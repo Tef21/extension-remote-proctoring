@@ -1,5 +1,5 @@
 {
-	"name" : "oat/extension-remote-proctoring",
+	"name" : "oat-sa/extension-remote-proctoring",
 	"type" : "tao-extension",
 	"authors" : [{
 			"name" : "Open Assessment Technologies SA"

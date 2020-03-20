@@ -1,6 +1,7 @@
 {
 	"name" : "oat-sa/extension-remote-proctoring",
 	"type" : "tao-extension",
+	"description" : "tao extension to allow you to proctor your delivery executions by a remote proctor",
 	"authors" : [{
 			"name" : "Open Assessment Technologies SA"
 		}
@@ -10,7 +11,7 @@
 		"computer-based-assessment"
 	],
 	"homepage" : "http://www.taotesting.com",
-	"license" : "GPL-2.0",
+	"license" : "GPL-2.0-only",
 	"extra" : {
 		"tao-extension-name" : "remoteProctoring"
 	},

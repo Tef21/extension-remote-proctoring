@@ -27,6 +27,8 @@ use oat\taoDelivery\model\execution\ServiceProxy;
 use oat\taoDelivery\model\execution\DeliveryExecutionInterface;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorAwareTrait;
+use oat\remoteProctoring\model\LaunchService;
+use oat\remoteProctoring\model\launch\SignatureException;
 
 /**
  * This controller aims at launching deliveries for a test-taker
@@ -37,6 +39,12 @@ class DeliveryLaunch extends Controller implements ServiceLocatorAwareInterface
 
     public function launch()
     {
+        // validate link
+        try {
+            $this->getServiceLocator()->get(LaunchService::SERVICE_ID)->validateRequest($this->getPsrRequest());
+        } catch (SignatureException $e) {
+            throw new \common_exception_Unauthorized('The provided link is not valid', 403, $e);
+        }
         // retrieve the delivery execution to launch from the parameters
         $deliveryExecution = $this->getDeliveryExecution();
         // init session from delivery execution user

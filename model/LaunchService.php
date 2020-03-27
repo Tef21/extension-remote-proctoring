@@ -22,26 +22,37 @@ namespace oat\remoteProctoring\model;
 
 use oat\oatbox\service\ConfigurableService;
 use Psr\Http\Message\RequestInterface;
+use oat\remoteProctoring\model\launch\SignatureMethod;
+use oat\remoteProctoring\model\launch\SignatureException;
 
 /**
  * This controller aims at launching deliveries for a test-taker
  */
 class LaunchService extends ConfigurableService
 {
+    const SERVICE_ID = 'remoteProctoring/LaunchService';
+
+    const OPTION_SIGNATURE_METHOD = 'signer';
+
     public function generateLaunchUrl(string $deliveryExecutionId): string
     {
-        return _url('launch', 'DeliveryLaunch', 'remoteProctoring', [
+        $url = _url('launch', 'DeliveryLaunch', 'remoteProctoring', [
             'deId' => $deliveryExecutionId
         ]);
+        return $this->getSignatureMethod()->signUrl($url);
     }
-    
-    public function validateLaunchUrl(RequestInterface $request): bool
+
+    /**
+     * @throws SignatureException
+     * @param RequestInterface $request
+     */
+    public function validateRequest(RequestInterface $request): void
     {
-        return true;
+        $this->getSignatureMethod()->validateRequest($request);
     }
-    
-    protected function getSignatureMethod(): string
+
+    protected function getSignatureMethod(): SignatureMethod
     {
-        
+        return $this->propagate($this->getOption(self::OPTION_SIGNATURE_METHOD));
     }
 }

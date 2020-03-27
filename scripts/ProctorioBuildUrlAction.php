@@ -39,7 +39,7 @@ class ProctorioBuildUrlAction extends AbstractAction
             [$tt, $proctor] = $proctorioApiService->getProctorioUrl($deliveryExecutionId);
             echo 'URLS for ' . $deliveryExecutionId.PHP_EOL;
             echo '   Testtaker: '.$tt.PHP_EOL;
-            echo '   Proctor  : '.$tt.PHP_EOL;
+            echo '   Proctor  : '.$proctor.PHP_EOL;
         }
         return new Report(Report::TYPE_SUCCESS);
     }

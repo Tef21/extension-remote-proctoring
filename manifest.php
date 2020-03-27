@@ -1,6 +1,4 @@
 <?php
-use oat\tao\model\user\TaoRoles;
-use oat\remoteProctoring\controller\DeliveryLaunch;
 
 /**
  * This program is free software; you can redistribute it and/or
@@ -22,6 +20,10 @@ use oat\remoteProctoring\controller\DeliveryLaunch;
  *
  */
 
+use oat\tao\model\user\TaoRoles;
+use oat\remoteProctoring\controller\DeliveryLaunch;
+use oat\remoteProctoring\scripts\install\RegisterAuthorizationProvider;
+
 /**
  * Generated using taoDevTools 6.5.0
  */
@@ -42,6 +44,9 @@ return [
 
     ],
     'install' => [
+        'php' => [
+            RegisterAuthorizationProvider::class
+        ]
     ],
     'uninstall' => [
     ],

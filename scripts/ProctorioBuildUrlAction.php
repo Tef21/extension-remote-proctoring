@@ -29,21 +29,18 @@ class ProctorioBuildUrlAction extends AbstractAction
 
     public function __invoke($params)
     {
-        $deliveryExecutionId = urldecode('kve_de_https%3A%2F%2Ftao33.bout%2Frdf%23i5e7dae79e6ded304522da34e3587659e3b');
         /** @var ProctorioApiService $proctorioApiService */
         $proctorioApiService = $this->getServiceLocator()->get(ProctorioApiService::class);
-
-        $urls = $proctorioApiService->getProctorioUrl($deliveryExecutionId);
-        echo 'URLS:'.PHP_EOL;
-        foreach ($urls as $url) {
-            echo $url.PHP_EOL;
+        foreach ($params as $param) {
+            $deliveryExecutionId = strpos($param, '%23') !== false
+                ? urldecode($param)
+                : $param;
+            $this->logInfo('Run get Proctorio Url for '.$deliveryExecutionId);
+            [$tt, $proctor] = $proctorioApiService->getProctorioUrl($deliveryExecutionId);
+            echo 'URLS for ' . $deliveryExecutionId.PHP_EOL;
+            echo '   Testtaker: '.$tt.PHP_EOL;
+            echo '   Proctor  : '.$tt.PHP_EOL;
         }
-
-        $this->logInfo('Run get Proctorio Urls');
-        if ($urls) {
-            return new Report(Report::TYPE_SUCCESS, __('URls successfully retrieved'));
-        }
-
-        return new Report(Report::TYPE_WARNING, __('URls not retrieved'));
+        return new Report(Report::TYPE_SUCCESS);
     }
 }

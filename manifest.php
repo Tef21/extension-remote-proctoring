@@ -1,4 +1,7 @@
 <?php
+use oat\tao\model\user\TaoRoles;
+use oat\remoteProctoring\controller\DeliveryLaunch;
+
 /**
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -30,11 +33,13 @@ return [
     'version' => '0.0.0',
     'author' => 'Open Assessment Technologies SA',
     'requires' => [
-        'tao' => '>=41.4.0'
+        'taoDelivery' => '>=14.9.0'
     ],
     'managementRole' => 'http://www.tao.lu/Ontologies/generis.rdf#remoteProctoringManager',
     'acl' => [
         ['grant', 'http://www.tao.lu/Ontologies/generis.rdf#remoteProctoringManager', ['ext'=>'remoteProctoring']],
+        ['grant', TaoRoles::ANONYMOUS, DeliveryLaunch::class],
+
     ],
     'install' => [
     ],
@@ -45,12 +50,12 @@ return [
     ],
     'constants' => [
         # views directory
-        "DIR_VIEWS" => dirname(__FILE__).DIRECTORY_SEPARATOR."views".DIRECTORY_SEPARATOR,
+        "DIR_VIEWS" => __DIR__ . DIRECTORY_SEPARATOR . "views" . DIRECTORY_SEPARATOR,
 
         #BASE URL (usually the domain root)
-        'BASE_URL' => ROOT_URL.'remoteProctoring/',
+        'BASE_URL' => ROOT_URL . 'remoteProctoring/',
     ],
     'extra' => [
-        'structures' => dirname(__FILE__).DIRECTORY_SEPARATOR.'controller'.DIRECTORY_SEPARATOR.'structures.xml',
+        'structures' => __DIR__ . DIRECTORY_SEPARATOR . 'controller' . DIRECTORY_SEPARATOR . 'structures.xml',
     ]
 ];

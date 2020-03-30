@@ -33,12 +33,12 @@ Install the extension on the CLI from the project root:
 
 **Linux:**
 ```bash
-sudo php tao/scripts/installExtension oat-sa/remote-proctoring
+sudo php tao/scripts/installExtension.php remoteProctoring
 ```
 
 **Windows:**
 ```bash
-php tao\scripts\installExtension oat-sa/remote-proctoring
+php tao\scripts\installExtension remote-proctoring
 ```
 
 As a system administrator you can also install it through the TAO Extension Manager:

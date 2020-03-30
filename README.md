@@ -7,7 +7,6 @@ REPOSITORY_NAME = extension-remote-proctoring, e.g. extension-tao-foo-bar
 
 ![TAO Logo](https://github.com/oat-sa/taohub-developer-guide/raw/master/resources/tao-logo.png)
 
-![GitHub](https://img.shields.io/github/license/oat-sa/extension-remote-proctoring.svg)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/y/oat-sa/extension-remote-proctoring.svg)
 
 ## Table of contents

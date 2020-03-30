@@ -1,6 +1,6 @@
 <!--
-EXTENSION_NAME = remoteProctoring, e.g. taoFooBar
-REPOSITORY_NAME = extension-remote-proctoring, e.g. extension-tao-foo-bar
+EXTENSION_NAME = remoteProctoring
+REPOSITORY_NAME = extension-remote-proctoring
 -->
 
 # TAO _Remote Proctoring_ extension
@@ -25,7 +25,7 @@ These instructions assume that you have already a TAO installation on your syste
 
 If you installed your TAO instance through [package-tao](https://github.com/oat-sa/package-tao),
 `oat-sa/extension-remote-proctoring` is very likely already installed. You can verify this under _Settings -> Extension
-manager_, where it would appear on the left hand side as `{{EXTENSION_NAME}}`. Alternatively you would find it in
+manager_, where it would appear on the left hand side as `remoteProctoring`. Alternatively you would find it in
 the code at `/config/generis/installation.conf.php`.
 
 _Note, that you have to be logged in as System Administrator to do this._
@@ -49,7 +49,7 @@ php tao\scripts\installExtension oat-sa/extension-remote-proctoring
 
 As a system administrator you can also install it through the TAO Extension Manager:
 - Settings (the gears on the right hand side of the menu) -> Extension manager
-- Select _{{EXTENSION_NAME}}_ on the right hand side, check the box and hit _install_
+- Select _remoteProctoring_ on the right hand side, check the box and hit _install_
 
 
 

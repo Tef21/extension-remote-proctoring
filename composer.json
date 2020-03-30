@@ -13,7 +13,7 @@
 	"homepage" : "http://www.taotesting.com",
 	"license" : "GPL-2.0-only",
 	"extra" : {
-		"tao-extension-name" : "remoteProctoring"
+		"tao-extension-name" : "taoRemoteProctoring"
 	},
 	"minimum-stability" : "dev",
 	"require" : {

@@ -25,7 +25,7 @@ These instructions assume that you have already a TAO installation on your syste
 
 If you installed your TAO instance through [package-tao](https://github.com/oat-sa/package-tao),
 `oat-sa/extension-remote-proctoring` is very likely already installed. You can verify this under _Settings -> Extension
-manager_, where it would appear on the left hand side as `{{EXTENSION_NAME}}`. Alternatively you would find it in
+manager_, where it would appear on the left hand side as `RemoteProctoring`. Alternatively you would find it in
 the code at `/config/generis/installation.conf.php`.
 
 _Note, that you have to be logged in as System Administrator to do this._

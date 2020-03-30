@@ -16,7 +16,7 @@ REPOSITORY_NAME = extension-remote-proctoring, e.g. extension-tao-foo-bar
 
 > This extension provide functionality to connect Tao instance to Proctorio tool
 
-Using this extension u can use [Proctorio](https://proctorio.com) tool with TAO
+Using this extension you can use the remote proctoring provider [Proctorio](https://proctorio.com) tool with TAO
 
 ## Installation instructions
 

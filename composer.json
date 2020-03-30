@@ -1,5 +1,5 @@
 {
-	"name" : "oat-sa/extension-remote-proctoring",
+	"name" : "oat-sa/remote-proctoring",
 	"type" : "tao-extension",
 	"description" : "tao extension to allow you to proctor your delivery executions by a remote proctor",
 	"authors" : [{

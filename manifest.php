@@ -24,7 +24,7 @@
  */
 
 return [
-    'name' => 'taoRemoteProctoring',
+    'name' => 'remoteProctoring',
     'label' => 'Integration with Remote Proctoring',
     'description' => 'This extension is provide functionality to integrate with Proctorio tool',
     'license' => 'GPL-2.0',
@@ -35,21 +35,21 @@ return [
     ],
     'managementRole' => 'http://www.tao.lu/Ontologies/generis.rdf#remoteProctoringManager',
     'acl' => [
-        ['grant', 'http://www.tao.lu/Ontologies/generis.rdf#remoteProctoringManager', ['ext' => 'taoRemoteProctoring']],
+        ['grant', 'http://www.tao.lu/Ontologies/generis.rdf#remoteProctoringManager', ['ext' => 'remoteProctoring']],
     ],
     'install' => [
     ],
     'uninstall' => [
     ],
     'routes' => [
-        '/taoRemoteProctoring' => 'oat\\taoRemoteProctoring\\controller',
+        '/remoteProctoring' => 'oat\\remoteProctoring\\controller',
     ],
     'constants' => [
         # views directory
         'DIR_ACTIONS' => __DIR__ . DIRECTORY_SEPARATOR . 'controller' . DIRECTORY_SEPARATOR,
 
         #BASE URL (usually the domain root)
-        'BASE_URL' => ROOT_URL . 'taoRemoteProctoring/',
+        'BASE_URL' => ROOT_URL . 'remoteProctoring/',
     ],
     'extra' => [
     ],

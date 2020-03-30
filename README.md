@@ -7,7 +7,6 @@ REPOSITORY_NAME = extension-remote-proctoring
 
 ![TAO Logo](https://github.com/oat-sa/taohub-developer-guide/raw/master/resources/tao-logo.png)
 
-![GitHub](https://img.shields.io/github/license/oat-sa/extension-remote-proctoring.svg)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/y/oat-sa/extension-remote-proctoring.svg)
 
 ## Table of contents
@@ -16,7 +15,7 @@ REPOSITORY_NAME = extension-remote-proctoring
 
 > This extension provide functionality to connect Tao instance to Proctorio tool
 
-Using this extension u can use [Proctorio](https://proctorio.com) tool with TAO
+Using this extension you can use the remote proctoring provider [Proctorio](https://proctorio.com) tool with TAO
 
 ## Installation instructions
 

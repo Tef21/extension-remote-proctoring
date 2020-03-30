@@ -53,15 +53,6 @@ registry.service.consul:4444/tao/dependency-resolver oat:dependencies:resolve --
                         label: 'Add phpunit',
                         script: 'composer require phpunit/phpunit:^8.5'
                     )
-                    sh(
-                        label: "Extra filesystem mocks",
-                        script: '''
-mkdir -p taoQtiItem/views/js/mathjax/ && touch taoQtiItem/views/js/mathjax/MathJax.js
-mkdir -p tao/views/locales/en-US/
-    echo "{\\"serial\\":\\"${BUILD_ID}\\",\\"date\\":$(date +%s),\\"version\\":\\"3.3.0-${BUILD_NUMBER}\\",\\"translations\\":{}}" > tao/views/locales/en-US/messages.json
-mkdir -p tao/views/locales/en-US/
-                        '''
-                    )
                 }
             }
         }

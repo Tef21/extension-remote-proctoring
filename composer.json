@@ -19,9 +19,17 @@
 	"require" : {
 		"oat-sa/oatbox-extension-installer" : "dev-master"
 	},
+	"require-dev": {
+		"phpunit/phpunit": "^8.5"
+	},
 	"autoload" : {
 		"psr-4" : {
 			"oat\\remoteProctoring\\" : ""
 		}
-	}
+	},
+    "autoload-dev": {
+        "psr-4": {
+          "oat\\Proctorio\\tests\\": "test"
+        }
+    }
 }

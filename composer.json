@@ -24,8 +24,12 @@
 	},
 	"autoload" : {
 		"psr-4" : {
-			"oat\\remoteProctoring\\" : "",
-			"oat\\remoteProctoring\\test\\": "test"
+			"oat\\remoteProctoring\\" : ""
 		}
-	}
+	},
+    "autoload-dev": {
+        "psr-4": {
+          "oat\\Proctorio\\tests\\": "test"
+        }
+    }
 }

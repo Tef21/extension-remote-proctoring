@@ -22,35 +22,35 @@
 /**
  * Generated using taoDevTools 6.5.0
  */
+
 return [
     'name' => 'remoteProctoring',
-    'label' => 'Remote Proctoring',
-    'description' => '',
+    'label' => 'Remote Proctoring extension that allows you to use a remote proctoring solution',
+    'description' => 'This extension provides functionality to integrate with Proctorio tool',
     'license' => 'GPL-2.0',
     'version' => '0.0.0',
     'author' => 'Open Assessment Technologies SA',
     'requires' => [
-        'tao' => '>=41.4.0'
+        'tao' => '>=41.4.0',
     ],
     'managementRole' => 'http://www.tao.lu/Ontologies/generis.rdf#remoteProctoringManager',
     'acl' => [
-        ['grant', 'http://www.tao.lu/Ontologies/generis.rdf#remoteProctoringManager', ['ext'=>'remoteProctoring']],
+        ['grant', 'http://www.tao.lu/Ontologies/generis.rdf#remoteProctoringManager', ['ext' => 'remoteProctoring']],
     ],
     'install' => [
     ],
     'uninstall' => [
     ],
     'routes' => [
-        '/remoteProctoring' => 'oat\\remoteProctoring\\controller'
+        '/remoteProctoring' => 'oat\\remoteProctoring\\controller',
     ],
     'constants' => [
         # views directory
-        "DIR_VIEWS" => dirname(__FILE__).DIRECTORY_SEPARATOR."views".DIRECTORY_SEPARATOR,
+        'DIR_ACTIONS' => __DIR__ . DIRECTORY_SEPARATOR . 'controller' . DIRECTORY_SEPARATOR,
 
         #BASE URL (usually the domain root)
-        'BASE_URL' => ROOT_URL.'remoteProctoring/',
+        'BASE_URL' => ROOT_URL . 'remoteProctoring/',
     ],
     'extra' => [
-        'structures' => dirname(__FILE__).DIRECTORY_SEPARATOR.'controller'.DIRECTORY_SEPARATOR.'structures.xml',
-    ]
+    ],
 ];

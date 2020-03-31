@@ -22,9 +22,19 @@ These instructions assume that you have already a TAO installation on your syste
 
 _Note, that you have to be logged in as System Administrator to do this._
 
-Add the extension to your TAO composer and to the autoloader:
+Add the extension to your TAO composer and to the autoloEader:
 ```bash
 composer require oat-sa/extension-remote-proctoring
+```
+
+__Warning!__ Extension is under private oat project and it's not published in packagist. 
+Please remember to add custom vcs to your `composer.json` file
+
+```
+{
+  "type": "vcs",
+  "url": "git@github.com:oat-sa/extension-remote-proctoring.git"
+}
 ```
 
 Install the extension on the CLI from the project root:

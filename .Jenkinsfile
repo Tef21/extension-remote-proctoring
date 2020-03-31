@@ -24,6 +24,10 @@ pipeline {
                     )
                 }
                 sh(
+                    label: 'Add phpunit',
+                    script: 'composer require phpunit/phpunit:^8.5'
+                )
+                sh(
                     label: 'Run backend tests',
                     script: './vendor/bin/phpunit'
                 )

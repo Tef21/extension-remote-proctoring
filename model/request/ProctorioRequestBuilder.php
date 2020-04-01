@@ -18,7 +18,7 @@
  * Copyright (c) 2020 (original work) Open Assessment Technologies SA
  */
 
-namespace oat\remoteProctoring\model;
+namespace oat\remoteProctoring\request;
 
 use common_exception_Error;
 use common_exception_NotFound;
@@ -30,7 +30,7 @@ use oat\Proctorio\ProctorioConfig;
 use oat\tao\helpers\UserHelper;
 use oat\taoDelivery\model\execution\DeliveryExecutionInterface;
 
-class RequestBuilder
+class ProctorioRequestBuilder
 {
     use UuidPrimaryKeyTrait;
     use LoggerAwareTrait;

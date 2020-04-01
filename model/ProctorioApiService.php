@@ -20,28 +20,22 @@
 
 namespace oat\remoteProctoring\model;
 
-use common_exception_Error;
-use common_exception_NotFound;
-use core_kernel_classes_Resource;
+use common_persistence_KeyValuePersistence;
 use Exception;
-use oat\generis\Helper\UuidPrimaryKeyTrait;
 use oat\generis\persistence\PersistenceManager;
 use oat\oatbox\service\ConfigurableService;
-use oat\oatbox\user\User;
-use oat\Proctorio\ProctorioConfig;
 use oat\Proctorio\ProctorioService;
-use oat\tao\helpers\UserHelper;
+use oat\remoteProctoring\request\ProctorioRequestBuilder;
+use oat\remoteProctoring\response\ProctorioResponse;
+use oat\remoteProctoring\response\ResponseValidator;
 use oat\taoDelivery\model\execution\DeliveryExecutionInterface;
-use RuntimeException;
 use Throwable;
-use common_persistence_KeyValuePersistence;
 
 /**
- * This controller aims at launching deliveries for a test-taker
+ * Class ProctorioApiService
  */
 class ProctorioApiService extends ConfigurableService
 {
-    use UuidPrimaryKeyTrait;
 
     public const SERVICE_ID = 'remoteProctoring/ProctorioApiService';
 
@@ -53,94 +47,41 @@ class ProctorioApiService extends ConfigurableService
 
     public const OPTION_EXAM_SETTINGS = 'exam_settings';
 
-    public const PREFIX_KEY_VALUE = 'proctorio::';
+    private $repository;
+    private $validator;
 
     /**
-     * @var
+     * @param DeliveryExecutionInterface $deliveryExecutionId
+     * @return ProctorioResponse|null
+     * @throws Exception
      */
-    private $proctorioUrls;
-
-    public function getProctorioUrl(DeliveryExecutionInterface $deliveryExecutionId): array
+    public function getProctorioUrl(DeliveryExecutionInterface $deliveryExecutionId): ?ProctorioResponse
     {
-        if ($this->proctorioUrls === null) {
-            $proctorioUrls = $this->loadProctorioUrls($deliveryExecutionId->getIdentifier());
-            if (empty($proctorioUrls)) {
-                $proctorioUrls = $this->requestProctorioUrls($deliveryExecutionId);
-                $this->storeProctorioUrls($deliveryExecutionId, $proctorioUrls);
+        $proctorioUrls = $this->getProctorioUrlRepository()->findById($this->getUrlsId($deliveryExecutionId));
+        if ($proctorioUrls === null) {
+            $proctorioResponse = $this->requestProctorioUrls($deliveryExecutionId);
+            if ($this->getValidator()->validate($proctorioResponse)) {
+                $proctorioUrls = ProctorioResponse::fromJson($proctorioResponse);
+                $this->getProctorioUrlRepository()->save($proctorioUrls, $this->getUrlsId($deliveryExecutionId));
             }
         }
 
         return $proctorioUrls;
     }
 
-
-    public function getLaunchService()
-    {
-        return $this->getServiceLocator()->get(LaunchService::class);
-    }
-
     /**
+     * @param DeliveryExecutionInterface $deliveryExecution
      * @return string
-     */
-    private function getOauthCredentials(): string
-    {
-        return $this->getOption(self::OPTION_OAUTH_KEY);
-    }
-
-    /**
-     * @return string
-     */
-    private function getExamSettings(): string
-    {
-        return $this->getOption(self::OPTION_EXAM_SETTINGS);
-    }
-
-    /**
-     * @param string $deliveryExecutionId
-     * @return array
      * @throws Exception
      */
-    protected function requestProctorioUrls(string $deliveryExecutionId): array
+    protected function requestProctorioUrls(DeliveryExecutionInterface $deliveryExecution): string
     {
         $proctorioService = new ProctorioService();
+        $launchUrl = $this->getLaunchService()->generateLaunchUrl($deliveryExecution->getIdentifier());
+        $config = $this->getRequestBuilder()->build($deliveryExecution, $launchUrl, $this->getOptions());
+        $proctorioService->buildConfig($config);
 
-        $config = $this->buildRequestPayload($deliveryExecutionId, $proctorioService);
-
-        $urls = $proctorioService->callRemoteProctoring($config, $this->getOption(self::OPTION_OAUTH_SECRET));
-
-        if ($urls = json_decode($urls, true)) {
-            return $urls;
-        }
-
-        throw new RuntimeException(json_last_error());
-    }
-
-    /**
-     * @param $deliveryExecutionId
-     * @param $proctorioUrls
-     * @return bool
-     */
-    protected function storeProctorioUrls($deliveryExecutionId, $proctorioUrls): bool
-    {
-        try {
-            return $this->getStorage()->set(self::PREFIX_KEY_VALUE . $deliveryExecutionId, json_encode($proctorioUrls));
-        } catch (Throwable $exception) {
-            $this->logError($exception->getMessage());
-        }
-        return false;
-    }
-
-    /**
-     * @param string $deliveryExecutionId
-     * @return array
-     */
-    protected function loadProctorioUrls(string $deliveryExecutionId): array
-    {
-        $urls = $this->getStorage()->get(self::PREFIX_KEY_VALUE . $deliveryExecutionId);
-        if ($urls !== false) {
-            $urls = json_decode($urls, true);
-        }
-        return is_array($urls) ? $urls : [];
+        return $proctorioService->callRemoteProctoring($config, $this->getOption(self::OPTION_OAUTH_SECRET));
     }
 
     /**
@@ -153,68 +94,53 @@ class ProctorioApiService extends ConfigurableService
             ->getPersistenceById($this->getOption(self::OPTION_PERSISTENCE));
     }
 
-    /**
-     * @param DeliveryExecutionInterface $deliveryExecution
-     * @param ProctorioService $proctorioService
-     * @return array
-     * @throws Exception
-     */
-    private function buildRequestPayload(DeliveryExecutionInterface $deliveryExecution, ProctorioService $proctorioService): array
+    public function getLaunchService()
     {
-        $launchUrl = $this->getLaunchService()->generateLaunchUrl($deliveryExecution->getIdentifier());
-        $configDetails =
-            [
-                //delivery execution level
-                ProctorioConfig::LAUNCH_URL => $launchUrl,
-                ProctorioConfig::USER_ID => $deliveryExecution->getUserIdentifier(),
-
-                //platform level
-                ProctorioConfig::OAUTH_CONSUMER_KEY => $this->getOauthCredentials(),
-
-                ProctorioConfig::EXAM_START => $launchUrl,
-                ProctorioConfig::EXAM_TAKE => $this->getExamUrl($deliveryExecution),
-                ProctorioConfig::EXAM_END => $this->getExamUrl($deliveryExecution),
-                ProctorioConfig::EXAM_SETTINGS => $this->getExamSettings(),
-
-                //delivery execution level
-                ProctorioConfig::FULL_NAME => $this->getUserFullName($deliveryExecution),
-                //Delivery level
-                ProctorioConfig::EXAM_TAG => $deliveryExecution->getDelivery()->getLabel(),
-
-                ProctorioConfig::OAUTH_TIMESTAMP => time(),
-                ProctorioConfig::OAUTH_NONCE => $this->getUniquePrimaryKey(),
-            ];
-
-        return $proctorioService->buildConfig($configDetails);
+        return $this->getServiceLocator()->get(LaunchService::class);
     }
 
     /**
-     * @param DeliveryExecutionInterface $deliveryExecution
-     * @return string
-     * @throws common_exception_Error
-     * @throws common_exception_NotFound
+     * @return ProctorioUrlRepository
      */
-    private function getUserFullName(DeliveryExecutionInterface $deliveryExecution): string
+    public function getProctorioUrlRepository(): ProctorioUrlRepository
     {
-        /** @var User $user */
-        $user = new core_kernel_classes_Resource($deliveryExecution->getUserIdentifier());
-        $fullName = UserHelper::getUserFirstName($user) ?? '';
-        $fullName .= ' ' . UserHelper::getUserLastName($user) ?? '';
-        return $fullName;
+        if ($this->repository === null) {
+            $this->repository = new ProctorioUrlRepository($this->getStorage());
+        }
+        return $this->repository;
     }
 
     /**
-     * @param DeliveryExecutionInterface $activeExecution
-     * @return string
-     * @throws common_exception_NotFound
+     * @return ProctorioRequestBuilder
      */
-    private function getExamUrl(DeliveryExecutionInterface $activeExecution)
+    private function getRequestBuilder(): ProctorioRequestBuilder
     {
-        return _url(
-            'runDeliveryExecution',
-            'DeliveryRunner',
-            null,
-            ['deliveryExecution' => $activeExecution->getIdentifier()]
-        );
+        return $this->getServiceLocator()->get(ProctorioRequestBuilder::class);
+    }
+
+    /**
+     * @param DeliveryExecutionInterface $deliveryExecutionId
+     * @return string
+     */
+    private function getUrlsId(DeliveryExecutionInterface $deliveryExecutionId): string
+    {
+        try {
+            return ProctorioUrlRepository::PREFIX_KEY_VALUE . $deliveryExecutionId->getUserIdentifier();
+        } catch (Throwable $exception) {
+            $time = time();
+            $this->logError(
+                'Error generating url identifier at:' . $time . ' with message: ' . $exception->getMessage()
+            );
+
+            return ProctorioUrlRepository::PREFIX_KEY_VALUE . $time;
+        }
+    }
+
+    private function getValidator()
+    {
+        if ($this->validator === null) {
+            $this->validator = new ResponseValidator();
+        }
+        return $this->validator;
     }
 }

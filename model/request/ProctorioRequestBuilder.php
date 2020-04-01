@@ -1,0 +1,146 @@
+<?php
+
+/**
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; under version 2
+ * of the License (non-upgradable).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *
+ * Copyright (c) 2020 (original work) Open Assessment Technologies SA
+ */
+
+namespace oat\remoteProctoring\model;
+
+use common_exception_Error;
+use common_exception_NotFound;
+use core_kernel_classes_Resource;
+use oat\generis\Helper\UuidPrimaryKeyTrait;
+use oat\oatbox\log\LoggerAwareTrait;
+use oat\oatbox\user\User;
+use oat\Proctorio\ProctorioConfig;
+use oat\tao\helpers\UserHelper;
+use oat\taoDelivery\model\execution\DeliveryExecutionInterface;
+
+class RequestBuilder
+{
+    use UuidPrimaryKeyTrait;
+    use LoggerAwareTrait;
+
+    /** @var array $options */
+    private $options;
+
+    /**
+     * @param DeliveryExecutionInterface $deliveryExecution
+     * @param string $launchUrl
+     * @param array $options
+     * @return array
+     * @throws common_exception_Error
+     * @throws common_exception_NotFound
+     */
+    public function build(DeliveryExecutionInterface $deliveryExecution, string $launchUrl, array $options): array
+    {
+        $this->options = $options;
+
+        return
+            [
+                //delivery execution level
+                ProctorioConfig::LAUNCH_URL => $launchUrl,
+                ProctorioConfig::USER_ID => $deliveryExecution->getUserIdentifier(),
+
+                //platform level
+                ProctorioConfig::OAUTH_CONSUMER_KEY => $this->getOauthCredentials(),
+
+                ProctorioConfig::EXAM_START => $launchUrl,
+                ProctorioConfig::EXAM_TAKE => $this->getExamUrl(),
+                ProctorioConfig::EXAM_END => $this->getExamUrl(),
+                ProctorioConfig::EXAM_SETTINGS => $this->getExamSettings(),
+
+                //delivery execution level
+                ProctorioConfig::FULL_NAME => $this->getUserFullName($deliveryExecution),
+                //Delivery level
+                ProctorioConfig::EXAM_TAG => $deliveryExecution->getDelivery()->getLabel(),
+
+                ProctorioConfig::OAUTH_TIMESTAMP => time(),
+                ProctorioConfig::OAUTH_NONCE => $this->getNonce(),
+            ];
+    }
+
+
+    /**
+     * @param $name
+     * @return mixed|null
+     */
+    public function getOption($name)
+    {
+        return isset($this->options[$name]) ? $this->options[$name] : null;
+    }
+
+
+    /**
+     * @return string
+     */
+    private function getExamUrl(): string
+    {
+        return _url(
+            'runDeliveryExecution',
+            'DeliveryRunner',
+            null,
+            ''
+        );
+    }
+
+
+    /**
+     * @param DeliveryExecutionInterface $deliveryExecution
+     * @return string
+     * @throws common_exception_Error
+     * @throws common_exception_NotFound
+     */
+    private function getUserFullName(DeliveryExecutionInterface $deliveryExecution): string
+    {
+        /** @var User $user */
+        $user = new core_kernel_classes_Resource($deliveryExecution->getUserIdentifier());
+        $fullName = UserHelper::getUserFirstName($user) ?? '';
+        $fullName .= ' ' . UserHelper::getUserLastName($user) ?? '';
+        return $fullName;
+    }
+
+    /**
+     * @return string
+     */
+    private function getOauthCredentials(): string
+    {
+        return $this->getOption(ProctorioApiService::OPTION_OAUTH_KEY);
+    }
+
+    /**
+     * @return string
+     */
+    private function getExamSettings(): string
+    {
+        return $this->getOption(ProctorioApiService::OPTION_EXAM_SETTINGS);
+    }
+
+    /**
+     * @return string
+     */
+    private function getNonce(): string
+    {
+        try {
+            $nonce = $this->getUniquePrimaryKey();
+        } catch (\Throwable $exception) {
+            $this->$this->logError('UUID assignation for proctorio nonce has failed');
+            $nonce = (string)time();
+        }
+        return $nonce;
+    }
+}

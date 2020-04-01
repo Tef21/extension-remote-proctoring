@@ -40,9 +40,12 @@ class ProctoringAuthorizationProvider extends ConfigurableService implements Aut
 
     public function verifyResumeAuthorization(DeliveryExecutionInterface $deliveryExecution, User $user)
     {
-//        $this->logInfo(var_export(getallheaders(), true));
-        $proctorioApiService = $this->getServiceLocator()->get(ProctorioApiService::class);
-        [$tt, $proctor] = $proctorioApiService->getProctorioUrl($deliveryExecution->getIdentifier());
-        throw new UnAuthorizedException($tt);
+        $this->logInfo(var_export(getallheaders(), true));
+        $headers = getallheaders();
+        if ($headers['Referer'] !== 'https://getproctorio.com/') {
+            $proctorioApiService = $this->getServiceLocator()->get(ProctorioApiService::class);
+            [$tt, $proctor] = $proctorioApiService->getProctorioUrl($deliveryExecution->getIdentifier());
+            throw new UnAuthorizedException($tt);
+        }
     }
 }

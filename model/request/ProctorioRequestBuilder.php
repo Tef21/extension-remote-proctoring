@@ -79,7 +79,7 @@ class ProctorioRequestBuilder
      * @param $name
      * @return mixed|null
      */
-    public function getOption($name)
+    private function getOption($name)
     {
         return isset($this->options[$name]) ? $this->options[$name] : null;
     }

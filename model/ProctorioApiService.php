@@ -129,7 +129,9 @@ class ProctorioApiService extends ConfigurableService
         } catch (Throwable $exception) {
             $time = time();
             $this->logError(
-                'Error generating url identifier at:' . $time . ' with message: ' . $exception->getMessage()
+                'Error generating url identifier, failback index created: '
+                . ProctorioUrlRepository::PREFIX_KEY_VALUE . $time
+                . ' Error message: ' . $exception->getMessage()
             );
 
             return ProctorioUrlRepository::PREFIX_KEY_VALUE . $time;

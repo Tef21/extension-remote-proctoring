@@ -25,6 +25,6 @@ use Ramsey\Uuid\Uuid;
 
 return new LaunchService([
     LaunchService::OPTION_SIGNATURE_METHOD => new Sha1Signature([
-        Sha1Signature::OPTION_SECRET => Uuid::uuid4()
+        Sha1Signature::OPTION_SECRET => Uuid::uuid4()->toString()
     ])
 ]);

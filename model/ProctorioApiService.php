@@ -25,7 +25,7 @@ use Exception;
 use oat\generis\persistence\PersistenceManager;
 use oat\oatbox\service\ConfigurableService;
 use oat\Proctorio\ProctorioService;
-use oat\remoteProctoring\request\ProctorioRequestBuilder;
+use oat\remoteProctoring\model\request\ProctorioRequestBuilder;
 use oat\remoteProctoring\response\ProctorioResponse;
 use oat\remoteProctoring\response\ResponseValidator;
 use oat\taoDelivery\model\execution\DeliveryExecutionInterface;
@@ -77,7 +77,8 @@ class ProctorioApiService extends ConfigurableService
     protected function requestProctorioUrls(DeliveryExecutionInterface $deliveryExecution): string
     {
         $proctorioService = new ProctorioService();
-        $launchUrl = $this->getLaunchService()->generateLaunchUrl($deliveryExecution->getIdentifier());
+//        $launchUrl = $this->getLaunchService()->generateLaunchUrl($deliveryExecution->getIdentifier());
+        $launchUrl = "lunchURL";
         $config = $this->getRequestBuilder()->build($deliveryExecution, $launchUrl, $this->getOptions());
         $proctorioService->buildConfig($config);
 
@@ -94,10 +95,10 @@ class ProctorioApiService extends ConfigurableService
             ->getPersistenceById($this->getOption(self::OPTION_PERSISTENCE));
     }
 
-    public function getLaunchService()
-    {
-        return $this->getServiceLocator()->get(LaunchService::class);
-    }
+//    public function getLaunchService()
+//    {
+//        return $this->getServiceLocator()->get(LaunchService::class);
+//    }
 
     /**
      * @return ProctorioUrlRepository

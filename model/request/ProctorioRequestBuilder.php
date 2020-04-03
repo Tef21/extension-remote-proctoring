@@ -18,7 +18,7 @@
  * Copyright (c) 2020 (original work) Open Assessment Technologies SA
  */
 
-namespace oat\remoteProctoring\request;
+namespace oat\remoteProctoring\model\request;
 
 use common_exception_Error;
 use common_exception_NotFound;
@@ -27,8 +27,10 @@ use oat\generis\Helper\UuidPrimaryKeyTrait;
 use oat\oatbox\log\LoggerAwareTrait;
 use oat\oatbox\user\User;
 use oat\Proctorio\ProctorioConfig;
+use oat\remoteProctoring\model\ProctorioApiService;
 use oat\tao\helpers\UserHelper;
 use oat\taoDelivery\model\execution\DeliveryExecutionInterface;
+use tao_helpers_Uri;
 
 class ProctorioRequestBuilder
 {
@@ -69,7 +71,7 @@ class ProctorioRequestBuilder
                 //Delivery level
                 ProctorioConfig::EXAM_TAG => $deliveryExecution->getDelivery()->getLabel(),
 
-                ProctorioConfig::OAUTH_TIMESTAMP => time(),
+                ProctorioConfig::OAUTH_TIMESTAMP => $this->getTime(),
                 ProctorioConfig::OAUTH_NONCE => $this->getNonce(),
             ];
     }
@@ -88,13 +90,13 @@ class ProctorioRequestBuilder
     /**
      * @return string
      */
-    private function getExamUrl(): string
+    protected function getExamUrl(): string
     {
-        return _url(
+        return tao_helpers_Uri::url(
             'runDeliveryExecution',
             'DeliveryRunner',
             null,
-            ''
+            []
         );
     }
 
@@ -105,7 +107,7 @@ class ProctorioRequestBuilder
      * @throws common_exception_Error
      * @throws common_exception_NotFound
      */
-    private function getUserFullName(DeliveryExecutionInterface $deliveryExecution): string
+    protected function getUserFullName(DeliveryExecutionInterface $deliveryExecution): string
     {
         /** @var User $user */
         $user = new core_kernel_classes_Resource($deliveryExecution->getUserIdentifier());
@@ -117,7 +119,7 @@ class ProctorioRequestBuilder
     /**
      * @return string
      */
-    private function getOauthCredentials(): string
+    protected function getOauthCredentials(): ?string
     {
         return $this->getOption(ProctorioApiService::OPTION_OAUTH_KEY);
     }
@@ -125,7 +127,7 @@ class ProctorioRequestBuilder
     /**
      * @return string
      */
-    private function getExamSettings(): string
+    protected function getExamSettings(): ?string
     {
         return $this->getOption(ProctorioApiService::OPTION_EXAM_SETTINGS);
     }
@@ -133,14 +135,22 @@ class ProctorioRequestBuilder
     /**
      * @return string
      */
-    private function getNonce(): string
+    protected function getNonce(): string
     {
         try {
             $nonce = $this->getUniquePrimaryKey();
         } catch (\Throwable $exception) {
             $this->$this->logError('UUID assignation for proctorio nonce has failed');
-            $nonce = (string)time();
+            $nonce = (string)$this->getTime();
         }
         return $nonce;
+    }
+
+    /**
+     * @return int
+     */
+    protected function getTime(): int
+    {
+        return time();
     }
 }

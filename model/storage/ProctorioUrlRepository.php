@@ -18,6 +18,8 @@
  * Copyright (c) 2020 (original work) Open Assessment Technologies SA
  */
 
+declare(strict_types=1);
+
 namespace oat\remoteProctoring\model\storage;
 
 use common_persistence_KeyValuePersistence;

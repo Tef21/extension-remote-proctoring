@@ -18,6 +18,8 @@
  * Copyright (c) 2020 (original work) Open Assessment Technologies SA
  */
 
+declare(strict_types=1);
+
 namespace oat\remoteProctoring\model\request;
 
 use common_Exception;
@@ -148,7 +150,7 @@ class ProctorioRequestBuilder
             $this->$this->logError('UUID assignation for proctorio nonce has failed');
             $nonce = (string)$this->generate();
         }
-        
+
         return $nonce;
     }
 

@@ -18,6 +18,8 @@
  * Copyright (c) 2020 (original work) Open Assessment Technologies SA
  */
 
+declare(strict_types=1);
+
 namespace oat\remoteProctoring\test\unit\model\storage;
 
 use common_persistence_KeyValuePersistence;
@@ -53,14 +55,15 @@ class ProctorioApiServiceTest extends TestCase
         $this->deliveryExecution = $this->getDeliveryExecution();
         $this->subject = new ProctorioApiService();
 
-        /** @var ProctorioService $proctorioLibraryMock */
+        /** @var ProctorioService|MockObject $proctorioLibraryMock */
         $proctorioLibraryMock = $this->getMockBuilder(ProctorioService::class)
-            ->getMock()
-            ->method('callRemoteProctoring')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $proctorioLibraryMock->method('callRemoteProctoring')
             ->willReturn('["ttURL","reviewURL"]');
 
         $this->subject->setProctorioUrlLibraryService($proctorioLibraryMock);
-
         $this->subject->setServiceLocator($serviceLocatorMock);
         $this->setLogger();
     }

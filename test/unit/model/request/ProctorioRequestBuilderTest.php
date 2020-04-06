@@ -1,7 +1,27 @@
 <?php
 
+/**
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; under version 2
+ * of the License (non-upgradable).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *
+ * Copyright (c) 2020 (original work) Open Assessment Technologies SA
+ */
+
 namespace oat\remoteProctoring\test\unit\model\request;
 
+use common_exception_Error;
+use common_exception_NotFound;
 use core_kernel_classes_Resource;
 use oat\generis\test\TestCase;
 use oat\remoteProctoring\model\request\ProctorioRequestBuilder;
@@ -10,11 +30,15 @@ use PHPUnit\Framework\MockObject\MockObject;
 
 class ProctorioRequestBuilderTest extends TestCase
 {
-    /** @var ProctorioRequestBuilder $subject */
-    private $subject;
+
     /** @var MockObject|DeliveryExecutionInterface */
     private $deliveryExecution;
+
+    /** @var string $lunchUrl */
     private $lunchUrl;
+
+    /** @var ProctorioRequestBuilder $subject */
+    private $subject;
 
     protected function setUp(): void
     {
@@ -47,6 +71,10 @@ class ProctorioRequestBuilderTest extends TestCase
 
     }
 
+    /**
+     * @throws common_exception_Error
+     * @throws common_exception_NotFound
+     */
     public function testBuild(): void
     {
         $delivery = $this->getMockBuilder(core_kernel_classes_Resource::class)

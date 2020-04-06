@@ -18,7 +18,7 @@
  * Copyright (c) 2020 (original work) Open Assessment Technologies SA
  */
 
-namespace oat\remoteProctoring\response;
+namespace oat\remoteProctoring\model\response;
 
 use oat\oatbox\log\LoggerAwareTrait;
 use RuntimeException;
@@ -49,8 +49,8 @@ class ResponseValidator
         if (count($data) === 2 && !in_array(current($data), self::RESPONSE_CODES, true)) {
             return true;
         }
-        $this->logError('The Proctorio response contains an error' . $response);
+        $this->logError('Proctorio response contains an error' . $response);
 
-        throw new RuntimeException('The Proctorio response contains an error');
+        throw new RuntimeException('Proctorio response contains an error');
     }
 }

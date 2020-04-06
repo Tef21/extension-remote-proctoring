@@ -18,32 +18,39 @@
  * Copyright (c) 2020 (original work) Open Assessment Technologies SA
  */
 
-namespace oat\remoteProctoring\model;
+namespace oat\remoteProctoring\model\storage;
 
 use common_persistence_KeyValuePersistence;
-use oat\oatbox\log\LoggerAwareTrait;
-use oat\remoteProctoring\response\ProctorioResponse;
+use oat\remoteProctoring\model\response\ProctorioResponse;
+use Psr\Log\LoggerInterface;
 use Throwable;
 
 class ProctorioUrlRepository
 {
-    use LoggerAwareTrait;
-
     public const PREFIX_KEY_VALUE = 'proctorio::';
 
     /** @var common_persistence_KeyValuePersistence $persistence */
     private $persistence;
 
-    public function __construct(common_persistence_KeyValuePersistence $persistence)
+    /** @var LoggerInterface $logger */
+    private $logger;
+
+    /**
+     * ProctorioUrlRepository constructor.
+     * @param common_persistence_KeyValuePersistence $persistence
+     * @param LoggerInterface $logger
+     */
+    public function __construct(common_persistence_KeyValuePersistence $persistence, LoggerInterface $logger)
     {
         $this->persistence = $persistence;
+        $this->logger = $logger;
     }
 
 
     public function findById(string $id): ?ProctorioResponse
     {
         $urls = $this->persistence->get($id);
-        if ($urls !== false) {
+        if ($urls) {
             return ProctorioResponse::fromJson($urls);
         }
 
@@ -55,7 +62,7 @@ class ProctorioUrlRepository
         try {
             return $this->persistence->set($id, $response->toJson());
         } catch (Throwable $exception) {
-            $this->logError($exception->getMessage());
+            $this->logger->error($exception->getMessage());
         }
 
         return false;

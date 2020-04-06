@@ -20,12 +20,12 @@
 
 namespace oat\remoteProctoring\model\response;
 
-use oat\oatbox\log\LoggerAwareTrait;
+use Psr\Log\LoggerInterface;
 use RuntimeException;
+use Throwable;
 
-class ResponseValidator
+class ProctorioResponseValidator
 {
-    use LoggerAwareTrait;
 
     public const RESPONSE_CODES = [
         2653, // Missing required parameters
@@ -38,6 +38,18 @@ class ResponseValidator
         2660, // Unknown
     ];
 
+    /** @var LoggerInterface $logger */
+    private $logger;
+
+    /**
+     * ProctorioResponseValidator constructor.
+     * @param $logger
+     */
+    public function __construct(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
+
     /**
      * @param string $response
      * @return bool
@@ -45,12 +57,18 @@ class ResponseValidator
      */
     public function validate(string $response): bool
     {
-        $data = json_decode($response, true);
-        if (count($data) === 2 && !in_array(current($data), self::RESPONSE_CODES, true)) {
-            return true;
+        try {
+            $data = json_decode($response, true, 512, JSON_THROW_ON_ERROR);
+            if (count($data) === 2 && !in_array(current($data), self::RESPONSE_CODES, true)) {
+                return true;
+            }
+            throw new RuntimeException('Proctorio response contains an error');
+        } catch (Throwable $exception) {
+            $this->logger->error('Proctorio response contains an error'
+                . filter_var($response, FILTER_SANITIZE_STRING)
+            );
         }
-        $this->logError('Proctorio response contains an error' . $response);
 
-        throw new RuntimeException('Proctorio response contains an error');
+        return false;
     }
 }

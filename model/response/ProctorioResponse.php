@@ -18,9 +18,9 @@
  * Copyright (c) 2020 (original work) Open Assessment Technologies SA
  */
 
-namespace oat\remoteProctoring\response;
+namespace oat\remoteProctoring\model\response;
 
-use http\Exception\RuntimeException;
+use RuntimeException;
 
 /**
  * Class ProctorioResponse
@@ -37,10 +37,10 @@ class ProctorioResponse
 
     /**
      * ProctorioResponse constructor.
-     * @param $testTakerUrl
-     * @param $testReviewerUrl
+     * @param string $testTakerUrl
+     * @param string $testReviewerUrl
      */
-    public function __construct($testTakerUrl, $testReviewerUrl)
+    public function __construct(string $testTakerUrl, string $testReviewerUrl)
     {
         $this->testTakerUrl = $testTakerUrl;
         $this->testReviewerUrl = $testReviewerUrl;
@@ -50,7 +50,7 @@ class ProctorioResponse
     /**
      * @return string
      */
-    public function getTestTakerUrl()
+    public function getTestTakerUrl(): string
     {
         return $this->testTakerUrl;
     }
@@ -58,7 +58,7 @@ class ProctorioResponse
     /**
      * @return string
      */
-    public function getTestReviewerUrl()
+    public function getTestReviewerUrl(): string
     {
         return $this->testReviewerUrl;
     }
@@ -69,7 +69,7 @@ class ProctorioResponse
      */
     public static function fromJson(string $json): ProctorioResponse
     {
-        $data = json_decode($json, true);
+        $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
 
         if (!empty($data) && count($data) === 2) {
             return new self($data[0], $data[1]);
@@ -83,6 +83,6 @@ class ProctorioResponse
         return json_encode([
             $this->getTestTakerUrl(),
             $this->getTestReviewerUrl(),
-        ]);
+        ], JSON_THROW_ON_ERROR, 512);
     }
 }

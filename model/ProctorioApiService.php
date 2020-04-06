@@ -23,11 +23,13 @@ namespace oat\remoteProctoring\model;
 use common_persistence_KeyValuePersistence;
 use Exception;
 use oat\generis\persistence\PersistenceManager;
+use oat\oatbox\log\LoggerAwareTrait;
 use oat\oatbox\service\ConfigurableService;
 use oat\Proctorio\ProctorioService;
 use oat\remoteProctoring\model\request\ProctorioRequestBuilder;
-use oat\remoteProctoring\response\ProctorioResponse;
-use oat\remoteProctoring\response\ResponseValidator;
+use oat\remoteProctoring\model\response\ProctorioResponse;
+use oat\remoteProctoring\model\response\ProctorioResponseValidator;
+use oat\remoteProctoring\model\storage\ProctorioUrlRepository;
 use oat\taoDelivery\model\execution\DeliveryExecutionInterface;
 use Throwable;
 
@@ -36,6 +38,7 @@ use Throwable;
  */
 class ProctorioApiService extends ConfigurableService
 {
+    use LoggerAwareTrait;
 
     public const SERVICE_ID = 'remoteProctoring/ProctorioApiService';
 
@@ -50,19 +53,22 @@ class ProctorioApiService extends ConfigurableService
     private $repository;
     private $validator;
 
+    /** @var ProctorioService */
+    private $proctorioUrlLibraryService;
+
     /**
-     * @param DeliveryExecutionInterface $deliveryExecutionId
+     * @param DeliveryExecutionInterface $deliveryExecution
      * @return ProctorioResponse|null
      * @throws Exception
      */
-    public function getProctorioUrl(DeliveryExecutionInterface $deliveryExecutionId): ?ProctorioResponse
+    public function getProctorioUrl(DeliveryExecutionInterface $deliveryExecution): ?ProctorioResponse
     {
-        $proctorioUrls = $this->getProctorioUrlRepository()->findById($this->getUrlsId($deliveryExecutionId));
+        $proctorioUrls = $this->getProctorioUrlRepository()->findById($this->getUrlsId($deliveryExecution));
         if ($proctorioUrls === null) {
-            $proctorioResponse = $this->requestProctorioUrls($deliveryExecutionId);
+            $proctorioResponse = $this->requestProctorioUrls($deliveryExecution);
             if ($this->getValidator()->validate($proctorioResponse)) {
                 $proctorioUrls = ProctorioResponse::fromJson($proctorioResponse);
-                $this->getProctorioUrlRepository()->save($proctorioUrls, $this->getUrlsId($deliveryExecutionId));
+                $this->getProctorioUrlRepository()->save($proctorioUrls, $this->getUrlsId($deliveryExecution));
             }
         }
 
@@ -76,9 +82,8 @@ class ProctorioApiService extends ConfigurableService
      */
     protected function requestProctorioUrls(DeliveryExecutionInterface $deliveryExecution): string
     {
-        $proctorioService = new ProctorioService();
-//        $launchUrl = $this->getLaunchService()->generateLaunchUrl($deliveryExecution->getIdentifier());
-        $launchUrl = "lunchURL";
+        $proctorioService = $this->getProctorioLibraryService();
+        $launchUrl = $this->getLaunchService()->generateUrl($deliveryExecution->getIdentifier());
         $config = $this->getRequestBuilder()->build($deliveryExecution, $launchUrl, $this->getOptions());
         $proctorioService->buildConfig($config);
 
@@ -95,10 +100,10 @@ class ProctorioApiService extends ConfigurableService
             ->getPersistenceById($this->getOption(self::OPTION_PERSISTENCE));
     }
 
-//    public function getLaunchService()
-//    {
-//        return $this->getServiceLocator()->get(LaunchService::class);
-//    }
+    public function getLaunchService()
+    {
+        return $this->getServiceLocator()->get(LaunchService::class);
+    }
 
     /**
      * @return ProctorioUrlRepository
@@ -106,7 +111,7 @@ class ProctorioApiService extends ConfigurableService
     public function getProctorioUrlRepository(): ProctorioUrlRepository
     {
         if ($this->repository === null) {
-            $this->repository = new ProctorioUrlRepository($this->getStorage());
+            $this->repository = new ProctorioUrlRepository($this->getStorage(), $this->getLogger());
         }
         return $this->repository;
     }
@@ -139,11 +144,32 @@ class ProctorioApiService extends ConfigurableService
         }
     }
 
-    private function getValidator()
+    private function getValidator(): ProctorioResponseValidator
     {
         if ($this->validator === null) {
-            $this->validator = new ResponseValidator();
+            $this->validator = new ProctorioResponseValidator($this->getLogger());
         }
         return $this->validator;
     }
+
+    /**
+     * @return ProctorioService
+     */
+    protected function getProctorioLibraryService(): ProctorioService
+    {
+        if ($this->proctorioUrlLibraryService === null) {
+            return new ProctorioService();
+        }
+
+        return $this->proctorioUrlLibraryService;
+    }
+
+    /**
+     * @param ProctorioService $proctorioUrlLibraryService
+     */
+    public function setProctorioUrlLibraryService(ProctorioService $proctorioUrlLibraryService): void
+    {
+        $this->proctorioUrlLibraryService = $proctorioUrlLibraryService;
+    }
+
 }

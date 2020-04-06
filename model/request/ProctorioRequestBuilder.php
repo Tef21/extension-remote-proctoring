@@ -31,6 +31,7 @@ use oat\remoteProctoring\model\ProctorioApiService;
 use oat\tao\helpers\UserHelper;
 use oat\taoDelivery\model\execution\DeliveryExecutionInterface;
 use tao_helpers_Uri;
+use Throwable;
 
 class ProctorioRequestBuilder
 {
@@ -83,7 +84,7 @@ class ProctorioRequestBuilder
      */
     private function getOption($name)
     {
-        return isset($this->options[$name]) ? $this->options[$name] : null;
+        return $this->options[$name] ?? null;
     }
 
 
@@ -139,7 +140,7 @@ class ProctorioRequestBuilder
     {
         try {
             $nonce = $this->getUniquePrimaryKey();
-        } catch (\Throwable $exception) {
+        } catch (Throwable $exception) {
             $this->$this->logError('UUID assignation for proctorio nonce has failed');
             $nonce = (string)$this->getTime();
         }

@@ -50,7 +50,10 @@ class ProctorioApiService extends ConfigurableService
 
     public const OPTION_EXAM_SETTINGS = 'exam_settings';
 
+    /** @var ProctorioUrlRepository $repository */
     private $repository;
+
+    /** @var ProctorioResponseValidator $validator */
     private $validator;
 
     /** @var ProctorioService */
@@ -100,7 +103,10 @@ class ProctorioApiService extends ConfigurableService
             ->getPersistenceById($this->getOption(self::OPTION_PERSISTENCE));
     }
 
-    public function getLaunchService()
+    /**
+     * @return LaunchService
+     */
+    public function getLaunchService(): LaunchService
     {
         return $this->getServiceLocator()->get(LaunchService::class);
     }

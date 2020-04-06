@@ -25,7 +25,6 @@ use core_kernel_classes_Resource;
 use Exception;
 use oat\generis\persistence\PersistenceManager;
 use oat\generis\test\TestCase;
-use oat\oatbox\log\LoggerAwareTrait;
 use oat\Proctorio\ProctorioService;
 use oat\remoteProctoring\model\LaunchService;
 use oat\remoteProctoring\model\ProctorioApiService;

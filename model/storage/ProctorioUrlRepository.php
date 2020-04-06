@@ -47,6 +47,10 @@ class ProctorioUrlRepository
     }
 
 
+    /**
+     * @param string $id
+     * @return ProctorioResponse|null
+     */
     public function findById(string $id): ?ProctorioResponse
     {
         $urls = $this->persistence->get($id);
@@ -57,6 +61,11 @@ class ProctorioUrlRepository
         return null;
     }
 
+    /**
+     * @param ProctorioResponse $response
+     * @param string $id
+     * @return bool
+     */
     public function save(ProctorioResponse $response, string $id): bool
     {
         try {

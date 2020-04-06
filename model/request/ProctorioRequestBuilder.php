@@ -20,15 +20,16 @@
 
 namespace oat\remoteProctoring\model\request;
 
+use common_Exception;
 use common_exception_Error;
 use common_exception_NotFound;
-use core_kernel_classes_Resource;
 use oat\generis\Helper\UuidPrimaryKeyTrait;
 use oat\oatbox\log\LoggerAwareTrait;
 use oat\oatbox\user\User;
 use oat\Proctorio\ProctorioConfig;
 use oat\remoteProctoring\model\ProctorioApiService;
 use oat\tao\helpers\UserHelper;
+use oat\tao\model\security\TokenGenerator;
 use oat\taoDelivery\model\execution\DeliveryExecutionInterface;
 use tao_helpers_Uri;
 use Throwable;
@@ -37,6 +38,7 @@ class ProctorioRequestBuilder
 {
     use UuidPrimaryKeyTrait;
     use LoggerAwareTrait;
+    use TokenGenerator;
 
     /** @var array $options */
     private $options;
@@ -46,6 +48,7 @@ class ProctorioRequestBuilder
      * @param string $launchUrl
      * @param array $options
      * @return array
+     * @throws common_Exception
      * @throws common_exception_Error
      * @throws common_exception_NotFound
      */
@@ -111,7 +114,7 @@ class ProctorioRequestBuilder
     protected function getUserFullName(DeliveryExecutionInterface $deliveryExecution): string
     {
         /** @var User $user */
-        $user = new core_kernel_classes_Resource($deliveryExecution->getUserIdentifier());
+        $user = UserHelper::getUser($deliveryExecution->getUserIdentifier());
         $fullName = UserHelper::getUserFirstName($user) ?? '';
         $fullName .= ' ' . UserHelper::getUserLastName($user) ?? '';
         return $fullName;
@@ -135,6 +138,7 @@ class ProctorioRequestBuilder
 
     /**
      * @return string
+     * @throws common_Exception
      */
     protected function getNonce(): string
     {
@@ -142,8 +146,9 @@ class ProctorioRequestBuilder
             $nonce = $this->getUniquePrimaryKey();
         } catch (Throwable $exception) {
             $this->$this->logError('UUID assignation for proctorio nonce has failed');
-            $nonce = (string)$this->getTime();
+            $nonce = (string)$this->generate();
         }
+        
         return $nonce;
     }
 

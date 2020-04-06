@@ -64,7 +64,6 @@ class ProctorioApiServiceTest extends TestCase
 
         $this->subject->setServiceLocator($serviceLocatorMock);
         $this->setLogger();
-
     }
 
     /**

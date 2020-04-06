@@ -20,7 +20,6 @@
 
 namespace oat\remoteProctoring\test\unit\model\response;
 
-
 use oat\generis\test\TestCase;
 use oat\oatbox\log\LoggerService;
 use oat\remoteProctoring\model\response\ProctorioResponseValidator;

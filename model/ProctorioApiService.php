@@ -171,5 +171,4 @@ class ProctorioApiService extends ConfigurableService
     {
         $this->proctorioUrlLibraryService = $proctorioUrlLibraryService;
     }
-
 }

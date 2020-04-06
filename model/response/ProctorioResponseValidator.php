@@ -65,8 +65,7 @@ class ProctorioResponseValidator
             throw new RuntimeException('Proctorio response contains an error');
         } catch (Throwable $exception) {
             $this->logger->error('Proctorio response contains an error'
-                . filter_var($response, FILTER_SANITIZE_STRING)
-            );
+                . filter_var($response, FILTER_SANITIZE_STRING));
         }
 
         return false;

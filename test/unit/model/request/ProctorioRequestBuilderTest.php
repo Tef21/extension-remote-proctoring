@@ -65,10 +65,8 @@ class ProctorioRequestBuilderTest extends TestCase
             protected function getTime(): int
             {
                 return 123456;
-
             }
         };
-
     }
 
     /**

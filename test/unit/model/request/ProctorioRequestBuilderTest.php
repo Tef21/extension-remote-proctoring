@@ -18,13 +18,17 @@ class ProctorioRequestBuilderTest extends TestCase
 
     protected function setUp(): void
     {
+        $this->deliveryExecution = $this->getMockBuilder(DeliveryExecutionInterface::class)
+            ->getMock();
+        $this->lunchUrl = 'someTestUrl.tld';
+
         $this->subject = new class extends ProctorioRequestBuilder {
             protected function getExamUrl(): string
             {
                 return 'examURL';
             }
 
-            protected function getUserFullName(): string
+            protected function getUserFullName(DeliveryExecutionInterface $deliveryExecution): string
             {
                 return 'Username';
             }
@@ -40,9 +44,6 @@ class ProctorioRequestBuilderTest extends TestCase
 
             }
         };
-        $this->deliveryExecution = $this->getMockBuilder(DeliveryExecutionInterface::class)
-            ->getMock();
-        $this->lunchUrl = 'someTestUrl.tld';
 
     }
 
@@ -69,16 +70,22 @@ class ProctorioRequestBuilderTest extends TestCase
             'user_id' => 'test',
             'oauth_consumer_key' => null,
             'exam_start' => 'someTestUrl.tld',
-            'exam_take' => 'test',
-            'exam_end' => 'test',
+            'exam_take' => 'examURL',
+            'exam_end' => 'examURL',
             'exam_settings' => null,
-            'fullname' => '',
+            'fullname' => 'Username',
             'exam_tag' => 'test-Label',
             'oauth_timestamp' => '',
             'oauth_nonce' => ''
         ];
 
         $this->assertEquals(array_keys($expected), array_keys($buildData));
-        $this->assertEquals($expected['launch_url'], $buildData['launch_url']);
+        $this->assertEquals($expected['user_id'], $buildData['user_id']);
+        $this->assertEquals($expected['oauth_consumer_key'], $buildData['oauth_consumer_key']);
+        $this->assertEquals($expected['exam_start'], $buildData['exam_start']);
+        $this->assertEquals($expected['exam_take'], $buildData['exam_take']);
+        $this->assertEquals($expected['exam_end'], $buildData['exam_end']);
+        $this->assertEquals($expected['exam_settings'], $buildData['exam_settings']);
+        $this->assertEquals($expected['fullname'], $buildData['fullname']);
     }
 }

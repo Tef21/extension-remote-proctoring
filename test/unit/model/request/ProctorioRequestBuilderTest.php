@@ -88,9 +88,7 @@ class ProctorioRequestBuilderTest extends TestCase
         $this->deliveryExecution->method('getDelivery')
             ->willReturn($delivery);
 
-        $options = [
-
-        ];
+        $options = [];
         $buildData = $this->subject->build($this->deliveryExecution, $this->lunchUrl, $options);
 
         $expected = [

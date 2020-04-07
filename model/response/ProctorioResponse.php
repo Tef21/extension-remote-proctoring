@@ -71,7 +71,7 @@ class ProctorioResponse
      */
     public static function fromJson(string $json): ProctorioResponse
     {
-        $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+        $data = json_decode($json, true);
 
         if (!empty($data) && count($data) === 2) {
             return new self($data[0], $data[1]);
@@ -85,6 +85,6 @@ class ProctorioResponse
         return json_encode([
             $this->getTestTakerUrl(),
             $this->getTestReviewerUrl(),
-        ], JSON_THROW_ON_ERROR, 512);
+        ]);
     }
 }

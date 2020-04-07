@@ -60,7 +60,7 @@ class ProctorioResponseValidator
     public function validate(string $response): bool
     {
         try {
-            $data = json_decode($response, true, 512, JSON_THROW_ON_ERROR);
+            $data = json_decode($response, true);
             if (count($data) === 2 && !in_array(current($data), self::RESPONSE_CODES, true)) {
                 return true;
             }

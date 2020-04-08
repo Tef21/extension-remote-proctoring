@@ -23,7 +23,7 @@ namespace oat\remoteProctoring\scripts\install;
 use oat\oatbox\extension\InstallAction;
 use oat\taoDelivery\model\authorization\AuthorizationService;
 use oat\taoDelivery\model\authorization\strategy\AuthorizationAggregator;
-use oat\remoteProctoring\model\ProctoringAuthorizationProvider;
+use oat\remoteProctoring\model\authorization\ProctoringAuthorizationProvider;
 
 /**
  * Installation action that register the authorization.

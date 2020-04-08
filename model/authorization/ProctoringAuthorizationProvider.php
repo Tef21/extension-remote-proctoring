@@ -29,6 +29,7 @@ use oat\taoDelivery\model\authorization\UnAuthorizedException;
 use oat\taoDelivery\model\execution\DeliveryExecutionInterface;
 use oat\remoteProctoring\model\ProctorioApiService;
 use oat\remoteProctoring\model\response\ProctorioResponse;
+use oat\oatbox\session\SessionService;
 
 /**
  * Authorization Provider that verifies if the tes
@@ -61,8 +62,10 @@ class ProctoringAuthorizationProvider extends ConfigurableService implements Aut
      * @return boolean
      */
     private function isRemoteProctored() {
-        $headers = getallheaders();
-        return $headers['Referer'] == 'https://getproctorio.com/';
+        $sessionService = $this->getServiceLocator()->get(SessionService::SERVICE_ID);
+        $session = $sessionService->getCurrentSession();
+        $proctoredContexts = $session->getContexts(RemoteProcotoredSessionContext::class);
+        return count($proctoredContexts) == 1;
     }
 
     /**

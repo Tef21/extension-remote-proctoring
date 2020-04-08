@@ -22,9 +22,12 @@ declare(strict_types=1);
 
 namespace oat\remoteProctoring\model\authorization;
 
+use oat\oatbox\session\SessionContext;
+
 /**
  * Authorization Provider that verifies if the tes
  */
-class RemoteProcotoredSessionContext {
+class RemoteProcotoredSessionContext implements SessionContext
+{
 
 }

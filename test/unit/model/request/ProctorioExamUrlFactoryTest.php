@@ -22,8 +22,8 @@ declare(strict_types=1);
 
 namespace oat\remoteProctoring\test\unit\model\request;
 
+use oat\generis\test\TestCase;
 use oat\remoteProctoring\model\request\ProctorioExamUrlFactory;
-use PHPUnit\Framework\TestCase;
 
 class ProctorioExamUrlFactoryTest extends TestCase
 {

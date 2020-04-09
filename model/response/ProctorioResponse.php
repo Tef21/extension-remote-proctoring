@@ -24,7 +24,6 @@ namespace oat\remoteProctoring\model\response;
 
 use RuntimeException;
 
-
 class ProctorioResponse
 {
     /** @var string */
@@ -33,13 +32,11 @@ class ProctorioResponse
     /** @var string */
     private $testReviewerUrl;
 
-
     public function __construct(string $testTakerUrl, string $testReviewerUrl)
     {
         $this->testTakerUrl = $testTakerUrl;
         $this->testReviewerUrl = $testReviewerUrl;
     }
-
 
     public function getTestTakerUrl(): string
     {
@@ -50,7 +47,6 @@ class ProctorioResponse
     {
         return $this->testReviewerUrl;
     }
-
 
     public static function fromJson(string $json): ProctorioResponse
     {
@@ -63,7 +59,7 @@ class ProctorioResponse
         throw new RuntimeException('Proctorio response Format is not proper');
     }
 
-    public function toJson()
+    public function toJson(): string
     {
         return json_encode([
             $this->getTestTakerUrl(),

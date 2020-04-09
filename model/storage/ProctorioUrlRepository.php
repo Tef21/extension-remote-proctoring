@@ -37,22 +37,12 @@ class ProctorioUrlRepository
     /** @var LoggerInterface $logger */
     private $logger;
 
-    /**
-     * ProctorioUrlRepository constructor.
-     * @param common_persistence_KeyValuePersistence $persistence
-     * @param LoggerInterface $logger
-     */
     public function __construct(common_persistence_KeyValuePersistence $persistence, LoggerInterface $logger)
     {
         $this->persistence = $persistence;
         $this->logger = $logger;
     }
 
-
-    /**
-     * @param string $id
-     * @return ProctorioResponse|null
-     */
     public function findById(string $id): ?ProctorioResponse
     {
         $urls = $this->persistence->get($id);
@@ -63,11 +53,6 @@ class ProctorioUrlRepository
         return null;
     }
 
-    /**
-     * @param ProctorioResponse $response
-     * @param string $id
-     * @return bool
-     */
     public function save(ProctorioResponse $response, string $id): bool
     {
         try {

@@ -33,8 +33,6 @@ use oat\remoteProctoring\model\ProctorioApiService;
 use oat\tao\helpers\UserHelper;
 use oat\tao\model\security\TokenGenerator;
 use oat\taoDelivery\model\execution\DeliveryExecutionInterface;
-use tao_helpers_Uri;
-use Throwable;
 
 class ProctorioRequestBuilder
 {
@@ -42,21 +40,34 @@ class ProctorioRequestBuilder
     use LoggerAwareTrait;
     use TokenGenerator;
 
+    /** * @var int */
+    private $time;
+
     /** @var array $options */
     private $options;
 
-    /** * @var int */
-    private $time;
+    /** @var string */
+    private $nonce;
+
+    /** @var ProctorioExamUrlFactory */
+    private $proctorioExamUrlFactory;
+
+    public function __construct(int $time, string $nonce, array $options, ProctorioExamUrlFactory $proctorioExamUrlFactory)
+    {
+        $this->time = $time;
+        $this->nonce = $nonce;
+        $this->options = $options;
+        $this->proctorioExamUrlFactory = $proctorioExamUrlFactory;
+    }
+
 
     /**
      * @throws common_Exception
      * @throws common_exception_Error
      * @throws common_exception_NotFound
      */
-    public function build(DeliveryExecutionInterface $deliveryExecution, string $launchUrl, array $options): array
+    public function build(DeliveryExecutionInterface $deliveryExecution, string $launchUrl): array
     {
-        $this->options = $options;
-
         return
             [
                 //delivery execution level
@@ -65,9 +76,9 @@ class ProctorioRequestBuilder
                 ProctorioConfig::FULL_NAME => $this->getUserFullName($deliveryExecution),
 
                 //platform level
-                ProctorioConfig::EXAM_START => $this->getExamUrl(),
-                ProctorioConfig::EXAM_TAKE => $this->getExamUrl(),
-                ProctorioConfig::EXAM_END => $this->getExamUrl(),
+                ProctorioConfig::EXAM_START => $this->proctorioExamUrlFactory->createExamStartUrl(),
+                ProctorioConfig::EXAM_TAKE => $this->proctorioExamUrlFactory->createExamTakeUrl(),
+                ProctorioConfig::EXAM_END => $this->proctorioExamUrlFactory->createExamEndUrl(),
                 ProctorioConfig::EXAM_SETTINGS => $this->getExamSettings(),
 
                 //Delivery level
@@ -77,27 +88,12 @@ class ProctorioRequestBuilder
             ];
     }
 
-    private function getOption($name)
+    /**
+     * @return mixed|null
+     */
+    private function getOption(string $name)
     {
         return $this->options[$name] ?? null;
-    }
-
-    protected function getExamUrl(): string
-    {
-        $url = tao_helpers_Uri::url(
-            'runDeliveryExecution',
-            'DeliveryRunner',
-            null,
-            []
-        );
-        return str_replace(
-            ['.', '/', '+', '*', '?', '[', '^', ']', '$', '(', ')', '{', '}', '=', '!', '<', '>', '|', ':', '-', '#'],
-            [
-                '\.', '\/', '\+', '\*', '\?', '\[', '\^', '\]', '\$', '\(', '\)', '\{', '\}', '\=', '\!', '\<', '\>',
-                '\|', '\:', '\-', '\#'
-            ],
-            $url
-        );
     }
 
     /**
@@ -118,29 +114,13 @@ class ProctorioRequestBuilder
         return $this->getOption(ProctorioApiService::OPTION_EXAM_SETTINGS);
     }
 
-    /**
-     * @throws common_Exception
-     */
-    protected function getNonce(): string
+    private function getNonce(): string
     {
-        try {
-            $nonce = $this->getUniquePrimaryKey();
-        } catch (Throwable $exception) {
-            $this->$this->logError('UUID assignation for proctorio nonce has failed');
-            $nonce = (string)$this->generate();
-        }
-
-        return $nonce;
+        return $this->nonce ?? $this->getUniquePrimaryKey();
     }
 
-    protected function getTime(): int
+    private function getTime(): int
     {
-        return $this->time = time();
+        return $this->time ?? time();
     }
-
-    public function setTime(int $time): void
-    {
-        $this->time = $time;
-    }
-
 }

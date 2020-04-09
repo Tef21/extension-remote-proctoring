@@ -103,7 +103,8 @@ class ProctorioApiService extends ConfigurableService
         $launchUrl = $this->getLaunchService()->generateUrl($deliveryExecution->getIdentifier());
         $config = $this->getRequestBuilder()->build($deliveryExecution, $launchUrl, $this->getOptions());
 
-        return $proctorioService->callRemoteProctoring($config,
+        return $proctorioService->callRemoteProctoring(
+            $config,
             $this->getOption(self::OPTION_OAUTH_KEY),
             $this->getOption(self::OPTION_OAUTH_SECRET)
         );

@@ -57,16 +57,14 @@ class ProctorioRequestBuilder
 
     public function __construct(
         int $time = null,
-        string $nonce = null,
         string $userFullName = null,
-        array $options = [],
+        string $nonce = null,
         ProctorioExamUrlFactory $proctorioExamUrlFactory = null
     )
     {
         $this->time = $time;
-        $this->nonce = $nonce;
         $this->userFullName = $userFullName;
-        $this->options = $options;
+        $this->nonce = $nonce;
         $this->proctorioExamUrlFactory = $proctorioExamUrlFactory ?? new ProctorioExamUrlFactory();
     }
 
@@ -76,8 +74,9 @@ class ProctorioRequestBuilder
      * @throws common_exception_Error
      * @throws common_exception_NotFound
      */
-    public function build(DeliveryExecutionInterface $deliveryExecution, string $launchUrl): array
+    public function build(DeliveryExecutionInterface $deliveryExecution, string $launchUrl, array $options): array
     {
+        $this->options = $options;
         return
             [
                 //delivery execution level

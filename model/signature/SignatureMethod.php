@@ -22,6 +22,7 @@ declare(strict_types=1);
 
 namespace oat\remoteProctoring\model\signature;
 
+use oat\remoteProctoring\model\signature\exception\SignatureException;
 use Psr\Http\Message\RequestInterface;
 
 interface SignatureMethod

@@ -23,6 +23,7 @@ declare(strict_types=1);
 namespace oat\remoteProctoring\model\signature;
 
 use oat\oatbox\Configurable;
+use oat\remoteProctoring\model\signature\exception\SignatureException;
 use Psr\Http\Message\RequestInterface;
 
 class Sha256Signature extends Configurable implements SignatureMethod

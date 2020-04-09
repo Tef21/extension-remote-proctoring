@@ -23,9 +23,23 @@ declare(strict_types=1);
 namespace oat\remoteProctoring\test\unit\model;
 
 use oat\generis\test\TestCase;
+use oat\remoteProctoring\model\LaunchService;
 
 class LaunchServiceTest extends TestCase
 {
+    /**
+     * @var LaunchService
+     */
+    private $subject;
+
+    protected function setUp(): void
+    {
+        $this->subject = new LaunchService();
+
+        $serviceLocatorMock = $this->getServiceLocatorMock();
+        $this->subject->setServiceLocator($serviceLocatorMock);
+    }
+
 
     public function testValidateRequest()
     {
@@ -33,9 +47,11 @@ class LaunchServiceTest extends TestCase
 
     public function testGenerateUrl()
     {
+        $this->assertIsString($this->subject->generateUrl('id'));
     }
 
     public function testGetExecutionParamName()
     {
+        $this->assertIsString($this->subject->getExecutionParamName());
     }
 }

@@ -23,7 +23,7 @@ declare(strict_types=1);
 namespace oat\remoteProctoring\model;
 
 use oat\oatbox\service\ConfigurableService;
-use oat\remoteProctoring\model\signature\SignatureException;
+use oat\remoteProctoring\model\signature\exception\SignatureException;
 use oat\remoteProctoring\model\signature\SignatureMethod;
 use Psr\Http\Message\RequestInterface;
 
@@ -32,7 +32,7 @@ class LaunchService extends ConfigurableService
     public const SERVICE_ID = 'remoteProctoring/LaunchService';
     public const OPTION_SIGNATURE_METHOD = 'signer';
 
-    private const URI_PARAM_EXECUTION = 'deid';
+    private const URI_PARAM_EXECUTION = 'deId';
 
     public function generateUrl(string $deliveryExecutionId): string
     {

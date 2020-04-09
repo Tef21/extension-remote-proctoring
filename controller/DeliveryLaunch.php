@@ -27,10 +27,9 @@ use common_exception_Unauthorized;
 use common_session_DefaultSession as DefaultSession;
 use InterruptedActionException;
 use oat\oatbox\session\SessionService;
-use oat\oatbox\user\User;
 use oat\oatbox\user\UserService;
-use oat\remoteProctoring\model\signature\SignatureException;
 use oat\remoteProctoring\model\LaunchService;
+use oat\remoteProctoring\model\signature\exception\SignatureException;
 use oat\tao\model\http\Controller;
 use oat\taoDelivery\model\execution\DeliveryExecutionInterface;
 use oat\taoDelivery\model\execution\ServiceProxy;
@@ -46,20 +45,21 @@ class DeliveryLaunch extends Controller implements ServiceLocatorAwareInterface
      * @throws common_exception_NotFound
      * @throws common_exception_Unauthorized
      */
-    public function launch()
+    public function launch(): void
     {
         try {
             $this->getLaunchService()->validateRequest($this->getPsrRequest());
         } catch (SignatureException $e) {
             throw new common_exception_Unauthorized('The provided link is not valid', 403);
         }
-        $deliveryExecution = $this->getDeliveryExecution();
+        $deliveryExecutionId = $this->getGetParameter($this->getLaunchService()->getExecutionParamName());
+        $deliveryExecution = $this->getDeliveryExecution($deliveryExecutionId);
 
         $this->initSession($deliveryExecution->getUserIdentifier());
         $this->redirect($this->getRedirectUrl($deliveryExecution->getIdentifier()));
     }
 
-    private function initSession(string $userId): User
+    private function initSession(string $userId): void
     {
         /** @var UserService $userService */
         $userService = $this->getServiceLocator()->get(UserService::SERVICE_ID);
@@ -67,7 +67,6 @@ class DeliveryLaunch extends Controller implements ServiceLocatorAwareInterface
         /** @var SessionService $session */
         $session = $this->getServiceLocator()->get(SessionService::SERVICE_ID);
         $session->setSession(new DefaultSession($user));
-        return $user;
     }
 
     private function getDeliveryExecution($deliveryExecutionId): DeliveryExecutionInterface

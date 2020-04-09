@@ -26,7 +26,6 @@ use common_Exception;
 use common_exception_Error;
 use common_exception_NotFound;
 use common_persistence_KeyValuePersistence;
-use Exception;
 use GuzzleHttp\Exception\GuzzleException;
 use oat\generis\persistence\PersistenceManager;
 use oat\oatbox\log\LoggerAwareTrait;
@@ -38,7 +37,6 @@ use oat\remoteProctoring\model\response\ProctorioResponse;
 use oat\remoteProctoring\model\response\ProctorioResponseValidator;
 use oat\remoteProctoring\model\storage\ProctorioUrlRepository;
 use oat\taoDelivery\model\execution\DeliveryExecutionInterface;
-use Throwable;
 
 /**
  * Class ProctorioApiService
@@ -67,9 +65,11 @@ class ProctorioApiService extends ConfigurableService
     private $proctorioUrlLibraryService;
 
     /**
-     * @param DeliveryExecutionInterface $deliveryExecution
-     * @return ProctorioResponse|null
-     * @throws Exception
+     * @throws GuzzleException
+     * @throws ProctorioParameterException
+     * @throws common_Exception
+     * @throws common_exception_Error
+     * @throws common_exception_NotFound
      */
     public function getProctorioUrl(DeliveryExecutionInterface $deliveryExecution): ?ProctorioResponse
     {
@@ -85,6 +85,11 @@ class ProctorioApiService extends ConfigurableService
         return $proctorioUrls;
     }
 
+    public function setProctorioUrlLibraryService(ProctorioService $proctorioUrlLibraryService): void
+    {
+        $this->proctorioUrlLibraryService = $proctorioUrlLibraryService;
+    }
+
     /**
      * @throws GuzzleException
      * @throws common_Exception
@@ -92,7 +97,7 @@ class ProctorioApiService extends ConfigurableService
      * @throws common_exception_NotFound
      * @throws ProctorioParameterException
      */
-    protected function requestProctorioUrls(DeliveryExecutionInterface $deliveryExecution): string
+    private function requestProctorioUrls(DeliveryExecutionInterface $deliveryExecution): string
     {
         $proctorioService = $this->getProctorioLibraryService();
         $launchUrl = $this->getLaunchService()->generateUrl($deliveryExecution->getIdentifier());
@@ -104,9 +109,6 @@ class ProctorioApiService extends ConfigurableService
         );
     }
 
-    /**
-     * @return common_persistence_KeyValuePersistence
-     */
     protected function getStorage(): common_persistence_KeyValuePersistence
     {
         return $this->getServiceLocator()
@@ -114,28 +116,20 @@ class ProctorioApiService extends ConfigurableService
             ->getPersistenceById($this->getOption(self::OPTION_PERSISTENCE));
     }
 
-    /**
-     * @return LaunchService
-     */
-    public function getLaunchService(): LaunchService
+    private function getLaunchService(): LaunchService
     {
         return $this->getServiceLocator()->get(LaunchService::class);
     }
 
-    /**
-     * @return ProctorioUrlRepository
-     */
-    public function getProctorioUrlRepository(): ProctorioUrlRepository
+    private function getProctorioUrlRepository(): ProctorioUrlRepository
     {
         if ($this->repository === null) {
             $this->repository = new ProctorioUrlRepository($this->getStorage(), $this->getLogger());
         }
+
         return $this->repository;
     }
 
-    /**
-     * @return ProctorioRequestBuilder
-     */
     private function getRequestBuilder(): ProctorioRequestBuilder
     {
         return $this->getServiceLocator()->get(ProctorioRequestBuilder::class);
@@ -151,26 +145,16 @@ class ProctorioApiService extends ConfigurableService
         if ($this->validator === null) {
             $this->validator = new ProctorioResponseValidator($this->getLogger());
         }
+
         return $this->validator;
     }
 
-    /**
-     * @return ProctorioService
-     */
-    protected function getProctorioLibraryService(): ProctorioService
+    private function getProctorioLibraryService(): ProctorioService
     {
         if ($this->proctorioUrlLibraryService === null) {
             return new ProctorioService();
         }
 
         return $this->proctorioUrlLibraryService;
-    }
-
-    /**
-     * @param ProctorioService $proctorioUrlLibraryService
-     */
-    public function setProctorioUrlLibraryService(ProctorioService $proctorioUrlLibraryService): void
-    {
-        $this->proctorioUrlLibraryService = $proctorioUrlLibraryService;
     }
 }

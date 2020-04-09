@@ -65,7 +65,6 @@ class ProctorioRequestBuilder
                 ProctorioConfig::FULL_NAME => $this->getUserFullName($deliveryExecution),
 
                 //platform level
-                ProctorioConfig::OAUTH_CONSUMER_KEY => $this->getOauthCredentials(),
                 ProctorioConfig::EXAM_START => $this->getExamUrl(),
                 ProctorioConfig::EXAM_TAKE => $this->getExamUrl(),
                 ProctorioConfig::EXAM_END => $this->getExamUrl(),
@@ -112,11 +111,6 @@ class ProctorioRequestBuilder
         $fullName = UserHelper::getUserFirstName($user) ?? '';
         $fullName .= ' ' . UserHelper::getUserLastName($user) ?? '';
         return $fullName;
-    }
-
-    protected function getOauthCredentials(): ?string
-    {
-        return $this->getOption(ProctorioApiService::OPTION_OAUTH_KEY);
     }
 
     protected function getExamSettings(): array

@@ -70,13 +70,11 @@ class DeliveryLaunch extends Controller implements ServiceLocatorAwareInterface
         return $user;
     }
 
-    private function getDeliveryExecution(): DeliveryExecutionInterface
+    private function getDeliveryExecution($deliveryExecutionId): DeliveryExecutionInterface
     {
         /** @var ServiceProxy $deliveryExecutionService */
         $deliveryExecutionService = $this->getServiceLocator()->get(ServiceProxy::SERVICE_ID);
-        return $deliveryExecutionService->getDeliveryExecution(
-            $this->getGetParameter($this->getLaunchService()->getExecutionParamName())
-        );
+        return $deliveryExecutionService->getDeliveryExecution($deliveryExecutionId);
     }
 
     private function getRedirectUrl(string $deliveryExecutionId): string

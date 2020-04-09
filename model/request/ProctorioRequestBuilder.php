@@ -57,7 +57,7 @@ class ProctorioRequestBuilder
         $this->time = $time;
         $this->nonce = $nonce;
         $this->options = $options;
-        $this->proctorioExamUrlFactory = $proctorioExamUrlFactory;
+        $this->proctorioExamUrlFactory = $proctorioExamUrlFactory ?? new ProctorioExamUrlFactory();
     }
 
 

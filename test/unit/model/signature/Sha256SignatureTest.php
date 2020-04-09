@@ -20,9 +20,11 @@
 
 declare(strict_types=1);
 
-namespace oat\remoteProctoring\model\signature;
+namespace oat\remoteProctoring\test\unit\model\signature;
 
 use oat\generis\test\TestCase;
+use oat\remoteProctoring\model\signature\Sha256Signature;
+use oat\remoteProctoring\model\signature\SignatureException;
 use Psr\Http\Message\RequestInterface;
 
 class Sha256SignatureTest extends TestCase

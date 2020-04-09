@@ -20,38 +20,22 @@
 
 declare(strict_types=1);
 
-namespace oat\remoteProctoring\model\signature;
+namespace oat\remoteProctoring\test\unit\model;
 
 use oat\generis\test\TestCase;
-use Psr\Http\Message\RequestInterface;
 
-class NoSignatureTest extends TestCase
+class LaunchServiceTest extends TestCase
 {
-    /**
-     * @var NoSignature
-     */
-    private $subject;
-
-    protected function setUp(): void
-    {
-        $this->subject = new NoSignature([]);
-    }
-
-    public function testSignUrl()
-    {
-        $this->assertEquals('https://tao.lu', $this->subject->signUrl('https://tao.lu'));
-        $this->assertNotEquals('https://tao.lu&signed', $this->subject->signUrl('https://tao.lu'));
-    }
 
     public function testValidateRequest()
     {
-        $this->assertNull($this->subject->validateRequest($this->getMockRequest('https://tao.lu')));
     }
 
-    protected function getMockRequest($uri): RequestInterface
+    public function testGenerateUrl()
     {
-        $mock = $this->createMock(RequestInterface::class);
-        $mock->method('getUri')->willReturn($uri);
-        return $mock;
+    }
+
+    public function testGetExecutionParamName()
+    {
     }
 }

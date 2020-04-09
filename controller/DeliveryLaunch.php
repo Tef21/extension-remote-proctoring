@@ -52,11 +52,11 @@ class DeliveryLaunch extends Controller implements ServiceLocatorAwareInterface
         } catch (SignatureException $e) {
             throw new common_exception_Unauthorized('The provided link is not valid', 403);
         }
-        $deliveryExecutionId = $this->getGetParameter($this->getLaunchService()->getExecutionParamName());
+        $deliveryExecutionId = (string)$this->getGetParameter($this->getLaunchService()->getExecutionParamName());
         $deliveryExecution = $this->getDeliveryExecution($deliveryExecutionId);
 
         $this->initSession($deliveryExecution->getUserIdentifier());
-        $this->redirect($this->getRedirectUrl($deliveryExecution->getIdentifier()));
+        $this->redirect($this->getRedirectUrl($deliveryExecutionId));
     }
 
     private function initSession(string $userId): void

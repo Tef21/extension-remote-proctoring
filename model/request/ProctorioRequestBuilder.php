@@ -45,11 +45,10 @@ class ProctorioRequestBuilder
     /** @var array $options */
     private $options;
 
+    /** * @var int */
+    private $time;
+
     /**
-     * @param DeliveryExecutionInterface $deliveryExecution
-     * @param string $launchUrl
-     * @param array $options
-     * @return array
      * @throws common_Exception
      * @throws common_exception_Error
      * @throws common_exception_NotFound
@@ -63,53 +62,46 @@ class ProctorioRequestBuilder
                 //delivery execution level
                 ProctorioConfig::LAUNCH_URL => $launchUrl,
                 ProctorioConfig::USER_ID => $deliveryExecution->getUserIdentifier(),
+                ProctorioConfig::FULL_NAME => $this->getUserFullName($deliveryExecution),
 
                 //platform level
                 ProctorioConfig::OAUTH_CONSUMER_KEY => $this->getOauthCredentials(),
-
-                ProctorioConfig::EXAM_START => $launchUrl,
+                ProctorioConfig::EXAM_START => $this->getExamUrl(),
                 ProctorioConfig::EXAM_TAKE => $this->getExamUrl(),
                 ProctorioConfig::EXAM_END => $this->getExamUrl(),
                 ProctorioConfig::EXAM_SETTINGS => $this->getExamSettings(),
 
-                //delivery execution level
-                ProctorioConfig::FULL_NAME => $this->getUserFullName($deliveryExecution),
                 //Delivery level
                 ProctorioConfig::EXAM_TAG => $deliveryExecution->getDelivery()->getLabel(),
-
                 ProctorioConfig::OAUTH_TIMESTAMP => $this->getTime(),
                 ProctorioConfig::OAUTH_NONCE => $this->getNonce(),
             ];
     }
 
-
-    /**
-     * @param $name
-     * @return mixed|null
-     */
     private function getOption($name)
     {
         return $this->options[$name] ?? null;
     }
 
-
-    /**
-     * @return string
-     */
     protected function getExamUrl(): string
     {
-        return tao_helpers_Uri::url(
+        $url = tao_helpers_Uri::url(
             'runDeliveryExecution',
             'DeliveryRunner',
             null,
             []
         );
+        return str_replace(
+            ['.', '/', '+', '*', '?', '[', '^', ']', '$', '(', ')', '{', '}', '=', '!', '<', '>', '|', ':', '-', '#'],
+            [
+                '\.', '\/', '\+', '\*', '\?', '\[', '\^', '\]', '\$', '\(', '\)', '\{', '\}', '\=', '\!', '\<', '\>',
+                '\|', '\:', '\-', '\#'
+            ],
+            $url
+        );
     }
 
-
     /**
-     * @param DeliveryExecutionInterface $deliveryExecution
-     * @return string
      * @throws common_exception_Error
      * @throws common_exception_NotFound
      */
@@ -122,24 +114,17 @@ class ProctorioRequestBuilder
         return $fullName;
     }
 
-    /**
-     * @return string
-     */
     protected function getOauthCredentials(): ?string
     {
         return $this->getOption(ProctorioApiService::OPTION_OAUTH_KEY);
     }
 
-    /**
-     * @return string
-     */
-    protected function getExamSettings(): ?string
+    protected function getExamSettings(): array
     {
         return $this->getOption(ProctorioApiService::OPTION_EXAM_SETTINGS);
     }
 
     /**
-     * @return string
      * @throws common_Exception
      */
     protected function getNonce(): string
@@ -154,11 +139,14 @@ class ProctorioRequestBuilder
         return $nonce;
     }
 
-    /**
-     * @return int
-     */
     protected function getTime(): int
     {
-        return time();
+        return $this->time = time();
     }
+
+    public function setTime(int $time): void
+    {
+        $this->time = $time;
+    }
+
 }

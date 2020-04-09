@@ -107,7 +107,6 @@ class ProctorioRequestBuilder
     }
 
     /**
-     * @throws common_exception_Error
      * @throws common_exception_NotFound
      */
     private function getUserFullName(DeliveryExecutionInterface $deliveryExecution): string
@@ -115,10 +114,7 @@ class ProctorioRequestBuilder
         if ($this->userFullName === null) {
             /** @var User $user */
             $user = UserHelper::getUser($deliveryExecution->getUserIdentifier());
-            $fullName = UserHelper::getUserFirstName($user) ?? '';
-            $fullName .= ' ' . UserHelper::getUserLastName($user) ?? '';
-
-            return $fullName;
+            return UserHelper::getUserName($user);
         }
 
         return $this->userFullName;

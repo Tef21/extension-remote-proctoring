@@ -52,10 +52,20 @@ class ProctorioRequestBuilder
     /** @var ProctorioExamUrlFactory */
     private $proctorioExamUrlFactory;
 
-    public function __construct(int $time, string $nonce, array $options, ProctorioExamUrlFactory $proctorioExamUrlFactory)
+    /** * @var string */
+    private $userFullName;
+
+    public function __construct(
+        int $time = null,
+        string $nonce = null,
+        string $userFullName = null,
+        array $options = [],
+        ProctorioExamUrlFactory $proctorioExamUrlFactory = null
+    )
     {
         $this->time = $time;
         $this->nonce = $nonce;
+        $this->userFullName = $userFullName;
         $this->options = $options;
         $this->proctorioExamUrlFactory = $proctorioExamUrlFactory ?? new ProctorioExamUrlFactory();
     }
@@ -100,13 +110,18 @@ class ProctorioRequestBuilder
      * @throws common_exception_Error
      * @throws common_exception_NotFound
      */
-    protected function getUserFullName(DeliveryExecutionInterface $deliveryExecution): string
+    private function getUserFullName(DeliveryExecutionInterface $deliveryExecution): string
     {
-        /** @var User $user */
-        $user = UserHelper::getUser($deliveryExecution->getUserIdentifier());
-        $fullName = UserHelper::getUserFirstName($user) ?? '';
-        $fullName .= ' ' . UserHelper::getUserLastName($user) ?? '';
-        return $fullName;
+        if ($this->userFullName === null) {
+            /** @var User $user */
+            $user = UserHelper::getUser($deliveryExecution->getUserIdentifier());
+            $fullName = UserHelper::getUserFirstName($user) ?? '';
+            $fullName .= ' ' . UserHelper::getUserLastName($user) ?? '';
+
+            return $fullName;
+        }
+
+        return $this->userFullName;
     }
 
     protected function getExamSettings(): array

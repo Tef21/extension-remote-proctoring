@@ -34,7 +34,6 @@ class ProctorioExamUrlFactory
         $this->rootURl = $rootURl ?? tao_helpers_Uri::getRootUrl();
     }
 
-
     public function createExamStartUrl(): string
     {
         return $this->convertUrlToPattern($this->rootURl . '/remoteProctoring') . '.*';

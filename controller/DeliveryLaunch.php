@@ -59,7 +59,7 @@ class DeliveryLaunch extends Controller implements ServiceLocatorAwareInterface
         $this->redirect($this->getRedirectUrl($deliveryExecution->getIdentifier()));
     }
 
-    protected function initSession(string $userId): User
+    private function initSession(string $userId): User
     {
         /** @var UserService $userService */
         $userService = $this->getServiceLocator()->get(UserService::SERVICE_ID);

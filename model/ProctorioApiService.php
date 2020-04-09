@@ -132,24 +132,9 @@ class ProctorioApiService extends ConfigurableService
         return $this->getServiceLocator()->get(ProctorioRequestBuilder::class);
     }
 
-    /**
-     * @param DeliveryExecutionInterface $deliveryExecutionId
-     * @return string
-     */
-    private function getUrlsId(DeliveryExecutionInterface $deliveryExecutionId): string
+    private function getUrlsId(DeliveryExecutionInterface $deliveryExecution): string
     {
-        try {
-            return ProctorioUrlRepository::PREFIX_KEY_VALUE . $deliveryExecutionId->getUserIdentifier();
-        } catch (Throwable $exception) {
-            $time = time();
-            $this->logError(
-                'Error generating url identifier, failback index created: '
-                . ProctorioUrlRepository::PREFIX_KEY_VALUE . $time
-                . ' Error message: ' . $exception->getMessage()
-            );
-
-            return ProctorioUrlRepository::PREFIX_KEY_VALUE . $time;
-        }
+        return ProctorioUrlRepository::PREFIX_KEY_VALUE . $deliveryExecution->getIdentifier();
     }
 
     private function getValidator(): ProctorioResponseValidator

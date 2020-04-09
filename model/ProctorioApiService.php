@@ -46,13 +46,9 @@ class ProctorioApiService extends ConfigurableService
     use LoggerAwareTrait;
 
     public const SERVICE_ID = 'remoteProctoring/ProctorioApiService';
-
     public const OPTION_PERSISTENCE = 'persistence';
-
     public const OPTION_OAUTH_KEY = 'oauthKey';
-
     public const OPTION_OAUTH_SECRET = 'oauthSecret';
-
     public const OPTION_EXAM_SETTINGS = 'exam_settings';
 
     /** @var ProctorioUrlRepository $repository */

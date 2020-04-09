@@ -29,6 +29,7 @@ use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorAwareTrait;
 use oat\remoteProctoring\model\LaunchService;
 use oat\remoteProctoring\model\launch\SignatureException;
+use oat\remoteProctoring\model\authorization\RemoteProcotoredSessionContext;
 
 /**
  * This controller aims at launching deliveries for a test-taker
@@ -57,8 +58,10 @@ class DeliveryLaunch extends Controller implements ServiceLocatorAwareInterface
     {
         $userService = $this->getServiceLocator()->get(UserService::SERVICE_ID);
         $user = $userService->getUser($userId);
-        $session = $this->getServiceLocator()->get(SessionService::SERVICE_ID);
-        $session->setSession(new \common_session_DefaultSession($user));
+        $session = new \common_session_DefaultSession($user);
+        $session->withContext(new RemoteProcotoredSessionContext());
+        $sessionService = $this->getServiceLocator()->get(SessionService::SERVICE_ID);
+        $sessionService->setSession($session);
         return $user;
     }
 

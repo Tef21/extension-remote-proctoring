@@ -22,11 +22,16 @@ declare(strict_types=1);
 
 namespace oat\remoteProctoring\model;
 
+use common_Exception;
+use common_exception_Error;
+use common_exception_NotFound;
 use common_persistence_KeyValuePersistence;
 use Exception;
+use GuzzleHttp\Exception\GuzzleException;
 use oat\generis\persistence\PersistenceManager;
 use oat\oatbox\log\LoggerAwareTrait;
 use oat\oatbox\service\ConfigurableService;
+use oat\Proctorio\Exception\ProctorioParameterException;
 use oat\Proctorio\ProctorioService;
 use oat\remoteProctoring\model\request\ProctorioRequestBuilder;
 use oat\remoteProctoring\model\response\ProctorioResponse;
@@ -81,18 +86,22 @@ class ProctorioApiService extends ConfigurableService
     }
 
     /**
-     * @param DeliveryExecutionInterface $deliveryExecution
-     * @return string
-     * @throws Exception
+     * @throws GuzzleException
+     * @throws common_Exception
+     * @throws common_exception_Error
+     * @throws common_exception_NotFound
+     * @throws ProctorioParameterException
      */
     protected function requestProctorioUrls(DeliveryExecutionInterface $deliveryExecution): string
     {
         $proctorioService = $this->getProctorioLibraryService();
         $launchUrl = $this->getLaunchService()->generateUrl($deliveryExecution->getIdentifier());
         $config = $this->getRequestBuilder()->build($deliveryExecution, $launchUrl, $this->getOptions());
-        $proctorioService->buildConfig($config);
 
-        return $proctorioService->callRemoteProctoring($config, $this->getOption(self::OPTION_OAUTH_SECRET));
+        return $proctorioService->callRemoteProctoring($config,
+            $this->getOption(self::OPTION_OAUTH_KEY),
+            $this->getOption(self::OPTION_OAUTH_SECRET)
+        );
     }
 
     /**

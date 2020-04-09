@@ -62,5 +62,5 @@ class LaunchService extends ConfigurableService
     public function getExecutionParamName(): string
     {
         return self::URI_PARAM_EXECUTION;
-    }
+
 }

@@ -58,8 +58,7 @@ class DeliveryLaunch extends Controller implements ServiceLocatorAwareInterface
     {
         $userService = $this->getServiceLocator()->get(UserService::SERVICE_ID);
         $user = $userService->getUser($userId);
-        $session = new \common_session_DefaultSession($user);
-        $session->withContext(new RemoteProcotoredSessionContext());
+        $session = new \common_session_DefaultSession($user, [new RemoteProcotoredSessionContext()]);
         $sessionService = $this->getServiceLocator()->get(SessionService::SERVICE_ID);
         $sessionService->setSession($session);
         return $user;

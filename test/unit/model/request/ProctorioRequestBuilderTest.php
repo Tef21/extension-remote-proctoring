@@ -22,10 +22,12 @@ declare(strict_types=1);
 
 namespace oat\remoteProctoring\test\unit\model\request;
 
+use common_Exception;
 use common_exception_Error;
 use common_exception_NotFound;
 use core_kernel_classes_Resource;
 use oat\generis\test\TestCase;
+use oat\remoteProctoring\model\request\ProctorioExamUrlFactory;
 use oat\remoteProctoring\model\request\ProctorioRequestBuilder;
 use oat\taoDelivery\model\execution\DeliveryExecutionInterface;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -42,36 +44,39 @@ class ProctorioRequestBuilderTest extends TestCase
     /** @var ProctorioRequestBuilder $subject */
     private $subject;
 
+    /** * @var int */
+    private $time;
+
+    /** * @var string */
+    private $userFullName;
+
+    /** @var string */
+    private $nonce;
+
+    /** * @var ProctorioExamUrlFactory|MockObject */
+    private $proctorioExamUrlFactory;
+
     protected function setUp(): void
     {
         $this->deliveryExecution = $this->getMockBuilder(DeliveryExecutionInterface::class)
             ->getMock();
         $this->lunchUrl = 'someTestUrl.tld';
 
-        $this->subject = new class extends ProctorioRequestBuilder {
-            protected function getExamUrl(): string
-            {
-                return 'examURL';
-            }
+        $this->time = time();
+        $this->userFullName = 'userFull Name';
+        $this->nonce = 'abc1234';
+        $this->proctorioExamUrlFactory = $this->createMock(ProctorioExamUrlFactory::class);
 
-            protected function getUserFullName(DeliveryExecutionInterface $deliveryExecution): string
-            {
-                return 'Username';
-            }
-
-            protected function getNonce(): string
-            {
-                return 'randomUUID';
-            }
-
-            protected function getTime(): int
-            {
-                return 123456;
-            }
-        };
+        $this->subject = new ProctorioRequestBuilder(
+            $this->time,
+            $this->userFullName,
+            $this->nonce,
+            $this->proctorioExamUrlFactory
+        );
     }
 
     /**
+     * @throws common_Exception
      * @throws common_exception_Error
      * @throws common_exception_NotFound
      */
@@ -88,18 +93,19 @@ class ProctorioRequestBuilderTest extends TestCase
         $this->deliveryExecution->method('getDelivery')
             ->willReturn($delivery);
 
-        $options = [];
+        $options = [
+            'exam_settings' => ['webtraffic'],
+        ];
         $buildData = $this->subject->build($this->deliveryExecution, $this->lunchUrl, $options);
 
         $expected = [
             'launch_url' => 'someTestUrl.tld',
             'user_id' => 'test',
-            'oauth_consumer_key' => null,
-            'exam_start' => 'someTestUrl.tld',
-            'exam_take' => 'examURL',
-            'exam_end' => 'examURL',
-            'exam_settings' => null,
-            'fullname' => 'Username',
+            'fullname' => 'userFull Name',
+            'exam_start' => '',
+            'exam_take' => '',
+            'exam_end' => '',
+            'exam_settings' => ['webtraffic'],
             'exam_tag' => 'test-Label',
             'oauth_timestamp' => '',
             'oauth_nonce' => ''
@@ -107,7 +113,6 @@ class ProctorioRequestBuilderTest extends TestCase
 
         $this->assertEquals(array_keys($expected), array_keys($buildData));
         $this->assertEquals($expected['user_id'], $buildData['user_id']);
-        $this->assertEquals($expected['oauth_consumer_key'], $buildData['oauth_consumer_key']);
         $this->assertEquals($expected['exam_start'], $buildData['exam_start']);
         $this->assertEquals($expected['exam_take'], $buildData['exam_take']);
         $this->assertEquals($expected['exam_end'], $buildData['exam_end']);

@@ -29,5 +29,19 @@ use oat\oatbox\session\SessionContext;
  */
 class RemoteProcotoredSessionContext implements SessionContext
 {
+    /** @var string */
+    private $deliveryExecutionId;
 
+    public function __construct(string $deliveryExecutionId)
+    {
+        $this->deliveryExecutionId = $deliveryExecutionId;
+    }
+
+    /**
+     * Retuns the delivery execution id for which the authorization was granted
+     */
+    public function getDeliveryExecutionId(): string
+    {
+        return $this->deliveryExecutionId;
+    }
 }

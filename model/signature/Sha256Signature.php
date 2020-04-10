@@ -38,7 +38,7 @@ class Sha256Signature extends Configurable implements SignatureMethod
 
     public function validateRequest(RequestInterface $request): void
     {
-        $url = (string)$request->getUri();
+        $url = $this->rebuildOffloadedUrl($request);
         $pos = strrpos($url, '&signature');
         if ($pos === false) {
             throw new SignatureException('Missing Signature');
@@ -47,5 +47,21 @@ class Sha256Signature extends Configurable implements SignatureMethod
         if (!hash_equals($this->signUrl($baseString), $url)) {
             throw new SignatureException('Invalid Signature');
         }
+    }
+
+    private function rebuildOffloadedUrl(RequestInterface $request): string
+    {
+        $url = $request->getUri();
+
+        if ('http' === $url->getScheme()) {
+            $https = $request->hasHeader('x-forwarded-proto') && $request->getHeader('x-forwarded-proto')[0] === 'https';
+            $https = $https || ($request->hasHeader('x-forwarded-ssl') && $request->getHeader('x-forwarded-ssl')[0] === 'on');
+
+            if ($https) {
+                $url = $url->withScheme('https');
+            }
+        }
+
+        return (string)$url;
     }
 }

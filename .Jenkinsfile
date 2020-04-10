@@ -12,18 +12,24 @@ pipeline {
                             reuseNode true
                         }
                     }
+            environment {
+                HOME = '.'
+            }
                     options {
                         skipDefaultCheckout()
                     }
                     steps {
-                            sh(
-                                label: 'Add phpunit',
-                                script: 'composer require phpunit/phpunit:^8.5'
-                            )
-                            sh(
-                                label: 'Run backend tests',
-                                script: './vendor/bin/phpunit -c phpunit.xml remoteProctoring/test/unit/'
-                            )
+                            withCredentials(
+                                [ string(credentialsId: 'jenkins_github_token', variable: 'GIT_TOKEN')]) {
+                                sh(
+                                    label: 'Install/Update sources from Composer',
+                                    script: "COMPOSER_AUTH='{\"github-oauth\": {\"github.com\": \"$GIT_TOKEN\"}}\' composer install --no-interaction --no-ansi --no-progress"
+                                )
+                                sh(
+                                    label: 'Run backend tests',
+                                    script: './vendor/bin/phpunit -c phpunit.xml remoteProctoring/test/unit/'
+                                )
+                            }
                         }
                 }
             }

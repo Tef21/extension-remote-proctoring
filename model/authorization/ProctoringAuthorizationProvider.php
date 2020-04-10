@@ -43,29 +43,36 @@ class ProctoringAuthorizationProvider extends ConfigurableService implements Aut
 
     public function verifyResumeAuthorization(DeliveryExecutionInterface $deliveryExecution, User $user)
     {
-        if ($this->requiresRemoteProctoring($deliveryExecution) && !$this->isRemoteProctored()) {
+        if ($this->requiresRemoteProctoring($deliveryExecution) && !$this->isRemoteProctored($deliveryExecution)) {
             throw new UnAuthorizedException($this->getProctoringUrl($deliveryExecution)->getTestTakerUrl());
         }
     }
 
     /**
      * @param DeliveryExecutionInterface $deliveryExecution
-     * @return ProctorioResponse
      */
-    private function getProctoringUrl(DeliveryExecutionInterface $deliveryExecution) {
+    private function getProctoringUrl(DeliveryExecutionInterface $deliveryExecution): ProctorioResponse
+    {
         $proctorioApiService = $this->getServiceLocator()->get(ProctorioApiService::class);
         return $proctorioApiService->getProctorioUrl($deliveryExecution);
     }
 
     /**
      * Whenever or not we are in a proctored context
-     * @return boolean
      */
-    private function isRemoteProctored() {
+    private function isRemoteProctored(DeliveryExecutionInterface $deliveryExecution): bool
+    {
         $sessionService = $this->getServiceLocator()->get(SessionService::SERVICE_ID);
         $session = $sessionService->getCurrentSession();
         $proctoredContexts = $session->getContexts(RemoteProcotoredSessionContext::class);
-        return count($proctoredContexts) == 1;
+        $proctored = false;
+        foreach ($proctoredContexts as $context) {
+            if ($context->getDeliveryExecutionId() == $deliveryExecution->getIdentifier()) {
+                $proctored = true;
+                break;
+            }
+        }
+        return $proctored;
     }
 
     /**
@@ -73,7 +80,8 @@ class ProctoringAuthorizationProvider extends ConfigurableService implements Aut
      * @param DeliveryExecutionInterface $deliveryExecution
      * @return boolean
      */
-    protected function requiresRemoteProctoring(DeliveryExecutionInterface $deliveryExecution) {
+    protected function requiresRemoteProctoring(DeliveryExecutionInterface $deliveryExecution): bool
+    {
         return true;
     }
     

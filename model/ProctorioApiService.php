@@ -22,7 +22,6 @@ declare(strict_types=1);
 
 namespace oat\remoteProctoring\model;
 
-use common_cache_KeyValueCache;
 use common_Exception;
 use common_exception_Error;
 use common_exception_NotFound;
@@ -51,9 +50,6 @@ class ProctorioApiService extends ConfigurableService
     public const OPTION_OAUTH_KEY = 'oauthKey';
     public const OPTION_OAUTH_SECRET = 'oauthSecret';
     public const PREFIX_KEY_VALUE = 'proctorio::';
-
-    /** @var ProctorioUrlRepository */
-    private $repository;
 
     /** @var ProctorioResponseValidator */
     private $validator;

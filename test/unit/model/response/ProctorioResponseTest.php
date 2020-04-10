@@ -27,6 +27,8 @@ use oat\remoteProctoring\model\response\ProctorioResponse;
 
 class ProctorioResponseTest extends TestCase
 {
+    const TESTTAKER_URL = 'testtakerURL';
+    const REVIEW_URL = 'reviewURL';
     /** * @var string */
     private $json;
 
@@ -41,8 +43,8 @@ class ProctorioResponseTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->testTakerUrl = 'testtakerURL';
-        $this->reviewURL = 'reviewURL';
+        $this->testTakerUrl = self::TESTTAKER_URL;
+        $this->reviewURL = self::REVIEW_URL;
         $this->json = sprintf('["%s","%s"]', $this->testTakerUrl, $this->reviewURL);
         $this->subject = new ProctorioResponse($this->testTakerUrl, $this->reviewURL);
     }

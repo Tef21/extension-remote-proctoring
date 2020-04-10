@@ -13,21 +13,6 @@ pipeline {
                     label : 'Create build build directory',
                     script: 'mkdir -p build'
                 )
-
-                withCredentials([string(credentialsId: 'jenkins_github_token', variable: 'GIT_TOKEN')]) {
-                    sh(
-                        label : 'Run the Dependency Resolver',
-                        script: '''
-changeBranch=$CHANGE_BRANCH
-TEST_BRANCH="${changeBranch:-$BRANCH_NAME}"
-echo "select branch : ${TEST_BRANCH}"
-docker run --rm  \\
--e "GITHUB_ORGANIZATION=${GITHUB_ORGANIZATION}" \\
--e "GITHUB_SECRET=${GIT_TOKEN}"  \\
-registry.service.consul:4444/tao/dependency-resolver oat:dependencies:resolve --main-branch ${TEST_BRANCH} --repository-name ${REPO_NAME} > build/composer.json
-                        '''
-                    )
-                }
             }
         }
         stage('Install') {
@@ -45,6 +30,14 @@ registry.service.consul:4444/tao/dependency-resolver oat:dependencies:resolve --
             }
             steps {
                 dir('build') {
+                    sh(
+                        label : 'Change composer minimum stability',
+                        script: 'composer config minimum-stability dev'
+                    )
+                    sh(
+                        label : 'Change composer prefer-stable option',
+                        script: 'composer config prefer-stable true'
+                    )
                     sh(
                         label: 'Install/Update sources from Composer',
                         script: 'COMPOSER_DISCARD_CHANGES=true composer update --no-interaction --no-ansi --no-progress --no-scripts'
@@ -78,6 +71,38 @@ mkdir -p tao/views/locales/en-US/
                             sh(
                                 label: 'Run backend tests',
                                 script: './vendor/bin/phpunit remoteProctoring/test/unit'
+                            )
+                        }
+                    }
+                }
+                stage('Frontend Tests') {
+                    agent {
+                        docker {
+                            image 'btamas/puppeteer-git'
+                            reuseNode true
+                        }
+                    }
+                    environment {
+                        HOME = '.'
+                    }
+                    options {
+                        skipDefaultCheckout()
+                    }
+                    steps {
+                        dir('build/tao/views'){
+                            sh(
+                                label: 'Ensure FE resource are available',
+                                script: 'npm install --production'
+                            )
+                        }
+                        dir('build/tao/views/build') {
+                            sh(
+                                label: 'Setup frontend toolchain',
+                                script: 'npm install'
+                            )
+                            sh (
+                                label : 'Run frontend tests',
+                                script: 'npx grunt connect:test taotest'
                             )
                         }
                     }

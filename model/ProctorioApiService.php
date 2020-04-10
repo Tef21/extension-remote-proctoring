@@ -22,6 +22,7 @@ declare(strict_types=1);
 
 namespace oat\remoteProctoring\model;
 
+use common_cache_KeyValueCache;
 use common_Exception;
 use common_exception_Error;
 use common_exception_NotFound;
@@ -49,6 +50,7 @@ class ProctorioApiService extends ConfigurableService
     public const OPTION_PERSISTENCE = 'persistence';
     public const OPTION_OAUTH_KEY = 'oauthKey';
     public const OPTION_OAUTH_SECRET = 'oauthSecret';
+    public const PREFIX_KEY_VALUE = 'proctorio::';
 
     /** @var ProctorioUrlRepository */
     private $repository;
@@ -68,14 +70,11 @@ class ProctorioApiService extends ConfigurableService
      */
     public function getProctorioUrl(DeliveryExecutionInterface $deliveryExecution): ?ProctorioResponse
     {
-        $proctorioUrls = $this->getProctorioUrlRepository()->findById($this->getUrlsId($deliveryExecution));
-        if ($proctorioUrls === null) {
             $providerJsonResponse = $this->requestProctorioUrls($deliveryExecution);
             if ($this->getValidator()->validate($providerJsonResponse)) {
                 $proctorioUrls = ProctorioResponse::fromJson($providerJsonResponse);
-                $this->getProctorioUrlRepository()->save($proctorioUrls, $this->getUrlsId($deliveryExecution));
+                $this->getStorage()->set($this->getUrlsId($deliveryExecution), $proctorioUrls);
             }
-        }
 
         return $proctorioUrls;
     }
@@ -117,15 +116,6 @@ class ProctorioApiService extends ConfigurableService
         return $this->getServiceLocator()->get(LaunchService::SERVICE_ID);
     }
 
-    private function getProctorioUrlRepository(): ProctorioUrlRepository
-    {
-        if ($this->repository === null) {
-            $this->repository = new ProctorioUrlRepository($this->getStorage(), $this->getLogger());
-        }
-
-        return $this->repository;
-    }
-
     private function getRequestBuilder(): ProctorioRequestBuilder
     {
         return $this->getServiceLocator()->get(ProctorioRequestBuilder::SERVICE_ID);
@@ -133,7 +123,7 @@ class ProctorioApiService extends ConfigurableService
 
     private function getUrlsId(DeliveryExecutionInterface $deliveryExecution): string
     {
-        return ProctorioUrlRepository::PREFIX_KEY_VALUE . $deliveryExecution->getIdentifier();
+        return self::PREFIX_KEY_VALUE . $deliveryExecution->getIdentifier();
     }
 
     private function getValidator(): ProctorioResponseValidator

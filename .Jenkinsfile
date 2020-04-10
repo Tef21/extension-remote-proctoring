@@ -13,14 +13,6 @@ pipeline {
                     label : 'Create build build directory',
                     script: 'mkdir -p build'
                 )
-                sh(
-                    label : 'Change composer minimum stability',
-                    script: 'composer config minimum-stability dev'
-                )
-                sh(
-                    label : 'Change composer prefer-stable option',
-                    script: 'composer config prefer-stable true'
-                )
             }
         }
         stage('Install') {
@@ -43,12 +35,9 @@ pipeline {
                         script: 'COMPOSER_DISCARD_CHANGES=true composer update --no-interaction --no-ansi --no-progress --no-scripts'
                     )
                     sh(
-                        label: 'Add phpunit',
-                        script: 'composer require phpunit/phpunit:^8.5'
-                    )
-                    sh(
                         label: "Extra filesystem mocks",
                         script: '''
+mkdir -p taoQtiItem/views/js/mathjax/ && touch taoQtiItem/views/js/mathjax/MathJax.js
 mkdir -p tao/views/locales/en-US/
     echo "{\\"serial\\":\\"${BUILD_ID}\\",\\"date\\":$(date +%s),\\"version\\":\\"3.3.0-${BUILD_NUMBER}\\",\\"translations\\":{}}" > tao/views/locales/en-US/messages.json
 mkdir -p tao/views/locales/en-US/
@@ -73,7 +62,7 @@ mkdir -p tao/views/locales/en-US/
                         dir('build'){
                             sh(
                                 label: 'Run backend tests',
-                                script: './vendor/bin/phpunit remoteProctoring/test/unit'
+                                script: './vendor/bin/phpunit tao/test/unit'
                             )
                         }
                     }

@@ -31,6 +31,7 @@ use oat\taoDelivery\model\execution\DeliveryExecutionInterface;
 
 class ProctorioRequestBuilder extends ConfigurableService
 {
+    public const SERVICE_ID = 'remoteProctoring/ProctorioRequestBuilder';
     public const OPTION_EXAM_SETTINGS = 'exam_settings';
     public const OPTION_URL_EXAM_FACTORY = 'proctorioExamUrlFactory';
     public const OPTION_HASH_SERVICE = 'requestHashGenerator';

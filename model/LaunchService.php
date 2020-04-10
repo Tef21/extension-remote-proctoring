@@ -26,6 +26,8 @@ use oat\oatbox\service\ConfigurableService;
 
 class LaunchService extends ConfigurableService
 {
+    public const SERVICE_ID = 'remoteProctoring/LaunchService';
+
     public function generateUrl(string $deliveryExecutionId): string
     {
         //todo: to be created inside the NEX-878

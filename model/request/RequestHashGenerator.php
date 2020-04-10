@@ -26,6 +26,7 @@ use oat\oatbox\service\ConfigurableService;
 
 class RequestHashGenerator extends ConfigurableService
 {
+    public const SERVICE_ID = 'remoteProctoring/RequestHashGenerator';
     public const OPTION_HASH_FUNCTION = 'hash_function';
 
     public function hash(string $string): string

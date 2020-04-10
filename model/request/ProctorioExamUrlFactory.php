@@ -27,6 +27,8 @@ use tao_helpers_Uri;
 
 class ProctorioExamUrlFactory extends ConfigurableService
 {
+    public const SERVICE_ID = 'remoteProctoring/ProctorioExamUrlFactory';
+
     public const OPTION_BASE_URL = 'base_url';
 
     public function createExamStartUrl(): string

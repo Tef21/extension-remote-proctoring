@@ -3,7 +3,34 @@ pipeline {
         label 'builder'
     }
     stages {
-        stage('Tests') {
+        stage('Resolve TAO dependencies') {
+            environment {
+                GITHUB_ORGANIZATION='oat-sa'
+                REPO_NAME='oat-sa/extension-remote-proctoring'
+            }
+            steps {
+                sh(
+                    label : 'Create build build directory',
+                    script: 'mkdir -p build'
+                )
+
+                withCredentials([string(credentialsId: 'jenkins_github_token', variable: 'GIT_TOKEN')]) {
+                    sh(
+                        label : 'Run the Dependency Resolver',
+                        script: '''
+changeBranch=$CHANGE_BRANCH
+TEST_BRANCH="${changeBranch:-$BRANCH_NAME}"
+echo "select branch : ${TEST_BRANCH}"
+docker run --rm  \\
+-e "GITHUB_ORGANIZATION=${GITHUB_ORGANIZATION}" \\
+-e "GITHUB_SECRET=${GIT_TOKEN}"  \\
+registry.service.consul:4444/tao/dependency-resolver oat:dependencies:resolve --main-branch ${TEST_BRANCH} --repository-name ${REPO_NAME} > build/composer.json
+                        '''
+                    )
+                }
+            }
+        }
+        stage('Install') {
             agent {
                 docker {
                     image 'alexwijn/docker-git-php-composer'
@@ -17,16 +44,47 @@ pipeline {
                 skipDefaultCheckout()
             }
             steps {
-                withCredentials([string(credentialsId: 'jenkins_github_token', variable: 'GIT_TOKEN')]) {
+                dir('build') {
                     sh(
                         label: 'Install/Update sources from Composer',
-                        script: "COMPOSER_AUTH='{\"github-oauth\": {\"github.com\": \"$GIT_TOKEN\"}}\' composer install --no-interaction --no-ansi --no-progress"
+                        script: 'COMPOSER_DISCARD_CHANGES=true composer update --no-interaction --no-ansi --no-progress --no-scripts'
+                    )
+                    sh(
+                        label: 'Add phpunit',
+                        script: 'composer require phpunit/phpunit:^8.5'
+                    )
+                    sh(
+                        label: "Extra filesystem mocks",
+                        script: '''
+mkdir -p tao/views/locales/en-US/
+    echo "{\\"serial\\":\\"${BUILD_ID}\\",\\"date\\":$(date +%s),\\"version\\":\\"3.3.0-${BUILD_NUMBER}\\",\\"translations\\":{}}" > tao/views/locales/en-US/messages.json
+mkdir -p tao/views/locales/en-US/
+                        '''
                     )
                 }
-                sh(
-                    label: 'Run backend tests',
-                    script: './vendor/bin/phpunit'
-                )
+            }
+        }
+        stage('Tests') {
+            parallel {
+                stage('Backend Tests') {
+                    agent {
+                        docker {
+                            image 'alexwijn/docker-git-php-composer'
+                            reuseNode true
+                        }
+                    }
+                    options {
+                        skipDefaultCheckout()
+                    }
+                    steps {
+                        dir('build'){
+                            sh(
+                                label: 'Run backend tests',
+                                script: './vendor/bin/phpunit tao/test/unit'
+                            )
+                        }
+                    }
+                }
             }
         }
     }

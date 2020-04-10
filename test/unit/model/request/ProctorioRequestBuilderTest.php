@@ -43,10 +43,10 @@ class ProctorioRequestBuilderTest extends TestCase
     /** @var MockObject|DeliveryExecutionInterface */
     private $deliveryExecution;
 
-    /** @var string $lunchUrl */
+    /** @var string */
     private $lunchUrl;
 
-    /** @var ProctorioRequestBuilder $subject */
+    /** @var ProctorioRequestBuilder */
     private $subject;
 
     /** * @var UserService|MockObject */

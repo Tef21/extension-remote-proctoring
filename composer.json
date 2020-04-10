@@ -25,7 +25,6 @@
 	"minimum-stability": "dev",
 	"require": {
 		"oat-sa/oatbox-extension-installer" : "~1.1||dev-master",
-		"oat-sa/generis": "~12.0",
 		"oat-sa/lib-proctorio": "~1.0"
   },
 	"autoload" : {

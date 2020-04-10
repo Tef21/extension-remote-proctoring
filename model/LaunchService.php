@@ -39,7 +39,7 @@ class LaunchService extends ConfigurableService
         $url = _url(
             'launch',
             'DeliveryLaunch',
-            null,
+            'remoteProctoring',
             [
                 $this->getExecutionParamName() => $deliveryExecutionId
             ]

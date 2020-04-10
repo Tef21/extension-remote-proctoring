@@ -13,20 +13,14 @@ pipeline {
                     label : 'Create build build directory',
                     script: 'mkdir -p build'
                 )
-                withCredentials([string(credentialsId: 'jenkins_github_token', variable: 'GIT_TOKEN')]) {
-                    sh(
-                        label : 'Run the Dependency Resolver',
-                        script: '''
-changeBranch=$CHANGE_BRANCH
-TEST_BRANCH="${changeBranch:-$BRANCH_NAME}"
-echo "select branch : ${TEST_BRANCH}"
-docker run --rm  \\
--e "GITHUB_ORGANIZATION=${GITHUB_ORGANIZATION}" \\
--e "GITHUB_SECRET=${GIT_TOKEN}"  \\
-registry.service.consul:4444/tao/dependency-resolver oat:dependencies:resolve --main-branch ${TEST_BRANCH} --repository-name ${REPO_NAME} > build/composer.json
-                        '''
-                    )
-                }
+                sh(
+                    label : 'Change composer minimum stability',
+                    script: 'composer config minimum-stability dev'
+                )
+                sh(
+                    label : 'Change composer prefer-stable option',
+                    script: 'composer config prefer-stable true'
+                )
             }
         }
         stage('Install') {

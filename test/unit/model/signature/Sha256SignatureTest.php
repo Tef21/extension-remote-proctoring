@@ -22,9 +22,10 @@ declare(strict_types=1);
 
 namespace oat\remoteProctoring\test\unit\model\signature;
 
+use GuzzleHttp\Psr7\Request;
 use oat\generis\test\TestCase;
-use oat\remoteProctoring\model\signature\Sha256Signature;
 use oat\remoteProctoring\model\signature\exception\SignatureException;
+use oat\remoteProctoring\model\signature\Sha256Signature;
 use Psr\Http\Message\RequestInterface;
 
 class Sha256SignatureTest extends TestCase
@@ -40,8 +41,39 @@ class Sha256SignatureTest extends TestCase
         return [
             [
                 'https://tao.lu',
-                'https://tao.lu&signature=ae0d9df0a858f22a5ef4cab17b8f5b215c552867af0880ade4fa39311e7383d7'
+                'https://tao.lu&signature=ae0d9df0a858f22a5ef4cab17b8f5b215c552867af0880ade4fa39311e7383d7',
             ],
+        ];
+    }
+
+    public function successValidationProvider(): array
+    {
+        return [
+            ['https://tao.lu&signature=ae0d9df0a858f22a5ef4cab17b8f5b215c552867af0880ade4fa39311e7383d7', [],],
+            [
+                'http://tao.lu&signature=ae0d9df0a858f22a5ef4cab17b8f5b215c552867af0880ade4fa39311e7383d7',
+                ['x-forwarded-proto' => 'https'],
+            ],
+            [
+                'http://tao.lu&signature=ae0d9df0a858f22a5ef4cab17b8f5b215c552867af0880ade4fa39311e7383d7',
+                ['x-forwarded-ssl' => 'on'],
+            ]
+        ];
+    }
+
+    public function InvalidSignaturesProvider(): array
+    {
+        return [
+            ['https://tao.lu&signature=invalid', [],],
+            ['http://tao.lu&signature=ae0d9df0a858f22a5ef4cab17b8f5b215c552867af0880ade4fa39311e7383d7', [],],
+            [
+                'http://tao.lu&signature=ae0d9df0a858f22a5ef4cab17b8f5b215c552867af0880ade4fa39311e7383d7',
+                ['x-forwarded-proto' => null],
+            ],
+            [
+                'http://tao.lu&signature=ae0d9df0a858f22a5ef4cab17b8f5b215c552867af0880ade4fa39311e7383d7',
+                ['x-forwarded-ssl' => null],
+            ]
         ];
     }
 
@@ -58,35 +90,41 @@ class Sha256SignatureTest extends TestCase
         $this->assertEquals($signed, $this->subject->signUrl($original));
     }
 
-    public function testValidateRequest(): void
+    /**
+     * @dataProvider successValidationProvider
+     */
+    public function testValidateRequest($url, $headers): void
     {
         $this->assertNull(
             $this->subject->validateRequest(
-                $this->getMockRequest(
-                    'https://tao.lu&signature=ae0d9df0a858f22a5ef4cab17b8f5b215c552867af0880ade4fa39311e7383d7'
+                $this->getRequest(
+                    $url,
+                    $headers
                 )
             )
         );
     }
 
-    public function testInvalidSignature(): void
+    /**
+     * @dataProvider InvalidSignaturesProvider
+     * @throws SignatureException
+     */
+    public function testInvalidSignature(string $url, array $headers = []): void
     {
         $this->expectException(SignatureException::class);
         $this->expectExceptionMessage('Invalid Signature');
-        $this->assertNull($this->subject->validateRequest($this->getMockRequest('https://tao.lu&signature=invalid')));
+        $this->assertNull($this->subject->validateRequest($this->getRequest($url, $headers)));
     }
 
     public function testMissingSignature(): void
     {
         $this->expectException(SignatureException::class);
         $this->expectExceptionMessage('Missing Signature');
-        $this->assertNull($this->subject->validateRequest($this->getMockRequest('https://tao.lu&pamssss&asda')));
+        $this->assertNull($this->subject->validateRequest($this->getRequest('https://tao.lu&pamssss&asda')));
     }
 
-    protected function getMockRequest($uri): RequestInterface
+    protected function getRequest(string $uri, array $headers = []): RequestInterface
     {
-        $mock = $this->createMock(RequestInterface::class);
-        $mock->method('getUri')->willReturn($uri);
-        return $mock;
+        return new Request('get', $uri, $headers);
     }
 }

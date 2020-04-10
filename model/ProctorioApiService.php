@@ -138,7 +138,7 @@ class ProctorioApiService extends ConfigurableService
 
     private function getValidator(): ProctorioResponseValidator
     {
-        return $this->getServiceLocator()->get(ProctorioResponseValidator::SERVICE_ID);
+        return $this->getServiceLocator()->get(ProctorioResponseValidator::class);
     }
 
     private function getProctorioLibraryService(): ProctorioService

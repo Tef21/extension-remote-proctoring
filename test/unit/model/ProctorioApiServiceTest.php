@@ -124,7 +124,7 @@ class ProctorioApiServiceTest extends TestCase
             ProctorioRequestBuilder::SERVICE_ID => $this->createMock(ProctorioRequestBuilder::class),
             LaunchService::SERVICE_ID => $this->createMock(LaunchService::class),
             ProctorioRequestBuilder::class => $this->createMock(ProctorioRequestBuilder::class),
-            ProctorioResponseValidator::SERVICE_ID => $validator,
+            ProctorioResponseValidator::class => $validator,
             LoggerService::SERVICE_ID => $this->createMock(LoggerInterface::class)
         ];
 

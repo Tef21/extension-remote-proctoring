@@ -3,22 +3,6 @@ pipeline {
         label 'builder'
     }
     stages {
-        stage('Resolve TAO dependencies') {
-            environment {
-                GITHUB_ORGANIZATION='oat-sa'
-                REPO_NAME='oat-sa/extension-remote-proctoring'
-            }
-            steps {
-                sh(
-                    label : 'Create build build directory',
-                    script: 'mkdir -p build'
-                )
-                sh(
-                    label: 'Add phpunit',
-                    script: 'composer require phpunit/phpunit:^8.5'
-                )
-            }
-        }
         stage('Install') {
             agent {
                 docker {

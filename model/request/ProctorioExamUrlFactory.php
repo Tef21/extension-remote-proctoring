@@ -56,9 +56,6 @@ class ProctorioExamUrlFactory extends ConfigurableService
         );
     }
 
-    /**
-     * @return string
-     */
     public function getRootURl(): string
     {
         return $this->getOption(self::OPTION_BASE_URL) ?? tao_helpers_Uri::getRootUrl();

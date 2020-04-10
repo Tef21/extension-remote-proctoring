@@ -33,6 +33,7 @@ class ProctorioRequestBuilder extends ConfigurableService
 {
     public const OPTION_EXAM_SETTINGS = 'exam_settings';
     public const OPTION_URL_EXAM_FACTORY = 'proctorioExamUrlFactory';
+    public const OPTION_HASH_SERVICE = 'requestHashGenerator';
 
     /**
      * @throws common_exception_NotFound
@@ -43,7 +44,7 @@ class ProctorioRequestBuilder extends ConfigurableService
             [
                 //delivery execution level
                 ProctorioConfig::LAUNCH_URL => $launchUrl,
-                ProctorioConfig::USER_ID => (string)md5($deliveryExecution->getUserIdentifier()),
+                ProctorioConfig::USER_ID => $this->getHashGenerator()->hash($deliveryExecution->getUserIdentifier()),
                 ProctorioConfig::FULL_NAME => $this->getUserFullName($deliveryExecution),
 
                 //platform level
@@ -53,7 +54,7 @@ class ProctorioRequestBuilder extends ConfigurableService
                 ProctorioConfig::EXAM_SETTINGS => $this->getExamSettings(),
 
                 //Delivery level
-                ProctorioConfig::EXAM_TAG => $deliveryExecution->getDelivery()->getLabel(),
+                ProctorioConfig::EXAM_TAG => $this->getHashGenerator()->hash($deliveryExecution->getDelivery()->getLabel()),
             ];
     }
 
@@ -69,9 +70,14 @@ class ProctorioRequestBuilder extends ConfigurableService
         return UserHelper::getUserName($user);
     }
 
-    protected function getProctorioExamUrlFactory(): ProctorioExamUrlFactory
+    private function getProctorioExamUrlFactory(): ProctorioExamUrlFactory
     {
         return $this->propagate($this->getOption(self::OPTION_URL_EXAM_FACTORY));
+    }
+
+    private function getHashGenerator(): RequestHashGenerator
+    {
+        return $this->propagate($this->getOption(self::OPTION_HASH_SERVICE));
     }
 
     private function getExamSettings(): array

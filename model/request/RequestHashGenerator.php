@@ -18,12 +18,32 @@
  * Copyright (c) 2020 (original work) Open Assessment Technologies SA
  */
 
-use oat\remoteProctoring\model\request\ProctorioExamUrlFactory;
-use oat\remoteProctoring\model\request\ProctorioRequestBuilder;
-use oat\remoteProctoring\model\request\RequestHashGenerator;
+declare(strict_types=1);
 
-return new ProctorioRequestBuilder([
-    ProctorioRequestBuilder::OPTION_EXAM_SETTINGS => ['webtraffic'],
-    ProctorioRequestBuilder::OPTION_URL_EXAM_FACTORY => new ProctorioExamUrlFactory(),
-    ProctorioRequestBuilder::OPTION_HASH_SERVICE => new RequestHashGenerator(),
-]);
+namespace oat\remoteProctoring\model\request;
+
+class RequestHashGenerator
+{
+    /** @var string */
+    private $hashAlgorithm;
+
+    /**
+     * RequestHashGenerator constructor.
+     * @param $hashAlgorithm
+     */
+    public function __construct(string $hashAlgorithm = 'md5')
+    {
+        $this->hashAlgorithm = $hashAlgorithm;
+    }
+
+
+    public function hash(string $string): string
+    {
+        return (string)hash($this->hashAlgorithm, $string);
+    }
+
+    public function getAlgorithms(): array
+    {
+        return hash_algos();
+    }
+}

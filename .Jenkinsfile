@@ -13,7 +13,6 @@ pipeline {
                     label : 'Create build build directory',
                     script: 'mkdir -p build'
                 )
-
                 withCredentials([string(credentialsId: 'jenkins_github_token', variable: 'GIT_TOKEN')]) {
                     sh(
                         label : 'Run the Dependency Resolver',
@@ -80,7 +79,7 @@ mkdir -p tao/views/locales/en-US/
                         dir('build'){
                             sh(
                                 label: 'Run backend tests',
-                                script: './vendor/bin/phpunit tao/test/unit'
+                                script: './vendor/bin/phpunit remoteProctoring/test/unit'
                             )
                         }
                     }

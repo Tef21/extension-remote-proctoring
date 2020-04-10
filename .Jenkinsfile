@@ -14,6 +14,10 @@ pipeline {
                     script: 'mkdir -p build'
                 )
                 sh(
+                    label: 'Add phpunit',
+                    script: 'composer require phpunit/phpunit:^8.5'
+                )
+                sh(
                     label : 'Change composer minimum stability',
                     script: 'composer config minimum-stability dev'
                 )
@@ -41,10 +45,6 @@ pipeline {
                     sh(
                         label: 'Install/Update sources from Composer',
                         script: 'COMPOSER_DISCARD_CHANGES=true composer update --no-interaction --no-ansi --no-progress --no-scripts'
-                    )
-                    sh(
-                        label: 'Add phpunit',
-                        script: 'composer require phpunit/phpunit:^8.5'
                     )
                     sh(
                         label: "Extra filesystem mocks",

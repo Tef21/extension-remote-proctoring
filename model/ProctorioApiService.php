@@ -114,7 +114,7 @@ class ProctorioApiService extends ConfigurableService
 
     private function getLaunchService(): LaunchService
     {
-        return $this->getServiceLocator()->get(LaunchService::class);
+        return $this->getServiceLocator()->get(LaunchService::SERVICE_ID);
     }
 
     private function getProctorioUrlRepository(): ProctorioUrlRepository
@@ -128,7 +128,7 @@ class ProctorioApiService extends ConfigurableService
 
     private function getRequestBuilder(): ProctorioRequestBuilder
     {
-        return $this->getServiceLocator()->get(ProctorioRequestBuilder::class);
+        return $this->getServiceLocator()->get(ProctorioRequestBuilder::SERVICE_ID);
     }
 
     private function getUrlsId(DeliveryExecutionInterface $deliveryExecution): string

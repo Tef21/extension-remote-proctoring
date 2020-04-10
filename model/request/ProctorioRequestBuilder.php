@@ -31,6 +31,7 @@ use oat\taoDelivery\model\execution\DeliveryExecutionInterface;
 
 class ProctorioRequestBuilder extends ConfigurableService
 {
+    public const SERVICE_ID = 'remoteProctoring/ProctorioRequestBuilder';
     public const OPTION_EXAM_SETTINGS = 'exam_settings';
     public const OPTION_URL_EXAM_FACTORY = 'proctorioExamUrlFactory';
     public const OPTION_HASH_SERVICE = 'requestHashGenerator';
@@ -72,12 +73,12 @@ class ProctorioRequestBuilder extends ConfigurableService
 
     private function getProctorioExamUrlFactory(): ProctorioExamUrlFactory
     {
-        return $this->propagate($this->getOption(self::OPTION_URL_EXAM_FACTORY));
+        return $this->getSubService(self::OPTION_URL_EXAM_FACTORY);
     }
 
     private function getHashGenerator(): RequestHashGenerator
     {
-        return $this->propagate($this->getOption(self::OPTION_HASH_SERVICE));
+        return $this->getSubService(self::OPTION_HASH_SERVICE);
     }
 
     private function getExamSettings(): array

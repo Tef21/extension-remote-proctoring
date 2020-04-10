@@ -31,22 +31,22 @@ class ProctorioExamUrlFactory
 
     public function __construct(string $rootURl = null)
     {
-        $this->rootURl = rtrim($rootURl ?? tao_helpers_Uri::getRootUrl(), '/');
+        $this->rootURl = rtrim(tao_helpers_Uri::getRootUrl(), '/');
     }
 
     public function createExamStartUrl(): string
     {
-        return $this->convertUrlToPattern($this->rootURl . '/remoteProctoring') . '.*';
+        return $this->convertUrlToPattern($this->rootURl . '/remoteProctoring') . '\/.*';
     }
 
     public function createExamTakeUrl(): string
     {
-        return $this->convertUrlToPattern($this->rootURl) . '/.*';
+        return $this->convertUrlToPattern($this->rootURl) . '\/.*';
     }
 
     public function createExamEndUrl(): string
     {
-        return $this->convertUrlToPattern(sprintf('%s/taoDelivery/DeliveryServer/index', $this->rootURl)) . '/.*';
+        return $this->convertUrlToPattern(sprintf('%s/taoDelivery/DeliveryServer/index', $this->rootURl)) . '.*';
     }
 
     private function convertUrlToPattern(string $url): string

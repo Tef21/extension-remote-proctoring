@@ -75,22 +75,21 @@ class ProctorioRequestBuilder extends ConfigurableService
     public function build(DeliveryExecutionInterface $deliveryExecution, string $launchUrl, array $options): array
     {
         $this->setOptions($options);
-        return
-            [
-                //delivery execution level
-                ProctorioConfig::LAUNCH_URL => $launchUrl,
-                ProctorioConfig::USER_ID => (string)md5($deliveryExecution->getUserIdentifier()),
-                ProctorioConfig::FULL_NAME => $this->getUserFullName($deliveryExecution),
+        return [
+            //delivery execution level
+            ProctorioConfig::LAUNCH_URL => $launchUrl,
+            ProctorioConfig::USER_ID => (string)md5($deliveryExecution->getUserIdentifier()),
+            ProctorioConfig::FULL_NAME => $this->getUserFullName($deliveryExecution),
 
-                //platform level
-                ProctorioConfig::EXAM_START => $this->proctorioExamUrlFactory->createExamStartUrl(),
-                ProctorioConfig::EXAM_TAKE => $this->proctorioExamUrlFactory->createExamTakeUrl(),
-                ProctorioConfig::EXAM_END => $this->proctorioExamUrlFactory->createExamEndUrl(),
-                ProctorioConfig::EXAM_SETTINGS => $this->getExamSettings(),
+            //platform level
+            ProctorioConfig::EXAM_START => $this->proctorioExamUrlFactory->createExamStartUrl(),
+            ProctorioConfig::EXAM_TAKE => $this->proctorioExamUrlFactory->createExamTakeUrl(),
+            ProctorioConfig::EXAM_END => $this->proctorioExamUrlFactory->createExamEndUrl(),
+            ProctorioConfig::EXAM_SETTINGS => $this->getExamSettings(),
 
-                //Delivery level
-                ProctorioConfig::EXAM_TAG => $deliveryExecution->getDelivery()->getLabel()
-            ];
+            //Delivery level
+            ProctorioConfig::EXAM_TAG => (string)md5($deliveryExecution->getDelivery()->getUri())
+        ];
     }
 
     /**

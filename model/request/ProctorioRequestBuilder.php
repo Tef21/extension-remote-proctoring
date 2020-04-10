@@ -82,6 +82,6 @@ class ProctorioRequestBuilder extends ConfigurableService
 
     private function getExamSettings(): array
     {
-        return $this->getOption(ProctorioRequestBuilder::OPTION_EXAM_SETTINGS);
+        return $this->getOption(self::OPTION_EXAM_SETTINGS);
     }
 }

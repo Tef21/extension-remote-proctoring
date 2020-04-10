@@ -22,31 +22,26 @@ declare(strict_types=1);
 
 namespace oat\remoteProctoring\model\request;
 
+use oat\oatbox\service\ConfigurableService;
 use tao_helpers_Uri;
 
-class ProctorioExamUrlFactory
+class ProctorioExamUrlFactory extends ConfigurableService
 {
-    /** @var string */
-    private $rootURl;
-
-    public function __construct(string $rootURl = null)
-    {
-        $this->rootURl = $rootURl ?? tao_helpers_Uri::getRootUrl();
-    }
+    public const OPTION_BASE_URL = 'base_url';
 
     public function createExamStartUrl(): string
     {
-        return $this->convertUrlToPattern(rtrim($this->rootURl,'/') . '/remoteProctoring') . '.*';
+        return $this->convertUrlToPattern(rtrim($this->getRootURl(), '/') . '/remoteProctoring') . '.*';
     }
 
     public function createExamTakeUrl(): string
     {
-        return $this->convertUrlToPattern(rtrim($this->rootURl,'/')) . '/.*';
+        return $this->convertUrlToPattern(rtrim($this->getRootURl(), '/')) . '/.*';
     }
 
     public function createExamEndUrl(): string
     {
-        return $this->convertUrlToPattern(sprintf('%s/taoDelivery/DeliveryServer/index', rtrim($this->rootURl,'/'))) . '/.*';
+        return $this->convertUrlToPattern(sprintf('%s/taoDelivery/DeliveryServer/index', rtrim($this->getRootURl(), '/'))) . '/.*';
     }
 
     private function convertUrlToPattern(string $url): string
@@ -59,5 +54,13 @@ class ProctorioExamUrlFactory
             ],
             $url
         );
+    }
+
+    /**
+     * @return string
+     */
+    public function getRootURl(): string
+    {
+        return $this->getOption(self::OPTION_BASE_URL) ?? tao_helpers_Uri::getRootUrl();
     }
 }

@@ -22,28 +22,24 @@ declare(strict_types=1);
 
 namespace oat\remoteProctoring\model\request;
 
-class RequestHashGenerator
+use oat\oatbox\service\ConfigurableService;
+
+class RequestHashGenerator extends ConfigurableService
 {
-    /** @var string */
-    private $hashAlgorithm;
-
-    /**
-     * RequestHashGenerator constructor.
-     * @param $hashAlgorithm
-     */
-    public function __construct(string $hashAlgorithm = 'md5')
-    {
-        $this->hashAlgorithm = $hashAlgorithm;
-    }
-
+    public const OPTION_HASH_FUNCTION = 'hash_function';
 
     public function hash(string $string): string
     {
-        return (string)hash($this->hashAlgorithm, $string);
+        return (string)hash($this->getHashAlgorithm(), $string);
     }
 
     public function getAlgorithms(): array
     {
         return hash_algos();
+    }
+
+    private function getHashAlgorithm(): string
+    {
+        return $this->getOption(self::OPTION_HASH_FUNCTION) ?? 'md5';
     }
 }

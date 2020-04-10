@@ -22,143 +22,61 @@ declare(strict_types=1);
 
 namespace oat\remoteProctoring\model\request;
 
-use common_Exception;
-use common_exception_Error;
 use common_exception_NotFound;
-use oat\generis\Helper\UuidPrimaryKeyTrait;
-use oat\oatbox\log\LoggerAwareTrait;
+use oat\oatbox\service\ConfigurableService;
 use oat\oatbox\user\User;
 use oat\Proctorio\ProctorioConfig;
 use oat\remoteProctoring\model\ProctorioApiService;
 use oat\tao\helpers\UserHelper;
-use oat\tao\model\security\TokenGenerator;
 use oat\taoDelivery\model\execution\DeliveryExecutionInterface;
-use tao_helpers_Uri;
-use Throwable;
 
-class ProctorioRequestBuilder
+class ProctorioRequestBuilder extends ConfigurableService
 {
-    use UuidPrimaryKeyTrait;
-    use LoggerAwareTrait;
-    use TokenGenerator;
+    /** @var ProctorioExamUrlFactory */
+    private $proctorioExamUrlFactory;
 
-    /** @var array $options */
-    private $options;
+    /** * @var string */
+    private $userFullName;
 
     /**
-     * @param DeliveryExecutionInterface $deliveryExecution
-     * @param string $launchUrl
-     * @param array $options
-     * @return array
-     * @throws common_Exception
-     * @throws common_exception_Error
      * @throws common_exception_NotFound
      */
-    public function build(DeliveryExecutionInterface $deliveryExecution, string $launchUrl, array $options): array
+    public function build(DeliveryExecutionInterface $deliveryExecution, string $launchUrl): array
     {
-        $this->options = $options;
-
         return
             [
                 //delivery execution level
                 ProctorioConfig::LAUNCH_URL => $launchUrl,
-                ProctorioConfig::USER_ID => $deliveryExecution->getUserIdentifier(),
+                ProctorioConfig::USER_ID => (string)md5($deliveryExecution->getUserIdentifier()),
+                ProctorioConfig::FULL_NAME => $this->getUserFullName($deliveryExecution),
 
                 //platform level
-                ProctorioConfig::OAUTH_CONSUMER_KEY => $this->getOauthCredentials(),
-
-                ProctorioConfig::EXAM_START => $launchUrl,
-                ProctorioConfig::EXAM_TAKE => $this->getExamUrl(),
-                ProctorioConfig::EXAM_END => $this->getExamUrl(),
+                ProctorioConfig::EXAM_START => $this->proctorioExamUrlFactory->createExamStartUrl(),
+                ProctorioConfig::EXAM_TAKE => $this->proctorioExamUrlFactory->createExamTakeUrl(),
+                ProctorioConfig::EXAM_END => $this->proctorioExamUrlFactory->createExamEndUrl(),
                 ProctorioConfig::EXAM_SETTINGS => $this->getExamSettings(),
 
-                //delivery execution level
-                ProctorioConfig::FULL_NAME => $this->getUserFullName($deliveryExecution),
                 //Delivery level
                 ProctorioConfig::EXAM_TAG => $deliveryExecution->getDelivery()->getLabel(),
-
-                ProctorioConfig::OAUTH_TIMESTAMP => $this->getTime(),
-                ProctorioConfig::OAUTH_NONCE => $this->getNonce(),
             ];
     }
 
-
     /**
-     * @param $name
-     * @return mixed|null
-     */
-    private function getOption($name)
-    {
-        return $this->options[$name] ?? null;
-    }
-
-
-    /**
-     * @return string
-     */
-    protected function getExamUrl(): string
-    {
-        return tao_helpers_Uri::url(
-            'runDeliveryExecution',
-            'DeliveryRunner',
-            null,
-            []
-        );
-    }
-
-
-    /**
-     * @param DeliveryExecutionInterface $deliveryExecution
-     * @return string
-     * @throws common_exception_Error
      * @throws common_exception_NotFound
      */
-    protected function getUserFullName(DeliveryExecutionInterface $deliveryExecution): string
+    private function getUserFullName(DeliveryExecutionInterface $deliveryExecution): string
     {
-        /** @var User $user */
-        $user = UserHelper::getUser($deliveryExecution->getUserIdentifier());
-        $fullName = UserHelper::getUserFirstName($user) ?? '';
-        $fullName .= ' ' . UserHelper::getUserLastName($user) ?? '';
-        return $fullName;
-    }
-
-    /**
-     * @return string
-     */
-    protected function getOauthCredentials(): ?string
-    {
-        return $this->getOption(ProctorioApiService::OPTION_OAUTH_KEY);
-    }
-
-    /**
-     * @return string
-     */
-    protected function getExamSettings(): ?string
-    {
-        return $this->getOption(ProctorioApiService::OPTION_EXAM_SETTINGS);
-    }
-
-    /**
-     * @return string
-     * @throws common_Exception
-     */
-    protected function getNonce(): string
-    {
-        try {
-            $nonce = $this->getUniquePrimaryKey();
-        } catch (Throwable $exception) {
-            $this->$this->logError('UUID assignation for proctorio nonce has failed');
-            $nonce = (string)$this->generate();
+        if ($this->userFullName === null) {
+            /** @var User $user */
+            $user = UserHelper::getUser($deliveryExecution->getUserIdentifier());
+            return UserHelper::getUserName($user);
         }
 
-        return $nonce;
+        return $this->userFullName;
     }
 
-    /**
-     * @return int
-     */
-    protected function getTime(): int
+    private function getExamSettings(): array
     {
-        return time();
+        return $this->getOption(ProctorioApiService::OPTION_EXAM_SETTINGS);
     }
 }

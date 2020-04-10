@@ -19,7 +19,10 @@
  */
 
 use oat\remoteProctoring\model\ProctorioApiService;
+use oat\remoteProctoring\model\request\ProctorioRequestBuilder;
 
-return new ProctorioApiService([
-    ProctorioApiService::OPTION_PERSISTENCE => 'default_kv',
+return new ProctorioRequestBuilder([
+    ProctorioApiService::OPTION_OAUTH_KEY => '',
+    ProctorioApiService::OPTION_OAUTH_SECRET => '',
+    ProctorioApiService::OPTION_EXAM_SETTINGS => ['webtraffic'],
 ]);

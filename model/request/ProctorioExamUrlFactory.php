@@ -31,7 +31,7 @@ class ProctorioExamUrlFactory
 
     public function __construct(string $rootURl = null)
     {
-        $this->rootURl = $rootURl ?? tao_helpers_Uri::getRootUrl();
+        $this->rootURl = rtrim($rootURl ?? tao_helpers_Uri::getRootUrl(), '/');
     }
 
     public function createExamStartUrl(): string

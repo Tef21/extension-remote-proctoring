@@ -79,7 +79,7 @@ class ProctorioRequestBuilder extends ConfigurableService
             [
                 //delivery execution level
                 ProctorioConfig::LAUNCH_URL => $launchUrl,
-                ProctorioConfig::USER_ID => $deliveryExecution->getUserIdentifier(),
+                ProctorioConfig::USER_ID => (string)md5($deliveryExecution->getUserIdentifier()),
                 ProctorioConfig::FULL_NAME => $this->getUserFullName($deliveryExecution),
 
                 //platform level

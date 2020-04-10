@@ -24,19 +24,16 @@ namespace oat\remoteProctoring\model\request;
 
 use common_exception_NotFound;
 use oat\oatbox\service\ConfigurableService;
-use oat\oatbox\user\User;
+use oat\oatbox\user\UserService;
 use oat\Proctorio\ProctorioConfig;
-use oat\remoteProctoring\model\ProctorioApiService;
 use oat\tao\helpers\UserHelper;
 use oat\taoDelivery\model\execution\DeliveryExecutionInterface;
 
 class ProctorioRequestBuilder extends ConfigurableService
 {
-    /** @var ProctorioExamUrlFactory */
-    private $proctorioExamUrlFactory;
-
-    /** * @var string */
-    private $userFullName;
+    public const OPTION_EXAM_SETTINGS = 'exam_settings';
+    public const OPTION_URL_EXAM_FACTORY = 'proctorioExamUrlFactory';
+    public const OPTION_HASH_SERVICE = 'requestHashGenerator';
 
     /**
      * @throws common_exception_NotFound
@@ -47,17 +44,17 @@ class ProctorioRequestBuilder extends ConfigurableService
             [
                 //delivery execution level
                 ProctorioConfig::LAUNCH_URL => $launchUrl,
-                ProctorioConfig::USER_ID => (string)md5($deliveryExecution->getUserIdentifier()),
+                ProctorioConfig::USER_ID => $this->getHashGenerator()->hash($deliveryExecution->getUserIdentifier()),
                 ProctorioConfig::FULL_NAME => $this->getUserFullName($deliveryExecution),
 
                 //platform level
-                ProctorioConfig::EXAM_START => $this->proctorioExamUrlFactory->createExamStartUrl(),
-                ProctorioConfig::EXAM_TAKE => $this->proctorioExamUrlFactory->createExamTakeUrl(),
-                ProctorioConfig::EXAM_END => $this->proctorioExamUrlFactory->createExamEndUrl(),
+                ProctorioConfig::EXAM_START => $this->getProctorioExamUrlFactory()->createExamStartUrl(),
+                ProctorioConfig::EXAM_TAKE => $this->getProctorioExamUrlFactory()->createExamTakeUrl(),
+                ProctorioConfig::EXAM_END => $this->getProctorioExamUrlFactory()->createExamEndUrl(),
                 ProctorioConfig::EXAM_SETTINGS => $this->getExamSettings(),
 
                 //Delivery level
-                ProctorioConfig::EXAM_TAG => $deliveryExecution->getDelivery()->getLabel(),
+                ProctorioConfig::EXAM_TAG => $this->getHashGenerator()->hash($deliveryExecution->getDelivery()->getLabel()),
             ];
     }
 
@@ -66,17 +63,25 @@ class ProctorioRequestBuilder extends ConfigurableService
      */
     private function getUserFullName(DeliveryExecutionInterface $deliveryExecution): string
     {
-        if ($this->userFullName === null) {
-            /** @var User $user */
-            $user = UserHelper::getUser($deliveryExecution->getUserIdentifier());
-            return UserHelper::getUserName($user);
-        }
+        /** @var UserService $userService */
+        $userService = $this->getServiceLocator()->get(UserService::SERVICE_ID);
+        $user = $userService->getUser($deliveryExecution->getUserIdentifier());
 
-        return $this->userFullName;
+        return UserHelper::getUserName($user);
+    }
+
+    private function getProctorioExamUrlFactory(): ProctorioExamUrlFactory
+    {
+        return $this->propagate($this->getOption(self::OPTION_URL_EXAM_FACTORY));
+    }
+
+    private function getHashGenerator(): RequestHashGenerator
+    {
+        return $this->propagate($this->getOption(self::OPTION_HASH_SERVICE));
     }
 
     private function getExamSettings(): array
     {
-        return $this->getOption(ProctorioApiService::OPTION_EXAM_SETTINGS);
+        return $this->getOption(self::OPTION_EXAM_SETTINGS);
     }
 }

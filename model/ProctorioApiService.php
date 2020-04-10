@@ -49,7 +49,6 @@ class ProctorioApiService extends ConfigurableService
     public const OPTION_PERSISTENCE = 'persistence';
     public const OPTION_OAUTH_KEY = 'oauthKey';
     public const OPTION_OAUTH_SECRET = 'oauthSecret';
-    public const OPTION_EXAM_SETTINGS = 'exam_settings';
 
     /** @var ProctorioUrlRepository */
     private $repository;

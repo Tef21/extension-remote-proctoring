@@ -125,7 +125,7 @@ class ProctorioApiServiceTest extends TestCase
         return $this->getServiceLocatorMock($services);
     }
 
-    protected function setLogger(): void
+    protected function setLogger(): voidgetServiceLocatorMock
     {
         /** @var LoggerInterface $logger */
         $logger = $this->getMockBuilder(LoggerInterface::class)->getMock();

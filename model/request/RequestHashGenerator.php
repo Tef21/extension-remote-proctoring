@@ -31,7 +31,7 @@ class RequestHashGenerator extends ConfigurableService
 
     public function hash(string $string): string
     {
-        return (string)hash($this->getHashAlgorithm(), $string);
+        return hash($this->getHashAlgorithm(), $string);
     }
 
     public function getAlgorithms(): array

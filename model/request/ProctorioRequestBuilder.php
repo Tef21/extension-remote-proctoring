@@ -73,12 +73,12 @@ class ProctorioRequestBuilder extends ConfigurableService
 
     private function getProctorioExamUrlFactory(): ProctorioExamUrlFactory
     {
-        return $this->propagate($this->getOption(self::OPTION_URL_EXAM_FACTORY));
+        return $this->getSubService(self::OPTION_URL_EXAM_FACTORY);
     }
 
     private function getHashGenerator(): RequestHashGenerator
     {
-        return $this->propagate($this->getOption(self::OPTION_HASH_SERVICE));
+        return $this->getSubService(self::OPTION_HASH_SERVICE);
     }
 
     private function getExamSettings(): array

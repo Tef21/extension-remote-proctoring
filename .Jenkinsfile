@@ -17,14 +17,6 @@ pipeline {
                     label: 'Add phpunit',
                     script: 'composer require phpunit/phpunit:^8.5'
                 )
-                sh(
-                    label : 'Change composer minimum stability',
-                    script: 'composer config minimum-stability dev'
-                )
-                sh(
-                    label : 'Change composer prefer-stable option',
-                    script: 'composer config prefer-stable true'
-                )
             }
         }
         stage('Install') {

@@ -40,23 +40,14 @@ class ProctorioResponseValidator
         2660, // Unknown
     ];
 
-    /** @var LoggerInterface $logger */
+    /** @var LoggerInterface */
     private $logger;
 
-    /**
-     * ProctorioResponseValidator constructor.
-     * @param $logger
-     */
     public function __construct(LoggerInterface $logger)
     {
         $this->logger = $logger;
     }
 
-    /**
-     * @param string $response
-     * @return bool
-     * @throws RuntimeException
-     */
     public function validate(string $response): bool
     {
         try {

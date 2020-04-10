@@ -68,12 +68,10 @@ class ProctorioApiServiceTest extends TestCase
         $this->setLogger();
     }
 
-    /**
-     * @throws Exception
-     */
     public function testGetProctorioUrl(): void
     {
-        $this->subject->setOption(ProctorioApiService::OPTION_OAUTH_SECRET, 'someString');
+        $this->subject->setOption(ProctorioApiService::OPTION_OAUTH_KEY, 'key');
+        $this->subject->setOption(ProctorioApiService::OPTION_OAUTH_SECRET, 'secret');
         $expected = new ProctorioResponse('ttURL', 'reviewURL');
         $proctorioResponse = $this->subject->getProctorioUrl($this->deliveryExecution);
         $this->assertInstanceOf(ProctorioResponse::class, $proctorioResponse);
@@ -98,13 +96,9 @@ class ProctorioApiServiceTest extends TestCase
         $this->deliveryExecution->method('getIdentifier')
             ->willReturn('ttURL');
 
-
         return $this->deliveryExecution;
     }
 
-    /**
-     * @return MockObject
-     */
     protected function getPersistance(): MockObject
     {
         $persistance = $this->getMockBuilder(common_persistence_KeyValuePersistence::class)
@@ -119,10 +113,7 @@ class ProctorioApiServiceTest extends TestCase
         return $persistanceManager;
     }
 
-    /**
-     * @param MockObject $persistanceManager
-     * @return ServiceLocatorInterface
-     */
+
     protected function setMockServices(MockObject $persistanceManager): ServiceLocatorInterface
     {
         $services = [

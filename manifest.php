@@ -36,6 +36,7 @@ return [
     'version' => '0.0.0',
     'author' => 'Open Assessment Technologies SA',
     'requires' => [
+        'generis' => '>=12.17.0',
         'taoDelivery' => '>=14.9.0'
     ],
     'managementRole' => 'http://www.tao.lu/Ontologies/generis.rdf#remoteProctoringManager',
@@ -52,7 +53,7 @@ return [
     'uninstall' => [
     ],
     'routes' => [
-        '/remoteProctoring' => 'oat\\remoteProctoring\\controller'
+        '/remoteProctoring' => 'oat\\remoteProctoring\\controller',
     ],
     'constants' => [
     ],

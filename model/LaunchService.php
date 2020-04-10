@@ -34,7 +34,7 @@ class LaunchService extends ConfigurableService
 
     const OPTION_SIGNATURE_METHOD = 'signer';
 
-    public function generateLaunchUrl(string $deliveryExecutionId): string
+    public function generateUrl(string $deliveryExecutionId): string
     {
         $url = _url('launch', 'DeliveryLaunch', 'remoteProctoring', [
             'deId' => $deliveryExecutionId

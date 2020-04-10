@@ -33,8 +33,9 @@ use oat\remoteProctoring\model\ProctorioApiService;
 use oat\tao\helpers\UserHelper;
 use oat\tao\model\security\TokenGenerator;
 use oat\taoDelivery\model\execution\DeliveryExecutionInterface;
+use oat\oatbox\service\ConfigurableService;
 
-class ProctorioRequestBuilder
+class ProctorioRequestBuilder extends ConfigurableService
 {
     use UuidPrimaryKeyTrait;
     use LoggerAwareTrait;
@@ -42,9 +43,6 @@ class ProctorioRequestBuilder
 
     /** * @var int */
     private $time;
-
-    /** @var array $options */
-    private $options;
 
     /** @var string */
     private $nonce;
@@ -76,7 +74,7 @@ class ProctorioRequestBuilder
      */
     public function build(DeliveryExecutionInterface $deliveryExecution, string $launchUrl, array $options): array
     {
-        $this->options = $options;
+        $this->setOptions($options);
         return
             [
                 //delivery execution level
@@ -91,18 +89,8 @@ class ProctorioRequestBuilder
                 ProctorioConfig::EXAM_SETTINGS => $this->getExamSettings(),
 
                 //Delivery level
-                ProctorioConfig::EXAM_TAG => $deliveryExecution->getDelivery()->getLabel(),
-                ProctorioConfig::OAUTH_TIMESTAMP => $this->getTime(),
-                ProctorioConfig::OAUTH_NONCE => $this->getNonce(),
+                ProctorioConfig::EXAM_TAG => $deliveryExecution->getDelivery()->getLabel()
             ];
-    }
-
-    /**
-     * @return mixed|null
-     */
-    private function getOption(string $name)
-    {
-        return $this->options[$name] ?? null;
     }
 
     /**

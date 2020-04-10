@@ -6,7 +6,7 @@ pipeline {
         stage('Resolve TAO dependencies') {
             environment {
                 GITHUB_ORGANIZATION='oat-sa'
-                REPO_NAME='oat-sa/tao-remote-proctoring'
+                REPO_NAME='oat-sa/extension-remote-proctoring'
             }
             steps {
                 sh(

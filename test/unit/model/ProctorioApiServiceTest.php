@@ -24,14 +24,15 @@ namespace oat\remoteProctoring\test\unit\model\storage;
 
 use common_persistence_KeyValuePersistence;
 use core_kernel_classes_Resource;
-use Exception;
 use oat\generis\persistence\PersistenceManager;
 use oat\generis\test\TestCase;
+use oat\oatbox\log\LoggerService;
 use oat\Proctorio\ProctorioService;
 use oat\remoteProctoring\model\LaunchService;
 use oat\remoteProctoring\model\ProctorioApiService;
 use oat\remoteProctoring\model\request\ProctorioRequestBuilder;
 use oat\remoteProctoring\model\response\ProctorioResponse;
+use oat\remoteProctoring\model\response\ProctorioResponseValidator;
 use oat\taoDelivery\model\execution\DeliveryExecutionInterface;
 use PHPUnit\Framework\MockObject\MockBuilder;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -48,9 +49,9 @@ class ProctorioApiServiceTest extends TestCase
 
     protected function setUp(): void
     {
-        $persistanceManager = $this->getPersistance();
+        $persistenceManager = $this->getPersistance();
 
-        $serviceLocatorMock = $this->setMockServices($persistanceManager);
+        $serviceLocatorMock = $this->setMockServices($persistenceManager);
 
         $this->deliveryExecution = $this->getDeliveryExecution();
         $this->subject = new ProctorioApiService();
@@ -65,7 +66,6 @@ class ProctorioApiServiceTest extends TestCase
 
         $this->subject->setProctorioUrlLibraryService($proctorioLibraryMock);
         $this->subject->setServiceLocator($serviceLocatorMock);
-        $this->setLogger();
     }
 
     public function testGetProctorioUrl(): void
@@ -74,6 +74,7 @@ class ProctorioApiServiceTest extends TestCase
         $this->subject->setOption(ProctorioApiService::OPTION_OAUTH_SECRET, 'secret');
         $expected = new ProctorioResponse('ttURL', 'reviewURL');
         $proctorioResponse = $this->subject->getProctorioUrl($this->deliveryExecution);
+
         $this->assertInstanceOf(ProctorioResponse::class, $proctorioResponse);
         $this->assertEquals($expected, $proctorioResponse);
     }
@@ -99,7 +100,7 @@ class ProctorioApiServiceTest extends TestCase
         return $this->deliveryExecution;
     }
 
-    protected function getPersistance(): MockObject
+    private function getPersistance(): MockObject
     {
         $persistance = $this->getMockBuilder(common_persistence_KeyValuePersistence::class)
             ->disableOriginalConstructor()
@@ -114,21 +115,19 @@ class ProctorioApiServiceTest extends TestCase
     }
 
 
-    protected function setMockServices(MockObject $persistanceManager): ServiceLocatorInterface
+    private function setMockServices(MockObject $persistanceManager): ServiceLocatorInterface
     {
+        $validator = $this->createMock(ProctorioResponseValidator::class);
+        $validator->method('validate')->willReturn(true);
         $services = [
             PersistenceManager::SERVICE_ID => $persistanceManager,
-            LaunchService::class => $this->getMockBuilder(LaunchService::class)->getMock(),
-            ProctorioRequestBuilder::class => $this->getMockBuilder(ProctorioRequestBuilder::class)->getMock(),
+            ProctorioRequestBuilder::SERVICE_ID => $this->createMock(ProctorioRequestBuilder::class),
+            LaunchService::SERVICE_ID => $this->createMock(LaunchService::class),
+            ProctorioRequestBuilder::class => $this->createMock(ProctorioRequestBuilder::class),
+            ProctorioResponseValidator::SERVICE_ID => $validator,
+            LoggerService::SERVICE_ID => $this->createMock(LoggerInterface::class)
         ];
 
         return $this->getServiceLocatorMock($services);
-    }
-
-    protected function setLogger(): voidgetServiceLocatorMock
-    {
-        /** @var LoggerInterface $logger */
-        $logger = $this->getMockBuilder(LoggerInterface::class)->getMock();
-        $this->subject->setLogger($logger);
     }
 }

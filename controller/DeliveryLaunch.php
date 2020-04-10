@@ -49,16 +49,17 @@ class DeliveryLaunch extends Controller implements ServiceLocatorAwareInterface
         // retrieve the delivery execution to launch from the parameters
         $deliveryExecution = $this->getDeliveryExecution();
         // init session from delivery execution user
-        $this->initSession($deliveryExecution->getUserIdentifier());
+        $this->initSession($deliveryExecution);
         // redirect users to taoDelivery
         $this->redirect($this->getRedirectUrl($deliveryExecution->getIdentifier()));
     }
 
-    protected function initSession($userId)
+    protected function initSession(DeliveryExecutionInterface $deliveryExecution)
     {
         $userService = $this->getServiceLocator()->get(UserService::SERVICE_ID);
-        $user = $userService->getUser($userId);
-        $session = new \common_session_DefaultSession($user, [new RemoteProcotoredSessionContext()]);
+        $user = $userService->getUser($deliveryExecution->getUserIdentifier());
+        $proctorContext = new RemoteProcotoredSessionContext($deliveryExecution->getIdentifier());
+        $session = new \common_session_DefaultSession($user, [$proctorContext]);
         $sessionService = $this->getServiceLocator()->get(SessionService::SERVICE_ID);
         $sessionService->setSession($session);
         return $user;

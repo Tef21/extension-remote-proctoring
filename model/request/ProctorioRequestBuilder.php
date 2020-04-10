@@ -22,66 +22,32 @@ declare(strict_types=1);
 
 namespace oat\remoteProctoring\model\request;
 
-use common_Exception;
-use common_exception_Error;
 use common_exception_NotFound;
-use oat\generis\Helper\UuidPrimaryKeyTrait;
-use oat\oatbox\log\LoggerAwareTrait;
+use oat\oatbox\service\ConfigurableService;
 use oat\oatbox\user\User;
 use oat\Proctorio\ProctorioConfig;
 use oat\remoteProctoring\model\ProctorioApiService;
 use oat\tao\helpers\UserHelper;
-use oat\tao\model\security\TokenGenerator;
 use oat\taoDelivery\model\execution\DeliveryExecutionInterface;
 
-class ProctorioRequestBuilder
+class ProctorioRequestBuilder extends ConfigurableService
 {
-    use UuidPrimaryKeyTrait;
-    use LoggerAwareTrait;
-    use TokenGenerator;
-
-    /** * @var int */
-    private $time;
-
-    /** @var array $options */
-    private $options;
-
-    /** @var string */
-    private $nonce;
-
     /** @var ProctorioExamUrlFactory */
     private $proctorioExamUrlFactory;
 
     /** * @var string */
     private $userFullName;
 
-    public function __construct(
-        int $time = null,
-        string $userFullName = null,
-        string $nonce = null,
-        ProctorioExamUrlFactory $proctorioExamUrlFactory = null
-    )
-    {
-        $this->time = $time;
-        $this->userFullName = $userFullName;
-        $this->nonce = $nonce;
-        $this->proctorioExamUrlFactory = $proctorioExamUrlFactory ?? new ProctorioExamUrlFactory();
-    }
-
-
     /**
-     * @throws common_Exception
-     * @throws common_exception_Error
      * @throws common_exception_NotFound
      */
-    public function build(DeliveryExecutionInterface $deliveryExecution, string $launchUrl, array $options): array
+    public function build(DeliveryExecutionInterface $deliveryExecution, string $launchUrl): array
     {
-        $this->options = $options;
         return
             [
                 //delivery execution level
                 ProctorioConfig::LAUNCH_URL => $launchUrl,
-                ProctorioConfig::USER_ID => $deliveryExecution->getUserIdentifier(),
+                ProctorioConfig::USER_ID => (string)md5($deliveryExecution->getUserIdentifier()),
                 ProctorioConfig::FULL_NAME => $this->getUserFullName($deliveryExecution),
 
                 //platform level
@@ -92,17 +58,7 @@ class ProctorioRequestBuilder
 
                 //Delivery level
                 ProctorioConfig::EXAM_TAG => $deliveryExecution->getDelivery()->getLabel(),
-                ProctorioConfig::OAUTH_TIMESTAMP => $this->getTime(),
-                ProctorioConfig::OAUTH_NONCE => $this->getNonce(),
             ];
-    }
-
-    /**
-     * @return mixed|null
-     */
-    private function getOption(string $name)
-    {
-        return $this->options[$name] ?? null;
     }
 
     /**
@@ -119,18 +75,8 @@ class ProctorioRequestBuilder
         return $this->userFullName;
     }
 
-    protected function getExamSettings(): array
+    private function getExamSettings(): array
     {
         return $this->getOption(ProctorioApiService::OPTION_EXAM_SETTINGS);
-    }
-
-    private function getNonce(): string
-    {
-        return $this->nonce ?? $this->getUniquePrimaryKey();
-    }
-
-    private function getTime(): int
-    {
-        return $this->time ?? time();
     }
 }

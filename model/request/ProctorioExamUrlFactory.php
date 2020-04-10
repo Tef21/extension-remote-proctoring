@@ -36,17 +36,17 @@ class ProctorioExamUrlFactory
 
     public function createExamStartUrl(): string
     {
-        return $this->convertUrlToPattern($this->rootURl . '/remoteProctoring') . '.*';
+        return $this->convertUrlToPattern(rtrim($this->rootURl,'/') . '/remoteProctoring') . '.*';
     }
 
     public function createExamTakeUrl(): string
     {
-        return $this->convertUrlToPattern($this->rootURl) . '/.*';
+        return $this->convertUrlToPattern(rtrim($this->rootURl,'/')) . '/.*';
     }
 
     public function createExamEndUrl(): string
     {
-        return $this->convertUrlToPattern(sprintf('%s/taoDelivery/DeliveryServer/index', $this->rootURl)) . '/.*';
+        return $this->convertUrlToPattern(sprintf('%s/taoDelivery/DeliveryServer/index', rtrim($this->rootURl,'/'))) . '/.*';
     }
 
     private function convertUrlToPattern(string $url): string

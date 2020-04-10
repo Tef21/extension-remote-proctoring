@@ -96,7 +96,7 @@ class ProctorioRequestBuilderTest extends TestCase
         $options = [
             'exam_settings' => ['webtraffic'],
         ];
-        $buildData = $this->subject->build($this->deliveryExecution, $this->lunchUrl, $options);
+        $buildData = $this->subject->build($this->deliveryExecution, $this->lunchUrl);
 
         $expected = [
             'launch_url' => 'someTestUrl.tld',

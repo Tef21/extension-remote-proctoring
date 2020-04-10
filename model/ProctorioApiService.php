@@ -51,10 +51,10 @@ class ProctorioApiService extends ConfigurableService
     public const OPTION_OAUTH_SECRET = 'oauthSecret';
     public const OPTION_EXAM_SETTINGS = 'exam_settings';
 
-    /** @var ProctorioUrlRepository $repository */
+    /** @var ProctorioUrlRepository */
     private $repository;
 
-    /** @var ProctorioResponseValidator $validator */
+    /** @var ProctorioResponseValidator */
     private $validator;
 
     /** @var ProctorioService */
@@ -97,7 +97,7 @@ class ProctorioApiService extends ConfigurableService
     {
         $proctorioService = $this->getProctorioLibraryService();
         $launchUrl = $this->getLaunchService()->generateUrl($deliveryExecution->getIdentifier());
-        $config = $this->getRequestBuilder()->build($deliveryExecution, $launchUrl, $this->getOptions());
+        $config = $this->getRequestBuilder()->build($deliveryExecution, $launchUrl);
 
         return $proctorioService->callRemoteProctoring(
             $config,

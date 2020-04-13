@@ -32,16 +32,16 @@ class LaunchService extends ConfigurableService
     public const SERVICE_ID = 'remoteProctoring/LaunchService';
     public const OPTION_SIGNATURE_METHOD = 'signer';
 
-    private const URI_PARAM_EXECUTION = 'deId';
+    public const URI_PARAM_EXECUTION = 'deId';
 
-    public function generateUrl(string $deliveryExecutionId): string
+    public function generateUrl(string $declivityExecutionParamName, string $deliveryExecutionId): string
     {
         $url = _url(
             'launch',
             'DeliveryLaunch',
             'remoteProctoring',
             [
-                $this->getExecutionParamName() => $deliveryExecutionId
+                $declivityExecutionParamName => $deliveryExecutionId
             ]
         );
         return $this->getSignatureMethod()->signUrl($url);
@@ -58,10 +58,5 @@ class LaunchService extends ConfigurableService
     private function getSignatureMethod(): SignatureMethod
     {
         return $this->propagate($this->getOption(self::OPTION_SIGNATURE_METHOD));
-    }
-
-    public function getExecutionParamName(): string
-    {
-        return self::URI_PARAM_EXECUTION;
     }
 }

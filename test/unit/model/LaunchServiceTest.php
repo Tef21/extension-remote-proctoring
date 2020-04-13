@@ -49,9 +49,4 @@ class LaunchServiceTest extends TestCase
     {
         $this->assertIsString($this->subject->generateUrl('id'));
     }
-
-    public function testGetExecutionParamName()
-    {
-        $this->assertIsString($this->subject->getExecutionParamName());
-    }
 }

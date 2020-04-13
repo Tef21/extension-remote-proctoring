@@ -22,6 +22,7 @@ declare(strict_types=1);
 
 namespace oat\remoteProctoring\test\unit\model\signature;
 
+use GuzzleHttp\Psr7\Request;
 use oat\generis\test\TestCase;
 use oat\remoteProctoring\model\signature\NoSignature;
 use Psr\Http\Message\RequestInterface;
@@ -38,21 +39,19 @@ class NoSignatureTest extends TestCase
         $this->subject = new NoSignature([]);
     }
 
-    public function testSignUrl()
+    public function testSignUrl(): void
     {
         $this->assertEquals('https://tao.lu', $this->subject->signUrl('https://tao.lu'));
         $this->assertNotEquals('https://tao.lu&signed', $this->subject->signUrl('https://tao.lu'));
     }
 
-    public function testValidateRequest()
+    public function testValidateRequest(): void
     {
-        $this->assertNull($this->subject->validateRequest($this->getMockRequest('https://tao.lu')));
+        $this->assertNull($this->subject->validateRequest($this->getRequest('https://tao.lu')));
     }
 
-    protected function getMockRequest($uri): RequestInterface
+    private function getRequest(string $uri): RequestInterface
     {
-        $mock = $this->createMock(RequestInterface::class);
-        $mock->method('getUri')->willReturn($uri);
-        return $mock;
+        return new Request('get', $uri);
     }
 }

@@ -53,15 +53,20 @@ class Sha256Signature extends Configurable implements SignatureMethod
     {
         $url = $request->getUri();
 
-        if ('http' === $url->getScheme()) {
-            $https = $request->hasHeader('x-forwarded-proto') && $request->getHeader('x-forwarded-proto')[0] === 'https';
-            $https = $https || ($request->hasHeader('x-forwarded-ssl') && $request->getHeader('x-forwarded-ssl')[0] === 'on');
-
-            if ($https) {
-                $url = $url->withScheme('https');
-            }
+        if ('http' === $url->getScheme() && $this->wasRequestForwardedByHttps($request)) {
+            $url = $url->withScheme('https');
         }
 
         return (string)$url;
+    }
+
+    private function wasRequestForwardedByHttps(RequestInterface $request): bool
+    {
+        $https = $request->hasHeader('x-forwarded-proto')
+            && $request->getHeader('x-forwarded-proto')[0] === 'https';
+        $https = $https || ($request->hasHeader('x-forwarded-ssl')
+                && $request->getHeader('x-forwarded-ssl')[0] === 'on');
+
+        return $https;
     }
 }

@@ -30,12 +30,10 @@ class NoSignature extends Configurable implements SignatureMethod
 
     public function signUrl(string $url): string
     {
-        // do not add any signature
         return $url;
     }
 
     public function validateRequest(RequestInterface $request): void
     {
-        // do not validate any request
     }
 }

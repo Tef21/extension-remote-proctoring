@@ -123,7 +123,7 @@ class Sha256SignatureTest extends TestCase
         $this->assertNull($this->subject->validateRequest($this->getRequest('https://tao.lu&pamssss&asda')));
     }
 
-    protected function getRequest(string $uri, array $headers = []): RequestInterface
+    private function getRequest(string $uri, array $headers = []): RequestInterface
     {
         return new Request('get', $uri, $headers);
     }

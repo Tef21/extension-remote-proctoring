@@ -107,7 +107,6 @@ class Sha256SignatureTest extends TestCase
 
     /**
      * @dataProvider InvalidSignaturesProvider
-     * @throws SignatureException
      */
     public function testInvalidSignature(string $url, array $headers = []): void
     {

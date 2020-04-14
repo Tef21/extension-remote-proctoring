@@ -55,7 +55,7 @@ class ProctorioRequestBuilder extends ConfigurableService
                 ProctorioConfig::EXAM_SETTINGS => $this->getExamSettings(),
 
                 //Delivery level
-                ProctorioConfig::EXAM_TAG => $this->getHashGenerator()->hash($deliveryExecution->getDelivery()->getLabel()),
+                ProctorioConfig::EXAM_TAG => $this->getHashGenerator()->hash($deliveryExecution->getDelivery()->getUri()),
             ];
     }
 

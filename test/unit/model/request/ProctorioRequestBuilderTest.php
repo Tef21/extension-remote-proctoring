@@ -27,12 +27,15 @@ use common_exception_Error;
 use common_exception_NotFound;
 use core_kernel_classes_Resource;
 use oat\generis\test\TestCase;
+use oat\oatbox\log\LoggerService;
+use oat\oatbox\user\User;
 use oat\oatbox\user\UserService;
 use oat\remoteProctoring\model\request\ProctorioExamUrlFactory;
 use oat\remoteProctoring\model\request\ProctorioRequestBuilder;
 use oat\remoteProctoring\model\request\RequestHashGenerator;
 use oat\taoDelivery\model\execution\DeliveryExecutionInterface;
 use PHPUnit\Framework\MockObject\MockObject;
+use Psr\Log\LoggerInterface;
 
 class ProctorioRequestBuilderTest extends TestCase
 {
@@ -40,29 +43,38 @@ class ProctorioRequestBuilderTest extends TestCase
     /** @var MockObject|DeliveryExecutionInterface */
     private $deliveryExecution;
 
-    /** @var string $lunchUrl */
+    /** @var string */
     private $lunchUrl;
 
-    /** @var ProctorioRequestBuilder $subject */
+    /** @var ProctorioRequestBuilder */
     private $subject;
 
     /** * @var UserService|MockObject */
-    private $userMock;
+    private $userSerice;
 
     public function setUp(): void
     {
-        $this->userMock = $this->createMock(UserService::class);
+        $this->userSerice = $this->createMock(UserService::class);
+        $this->userSerice->method('getUser')
+            ->willReturn($this->createMock(User::class));
+
+        $requestHashGenerator = $this->createMock(RequestHashGenerator::class);
+        $proctorioExamUrlFactory = $this->createMock(ProctorioExamUrlFactory::class);
+        $this->deliveryExecution = $this->createMock(DeliveryExecutionInterface::class);
+
         $serviceLocatorMock = $this->getServiceLocatorMock([
-            ProctorioRequestBuilder::OPTION_URL_EXAM_FACTORY => new ProctorioExamUrlFactory(),
-            ProctorioRequestBuilder::OPTION_HASH_SERVICE => new RequestHashGenerator(),
-            UserService::SERVICE_ID => $this->userMock,
+            UserService::SERVICE_ID => $this->userSerice,
+            LoggerService::SERVICE_ID => $this->createMock(LoggerInterface::class)
         ]);
 
-        $this->deliveryExecution = $this->createMock(DeliveryExecutionInterface::class);
         $this->lunchUrl = 'someLunchUrl.tld';
 
         $this->subject = new ProctorioRequestBuilder(
-            ['requestHashGenerator' => $this->createMock(RequestHashGenerator::class)]
+            [
+                'requestHashGenerator' => $requestHashGenerator,
+                'proctorioExamUrlFactory' => $proctorioExamUrlFactory,
+                'exam_settings' => ['someSetting']
+            ]
         );
         $this->subject->setServiceLocator($serviceLocatorMock);
     }
@@ -78,7 +90,7 @@ class ProctorioRequestBuilderTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $delivery->method('getLabel')->willReturn('test-Label');
+        $delivery->method('getUri')->willReturn('test-ID');
 
         $this->deliveryExecution->method('getUserIdentifier')
             ->willReturn('test');
@@ -86,7 +98,17 @@ class ProctorioRequestBuilderTest extends TestCase
             ->willReturn($delivery);
 
         $buildData = $this->subject->build($this->deliveryExecution, $this->lunchUrl);
+        $expectedData = [
+            'launch_url' => 'someLunchUrl.tld',
+            'user_id' => '',
+            'fullname' => '',
+            'exam_start' => '',
+            'exam_take' => '',
+            'exam_end' => '',
+            'exam_settings' => ['someSetting'],
+            'exam_tag' => '',
+        ];
 
-        $this->assertEquals([], $buildData);
+        $this->assertEquals($expectedData, $buildData);
     }
 }

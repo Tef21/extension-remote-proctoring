@@ -56,7 +56,7 @@ class ProctorioApiService extends ConfigurableService
     public const PREFIX_KEY_VALUE = 'proctorio::';
 
     /** @var ProctorioService */
-    private $proctorioUrlLibraryService;
+    private $proctorioService;
 
     /**
      * @throws GuzzleException
@@ -76,9 +76,9 @@ class ProctorioApiService extends ConfigurableService
         return $proctorioUrls;
     }
 
-    public function setProctorioUrlLibraryService(ProctorioService $proctorioUrlLibraryService): void
+    public function setProctorioService(ProctorioService $proctorioUrlLibraryService): void
     {
-        $this->proctorioUrlLibraryService = $proctorioUrlLibraryService;
+        $this->proctorioService = $proctorioUrlLibraryService;
     }
 
     /**
@@ -130,10 +130,10 @@ class ProctorioApiService extends ConfigurableService
 
     private function getProctorioLibraryService(): ProctorioService
     {
-        if ($this->proctorioUrlLibraryService === null) {
+        if ($this->proctorioService === null) {
             return new ProctorioService();
         }
 
-        return $this->proctorioUrlLibraryService;
+        return $this->proctorioService;
     }
 }

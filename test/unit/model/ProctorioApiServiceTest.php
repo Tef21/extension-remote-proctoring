@@ -64,7 +64,7 @@ class ProctorioApiServiceTest extends TestCase
         $proctorioLibraryMock->method('callRemoteProctoring')
             ->willReturn('["ttURL","reviewURL"]');
 
-        $this->subject->setProctorioUrlLibraryService($proctorioLibraryMock);
+        $this->subject->setProctorioService($proctorioLibraryMock);
         $this->subject->setServiceLocator($serviceLocatorMock);
     }
 

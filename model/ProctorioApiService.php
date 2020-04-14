@@ -96,7 +96,7 @@ class ProctorioApiService extends ConfigurableService
     {
         $proctorioService = $this->getProctorioLibraryService();
         $launchUrl = $this->getLaunchService()->generateUrl(
-            $this->getLaunchService()::URI_PARAM_EXECUTION,
+            LaunchService::URI_PARAM_EXECUTION,
             $deliveryExecution->getIdentifier()
         );
         $config = $this->getRequestBuilder()->build($deliveryExecution, $launchUrl);

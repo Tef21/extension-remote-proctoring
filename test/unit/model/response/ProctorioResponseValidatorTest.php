@@ -68,8 +68,13 @@ class ProctorioResponseValidatorTest extends TestCase
     {
         return [
             ['[]'],
+            ['[2653]'],
             ['[2654]'],
-            ['[2654]'],
+            ['[2655]'],
+            ['[2656]'],
+            ['[2657]'],
+            ['[2658]'],
+            ['[2659]'],
         ];
     }
 }

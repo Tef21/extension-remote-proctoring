@@ -66,4 +66,9 @@ class ProctorioResponse
             $this->getTestReviewerUrl(),
         ]);
     }
+
+    public function __toString()
+    {
+        return $this->toJson();
+    }
 }

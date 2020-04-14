@@ -22,87 +22,41 @@ declare(strict_types=1);
 
 namespace oat\remoteProctoring\model\request;
 
-use common_Exception;
-use common_exception_Error;
 use common_exception_NotFound;
-use oat\generis\Helper\UuidPrimaryKeyTrait;
-use oat\oatbox\log\LoggerAwareTrait;
-use oat\oatbox\user\User;
+use oat\oatbox\service\ConfigurableService;
+use oat\oatbox\user\UserService;
 use oat\Proctorio\ProctorioConfig;
-use oat\remoteProctoring\model\ProctorioApiService;
 use oat\tao\helpers\UserHelper;
-use oat\tao\model\security\TokenGenerator;
 use oat\taoDelivery\model\execution\DeliveryExecutionInterface;
 
-class ProctorioRequestBuilder
+class ProctorioRequestBuilder extends ConfigurableService
 {
-    use UuidPrimaryKeyTrait;
-    use LoggerAwareTrait;
-    use TokenGenerator;
-
-    /** * @var int */
-    private $time;
-
-    /** @var array $options */
-    private $options;
-
-    /** @var string */
-    private $nonce;
-
-    /** @var ProctorioExamUrlFactory */
-    private $proctorioExamUrlFactory;
-
-    /** * @var string */
-    private $userFullName;
-
-    public function __construct(
-        int $time = null,
-        string $userFullName = null,
-        string $nonce = null,
-        ProctorioExamUrlFactory $proctorioExamUrlFactory = null
-    )
-    {
-        $this->time = $time;
-        $this->userFullName = $userFullName;
-        $this->nonce = $nonce;
-        $this->proctorioExamUrlFactory = $proctorioExamUrlFactory ?? new ProctorioExamUrlFactory();
-    }
-
+    public const SERVICE_ID = 'remoteProctoring/ProctorioRequestBuilder';
+    public const OPTION_EXAM_SETTINGS = 'exam_settings';
+    public const OPTION_URL_EXAM_FACTORY = 'proctorioExamUrlFactory';
+    public const OPTION_HASH_SERVICE = 'requestHashGenerator';
 
     /**
-     * @throws common_Exception
-     * @throws common_exception_Error
      * @throws common_exception_NotFound
      */
-    public function build(DeliveryExecutionInterface $deliveryExecution, string $launchUrl, array $options): array
+    public function build(DeliveryExecutionInterface $deliveryExecution, string $launchUrl): array
     {
-        $this->options = $options;
         return
             [
                 //delivery execution level
                 ProctorioConfig::LAUNCH_URL => $launchUrl,
-                ProctorioConfig::USER_ID => $deliveryExecution->getUserIdentifier(),
+                ProctorioConfig::USER_ID => $this->getHashGenerator()->hash($deliveryExecution->getUserIdentifier()),
                 ProctorioConfig::FULL_NAME => $this->getUserFullName($deliveryExecution),
 
                 //platform level
-                ProctorioConfig::EXAM_START => $this->proctorioExamUrlFactory->createExamStartUrl(),
-                ProctorioConfig::EXAM_TAKE => $this->proctorioExamUrlFactory->createExamTakeUrl(),
-                ProctorioConfig::EXAM_END => $this->proctorioExamUrlFactory->createExamEndUrl(),
+                ProctorioConfig::EXAM_START => $this->getProctorioExamUrlFactory()->createExamStartUrl(),
+                ProctorioConfig::EXAM_TAKE => $this->getProctorioExamUrlFactory()->createExamTakeUrl(),
+                ProctorioConfig::EXAM_END => $this->getProctorioExamUrlFactory()->createExamEndUrl(),
                 ProctorioConfig::EXAM_SETTINGS => $this->getExamSettings(),
 
                 //Delivery level
-                ProctorioConfig::EXAM_TAG => $deliveryExecution->getDelivery()->getLabel(),
-                ProctorioConfig::OAUTH_TIMESTAMP => $this->getTime(),
-                ProctorioConfig::OAUTH_NONCE => $this->getNonce(),
+                ProctorioConfig::EXAM_TAG => $this->getHashGenerator()->hash($deliveryExecution->getDelivery()->getUri()),
             ];
-    }
-
-    /**
-     * @return mixed|null
-     */
-    private function getOption(string $name)
-    {
-        return $this->options[$name] ?? null;
     }
 
     /**
@@ -110,27 +64,25 @@ class ProctorioRequestBuilder
      */
     private function getUserFullName(DeliveryExecutionInterface $deliveryExecution): string
     {
-        if ($this->userFullName === null) {
-            /** @var User $user */
-            $user = UserHelper::getUser($deliveryExecution->getUserIdentifier());
-            return UserHelper::getUserName($user);
-        }
+        /** @var UserService $userService */
+        $userService = $this->getServiceLocator()->get(UserService::SERVICE_ID);
+        $user = $userService->getUser($deliveryExecution->getUserIdentifier());
 
-        return $this->userFullName;
+        return UserHelper::getUserName($user);
     }
 
-    protected function getExamSettings(): array
+    private function getProctorioExamUrlFactory(): ProctorioExamUrlFactory
     {
-        return $this->getOption(ProctorioApiService::OPTION_EXAM_SETTINGS);
+        return $this->getSubService(self::OPTION_URL_EXAM_FACTORY);
     }
 
-    private function getNonce(): string
+    private function getHashGenerator(): RequestHashGenerator
     {
-        return $this->nonce ?? $this->getUniquePrimaryKey();
+        return $this->getSubService(self::OPTION_HASH_SERVICE);
     }
 
-    private function getTime(): int
+    private function getExamSettings(): array
     {
-        return $this->time ?? time();
+        return $this->getOption(self::OPTION_EXAM_SETTINGS);
     }
 }

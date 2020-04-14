@@ -33,11 +33,9 @@ class ProctorioExamUrlFactoryTest extends TestCase
     /** @var ProctorioExamUrlFactory */
     private $subject;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
-        $this->subject = new ProctorioExamUrlFactory(self::ROOT_URL);
-
-        parent::setUp();
+        $this->subject = new ProctorioExamUrlFactory(['base_url' => self::ROOT_URL]);
     }
 
     public function testCreateExamStartUrl(): void

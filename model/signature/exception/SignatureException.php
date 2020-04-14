@@ -18,10 +18,13 @@
  * Copyright (c) 2020 (original work) Open Assessment Technologies SA
  */
 
-use oat\remoteProctoring\model\ProctorioApiService;
+declare(strict_types=1);
 
-return new ProctorioApiService([
-    ProctorioApiService::OPTION_PERSISTENCE => 'default_kv',
-    ProctorioApiService::OPTION_OAUTH_KEY => '',
-    ProctorioApiService::OPTION_OAUTH_SECRET => '',
-]);
+namespace oat\remoteProctoring\model\signature\exception;
+
+use common_Exception;
+
+class SignatureException extends common_Exception
+{
+
+}

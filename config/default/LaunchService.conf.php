@@ -18,10 +18,16 @@
  * Copyright (c) 2020 (original work) Open Assessment Technologies SA
  */
 
-use oat\remoteProctoring\model\ProctorioApiService;
+use oat\remoteProctoring\model\LaunchService;
+use oat\remoteProctoring\model\signature\Sha256Signature;
+use Ramsey\Uuid\Uuid;
 
-return new ProctorioApiService([
-    ProctorioApiService::OPTION_PERSISTENCE => 'default_kv',
-    ProctorioApiService::OPTION_OAUTH_KEY => '',
-    ProctorioApiService::OPTION_OAUTH_SECRET => '',
-]);
+return new LaunchService(
+    [
+        LaunchService::OPTION_SIGNATURE_METHOD => new Sha256Signature(
+            [
+                Sha256Signature::OPTION_SECRET => Uuid::uuid4()->toString()
+            ]
+        )
+    ]
+);

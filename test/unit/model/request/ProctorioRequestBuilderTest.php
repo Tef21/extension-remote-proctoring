@@ -64,8 +64,6 @@ class ProctorioRequestBuilderTest extends TestCase
 
         $serviceLocatorMock = $this->getServiceLocatorMock([
             UserService::SERVICE_ID => $this->userSerice,
-            RequestHashGenerator::SERVICE_ID => $requestHashGenerator,
-            ProctorioExamUrlFactory::SERVICE_ID => $proctorioExamUrlFactory,
             LoggerService::SERVICE_ID => $this->createMock(LoggerInterface::class)
         ]);
 
@@ -92,7 +90,7 @@ class ProctorioRequestBuilderTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $delivery->method('getLabel')->willReturn('test-Label');
+        $delivery->method('getUri')->willReturn('test-ID');
 
         $this->deliveryExecution->method('getUserIdentifier')
             ->willReturn('test');

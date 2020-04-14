@@ -49,12 +49,9 @@ class ProctorioApiService extends ConfigurableService
     public const OPTION_PERSISTENCE = 'persistence';
     public const OPTION_OAUTH_KEY = 'oauthKey';
     public const OPTION_OAUTH_SECRET = 'oauthSecret';
-    public const OPTION_EXAM_SETTINGS = 'exam_settings';
+    public const PREFIX_KEY_VALUE = 'proctorio::';
 
-    /** @var ProctorioUrlRepository $repository */
-    private $repository;
-
-    /** @var ProctorioResponseValidator $validator */
+    /** @var ProctorioResponseValidator */
     private $validator;
 
     /** @var ProctorioService */
@@ -69,14 +66,11 @@ class ProctorioApiService extends ConfigurableService
      */
     public function getProctorioUrl(DeliveryExecutionInterface $deliveryExecution): ?ProctorioResponse
     {
-        $proctorioUrls = $this->getProctorioUrlRepository()->findById($this->getUrlsId($deliveryExecution));
-        if ($proctorioUrls === null) {
             $providerJsonResponse = $this->requestProctorioUrls($deliveryExecution);
             if ($this->getValidator()->validate($providerJsonResponse)) {
                 $proctorioUrls = ProctorioResponse::fromJson($providerJsonResponse);
-                $this->getProctorioUrlRepository()->save($proctorioUrls, $this->getUrlsId($deliveryExecution));
+                $this->getStorage()->set($this->getUrlsId($deliveryExecution), $proctorioUrls);
             }
-        }
 
         return $proctorioUrls;
     }
@@ -97,7 +91,7 @@ class ProctorioApiService extends ConfigurableService
     {
         $proctorioService = $this->getProctorioLibraryService();
         $launchUrl = $this->getLaunchService()->generateUrl($deliveryExecution->getIdentifier());
-        $config = $this->getRequestBuilder()->build($deliveryExecution, $launchUrl, $this->getOptions());
+        $config = $this->getRequestBuilder()->build($deliveryExecution, $launchUrl);
 
         return $proctorioService->callRemoteProctoring(
             $config,
@@ -115,35 +109,22 @@ class ProctorioApiService extends ConfigurableService
 
     private function getLaunchService(): LaunchService
     {
-        return $this->getServiceLocator()->get(LaunchService::class);
-    }
-
-    private function getProctorioUrlRepository(): ProctorioUrlRepository
-    {
-        if ($this->repository === null) {
-            $this->repository = new ProctorioUrlRepository($this->getStorage(), $this->getLogger());
-        }
-
-        return $this->repository;
+        return $this->getServiceLocator()->get(LaunchService::SERVICE_ID);
     }
 
     private function getRequestBuilder(): ProctorioRequestBuilder
     {
-        return $this->getServiceLocator()->get(ProctorioRequestBuilder::class);
+        return $this->getServiceLocator()->get(ProctorioRequestBuilder::SERVICE_ID);
     }
 
     private function getUrlsId(DeliveryExecutionInterface $deliveryExecution): string
     {
-        return ProctorioUrlRepository::PREFIX_KEY_VALUE . $deliveryExecution->getIdentifier();
+        return self::PREFIX_KEY_VALUE . $deliveryExecution->getIdentifier();
     }
 
     private function getValidator(): ProctorioResponseValidator
     {
-        if ($this->validator === null) {
-            $this->validator = new ProctorioResponseValidator($this->getLogger());
-        }
-
-        return $this->validator;
+        return $this->getServiceLocator()->get(ProctorioResponseValidator::class);
     }
 
     private function getProctorioLibraryService(): ProctorioService

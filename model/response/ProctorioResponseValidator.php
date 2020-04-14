@@ -22,13 +22,16 @@ declare(strict_types=1);
 
 namespace oat\remoteProctoring\model\response;
 
-use Psr\Log\LoggerInterface;
+use oat\oatbox\log\LoggerAwareTrait;
+use oat\oatbox\service\ConfigurableService;
 use RuntimeException;
 use Throwable;
 
-class ProctorioResponseValidator
+class ProctorioResponseValidator extends ConfigurableService
 {
+    use LoggerAwareTrait;
 
+    public const SERVICE_ID = 'remoteProctoring/RequestHashGenerator';
     public const RESPONSE_CODES = [
         2653, // Missing required parameters
         2654, // Invalid parameter 
@@ -40,14 +43,6 @@ class ProctorioResponseValidator
         2660, // Unknown
     ];
 
-    /** @var LoggerInterface */
-    private $logger;
-
-    public function __construct(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-    }
-
     public function validate(string $response): bool
     {
         try {
@@ -57,7 +52,7 @@ class ProctorioResponseValidator
             }
             throw new RuntimeException('Proctorio response contains an error');
         } catch (Throwable $exception) {
-            $this->logger->error('Proctorio response contains an error'
+            $this->logError('Proctorio response contains an error'
                 . filter_var($response, FILTER_SANITIZE_STRING));
         }
 

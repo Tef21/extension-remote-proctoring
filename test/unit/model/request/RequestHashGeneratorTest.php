@@ -18,10 +18,31 @@
  * Copyright (c) 2020 (original work) Open Assessment Technologies SA
  */
 
-use oat\remoteProctoring\model\ProctorioApiService;
+declare(strict_types=1);
 
-return new ProctorioApiService([
-    ProctorioApiService::OPTION_PERSISTENCE => 'default_kv',
-    ProctorioApiService::OPTION_OAUTH_KEY => '',
-    ProctorioApiService::OPTION_OAUTH_SECRET => '',
-]);
+namespace oat\remoteProctoring\test\unit\model\request;
+
+use oat\generis\test\TestCase;
+use oat\remoteProctoring\model\request\RequestHashGenerator;
+
+class RequestHashGeneratorTest extends TestCase
+{
+    /** @var RequestHashGenerator */
+    private $subject;
+
+    protected function setUp(): void
+    {
+        $this->subject = new RequestHashGenerator();
+    }
+
+    public function testHash()
+    {
+        $testString = 'someString';
+        $this->assertEquals((string)md5($testString), $this->subject->hash($testString));
+    }
+
+    public function testGet()
+    {
+        $this->assertContains('md5', $this->subject->getAlgorithms());
+    }
+}

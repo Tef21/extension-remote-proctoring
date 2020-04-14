@@ -26,6 +26,7 @@ use oat\generis\test\TestCase;
 use oat\oatbox\log\LoggerService;
 use oat\remoteProctoring\model\response\ProctorioResponseValidator;
 use PHPUnit\Framework\MockObject\MockObject;
+use Psr\Log\LoggerInterface;
 
 class ProctorioResponseValidatorTest extends TestCase
 {
@@ -38,8 +39,12 @@ class ProctorioResponseValidatorTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->loggerMock = $this->createMock(LoggerService::class);
-        $this->subject = new ProctorioResponseValidator($this->loggerMock);
+        $serviceLocator = $this->getServiceLocatorMock([
+            LoggerService::SERVICE_ID => $this->createMock(LoggerInterface::class)
+        ]);
+
+        $this->subject = new ProctorioResponseValidator();
+        $this->subject->setServiceLocator($serviceLocator);
     }
 
     public function testValidate(): void
@@ -56,7 +61,6 @@ class ProctorioResponseValidatorTest extends TestCase
      */
     public function testValidateFailed(string $testString): void
     {
-        $this->loggerMock->expects($this->once())->method('error');
         $this->assertFalse($this->subject->validate($testString));
     }
 

@@ -27,10 +27,15 @@ use common_exception_Error;
 use common_exception_NotFound;
 use core_kernel_classes_Resource;
 use oat\generis\test\TestCase;
+use oat\oatbox\log\LoggerService;
+use oat\oatbox\user\User;
+use oat\oatbox\user\UserService;
 use oat\remoteProctoring\model\request\ProctorioExamUrlFactory;
 use oat\remoteProctoring\model\request\ProctorioRequestBuilder;
+use oat\remoteProctoring\model\request\RequestHashGenerator;
 use oat\taoDelivery\model\execution\DeliveryExecutionInterface;
 use PHPUnit\Framework\MockObject\MockObject;
+use Psr\Log\LoggerInterface;
 
 class ProctorioRequestBuilderTest extends TestCase
 {
@@ -38,41 +43,40 @@ class ProctorioRequestBuilderTest extends TestCase
     /** @var MockObject|DeliveryExecutionInterface */
     private $deliveryExecution;
 
-    /** @var string $lunchUrl */
+    /** @var string */
     private $lunchUrl;
 
-    /** @var ProctorioRequestBuilder $subject */
+    /** @var ProctorioRequestBuilder */
     private $subject;
 
-    /** * @var int */
-    private $time;
+    /** * @var UserService|MockObject */
+    private $userSerice;
 
-    /** * @var string */
-    private $userFullName;
-
-    /** @var string */
-    private $nonce;
-
-    /** * @var ProctorioExamUrlFactory|MockObject */
-    private $proctorioExamUrlFactory;
-
-    protected function setUp(): void
+    public function setUp(): void
     {
-        $this->deliveryExecution = $this->getMockBuilder(DeliveryExecutionInterface::class)
-            ->getMock();
-        $this->lunchUrl = 'someTestUrl.tld';
+        $this->userSerice = $this->createMock(UserService::class);
+        $this->userSerice->method('getUser')
+            ->willReturn($this->createMock(User::class));
 
-        $this->time = time();
-        $this->userFullName = 'userFull Name';
-        $this->nonce = 'abc1234';
-        $this->proctorioExamUrlFactory = $this->createMock(ProctorioExamUrlFactory::class);
+        $requestHashGenerator = $this->createMock(RequestHashGenerator::class);
+        $proctorioExamUrlFactory = $this->createMock(ProctorioExamUrlFactory::class);
+        $this->deliveryExecution = $this->createMock(DeliveryExecutionInterface::class);
+
+        $serviceLocatorMock = $this->getServiceLocatorMock([
+            UserService::SERVICE_ID => $this->userSerice,
+            LoggerService::SERVICE_ID => $this->createMock(LoggerInterface::class)
+        ]);
+
+        $this->lunchUrl = 'someLunchUrl.tld';
 
         $this->subject = new ProctorioRequestBuilder(
-            $this->time,
-            $this->userFullName,
-            $this->nonce,
-            $this->proctorioExamUrlFactory
+            [
+                'requestHashGenerator' => $requestHashGenerator,
+                'proctorioExamUrlFactory' => $proctorioExamUrlFactory,
+                'exam_settings' => ['someSetting']
+            ]
         );
+        $this->subject->setServiceLocator($serviceLocatorMock);
     }
 
     /**
@@ -86,37 +90,25 @@ class ProctorioRequestBuilderTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $delivery->method('getLabel')->willReturn('test-Label');
+        $delivery->method('getUri')->willReturn('test-ID');
 
         $this->deliveryExecution->method('getUserIdentifier')
             ->willReturn('test');
         $this->deliveryExecution->method('getDelivery')
             ->willReturn($delivery);
 
-        $options = [
-            'exam_settings' => ['webtraffic'],
-        ];
-        $buildData = $this->subject->build($this->deliveryExecution, $this->lunchUrl, $options);
-
-        $expected = [
-            'launch_url' => 'someTestUrl.tld',
-            'user_id' => 'test',
-            'fullname' => 'userFull Name',
+        $buildData = $this->subject->build($this->deliveryExecution, $this->lunchUrl);
+        $expectedData = [
+            'launch_url' => 'someLunchUrl.tld',
+            'user_id' => '',
+            'fullname' => '',
             'exam_start' => '',
             'exam_take' => '',
             'exam_end' => '',
-            'exam_settings' => ['webtraffic'],
-            'exam_tag' => 'test-Label',
-            'oauth_timestamp' => '',
-            'oauth_nonce' => ''
+            'exam_settings' => ['someSetting'],
+            'exam_tag' => '',
         ];
 
-        $this->assertEquals(array_keys($expected), array_keys($buildData));
-        $this->assertEquals($expected['user_id'], $buildData['user_id']);
-        $this->assertEquals($expected['exam_start'], $buildData['exam_start']);
-        $this->assertEquals($expected['exam_take'], $buildData['exam_take']);
-        $this->assertEquals($expected['exam_end'], $buildData['exam_end']);
-        $this->assertEquals($expected['exam_settings'], $buildData['exam_settings']);
-        $this->assertEquals($expected['fullname'], $buildData['fullname']);
+        $this->assertEquals($expectedData, $buildData);
     }
 }

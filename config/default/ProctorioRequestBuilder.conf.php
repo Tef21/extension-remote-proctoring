@@ -18,10 +18,12 @@
  * Copyright (c) 2020 (original work) Open Assessment Technologies SA
  */
 
-use oat\remoteProctoring\model\ProctorioApiService;
+use oat\remoteProctoring\model\request\ProctorioExamUrlFactory;
+use oat\remoteProctoring\model\request\ProctorioRequestBuilder;
+use oat\remoteProctoring\model\request\RequestHashGenerator;
 
-return new ProctorioApiService([
-    ProctorioApiService::OPTION_PERSISTENCE => 'default_kv',
-    ProctorioApiService::OPTION_OAUTH_KEY => '',
-    ProctorioApiService::OPTION_OAUTH_SECRET => '',
+return new ProctorioRequestBuilder([
+    ProctorioRequestBuilder::OPTION_EXAM_SETTINGS => ['webtraffic'],
+    ProctorioRequestBuilder::OPTION_URL_EXAM_FACTORY => new ProctorioExamUrlFactory(),
+    ProctorioRequestBuilder::OPTION_HASH_SERVICE => new RequestHashGenerator(),
 ]);

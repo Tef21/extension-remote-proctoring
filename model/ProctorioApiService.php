@@ -68,10 +68,10 @@ class ProctorioApiService extends ConfigurableService
     public function getProctorioUrl(DeliveryExecutionInterface $deliveryExecution): ?ProctorioResponse
     {
             $providerJsonResponse = $this->requestProctorioUrls($deliveryExecution);
-            if ($this->getValidator()->validate($providerJsonResponse)) {
-                $proctorioUrls = ProctorioResponse::fromJson($providerJsonResponse);
-                $this->getStorage()->set($this->getUrlsId($deliveryExecution), $proctorioUrls);
-            }
+        if ($this->getValidator()->validate($providerJsonResponse)) {
+            $proctorioUrls = ProctorioResponse::fromJson($providerJsonResponse);
+            $this->getStorage()->set($this->getUrlsId($deliveryExecution), $proctorioUrls);
+        }
 
         return $proctorioUrls;
     }

@@ -26,6 +26,7 @@ use oat\oatbox\service\ConfigurableService;
 use oat\remoteProctoring\model\signature\exception\SignatureException;
 use oat\remoteProctoring\model\signature\SignatureMethod;
 use Psr\Http\Message\RequestInterface;
+use tao_helpers_Uri;
 
 class LaunchService extends ConfigurableService
 {
@@ -39,7 +40,7 @@ class LaunchService extends ConfigurableService
 
     public function generateUrl(string $deliveryExecutionParamName, string $deliveryExecutionId): string
     {
-        $url = \tao_helpers_Uri::url(
+        $url = tao_helpers_Uri::url(
             'launch',
             'DeliveryLaunch',
             'remoteProctoring',

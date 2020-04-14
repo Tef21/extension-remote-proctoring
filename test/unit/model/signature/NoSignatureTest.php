@@ -42,8 +42,8 @@ class NoSignatureTest extends TestCase
     public function testSignUrl(): void
     {
         $url = 'https://tao.lu';
-    
-        $this->assertEquals($url, $this->subject->signUrl($url);
+
+        $this->assertEquals($url, $this->subject->signUrl($url));
     }
 
     public function testValidateRequest(): void

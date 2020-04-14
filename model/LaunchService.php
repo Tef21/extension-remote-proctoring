@@ -34,14 +34,14 @@ class LaunchService extends ConfigurableService
 
     public const URI_PARAM_EXECUTION = 'deId';
 
-    public function generateUrl(string $declivityExecutionParamName, string $deliveryExecutionId): string
+    public function generateUrl(string $deliveryExecutionParamName, string $deliveryExecutionId): string
     {
         $url = _url(
             'launch',
             'DeliveryLaunch',
             'remoteProctoring',
             [
-                $declivityExecutionParamName => $deliveryExecutionId
+                $deliveryExecutionParamName => $deliveryExecutionId
             ]
         );
         return $this->getSignatureMethod()->signUrl($url);

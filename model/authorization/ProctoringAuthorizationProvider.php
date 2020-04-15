@@ -48,9 +48,6 @@ class ProctoringAuthorizationProvider extends ConfigurableService implements Aut
         }
     }
 
-    /**
-     * @param DeliveryExecutionInterface $deliveryExecution
-     */
     private function getProctoringUrl(DeliveryExecutionInterface $deliveryExecution): ProctorioResponse
     {
         $proctorioApiService = $this->getServiceLocator()->get(ProctorioApiService::SERVICE_ID);

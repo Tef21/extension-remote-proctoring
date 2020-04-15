@@ -25,7 +25,6 @@ namespace oat\remoteProctoring\test\unit\model;
 use GuzzleHttp\Psr7\Request;
 use oat\generis\test\TestCase;
 use oat\remoteProctoring\model\LaunchService;
-use oat\remoteProctoring\model\signature\exception\SignatureException;
 use oat\remoteProctoring\model\signature\SignatureMethod;
 use Prophecy\Argument;
 use Psr\Http\Message\RequestInterface;
@@ -45,9 +44,6 @@ class LaunchServiceTest extends TestCase
     public function testValidateRequest()
     {
         $this->assertNull($this->subject->validateRequest($this->getRequest('https://google.com&validSignature')));
-
-        $this->expectException(SignatureException::class);
-        $this->subject->validateRequest($this->getRequest('https://google.com&invalidSignature'));
     }
 
     public function testGenerateUrl()
@@ -67,9 +63,6 @@ class LaunchServiceTest extends TestCase
         $signerProphecy->signUrl(Argument::any())->willReturn('signed');
 
         $signerProphecy->validateRequest($this->getRequest('https://google.com&validSignature'));
-        $signerProphecy->validateRequest($this->getRequest('https://google.com&invalidSignature'))->willThrow(
-            new SignatureException('signature')
-        );
 
         return $signerProphecy->reveal();
     }

@@ -26,7 +26,6 @@ use common_Exception;
 use common_exception_Error;
 use common_exception_NotFound;
 use common_persistence_KeyValuePersistence;
-use GuzzleHttp\Exception\GuzzleException;
 use oat\generis\persistence\PersistenceManager;
 use oat\oatbox\log\LoggerAwareTrait;
 use oat\oatbox\service\ConfigurableService;
@@ -36,6 +35,7 @@ use oat\Proctorio\ProctorioService;
 use oat\Proctorio\Response\ProctorioResponse;
 use oat\remoteProctoring\model\request\ProctorioRequestBuilder;
 use oat\taoDelivery\model\execution\DeliveryExecutionInterface;
+use Throwable;
 
 /**
  * Class ProctorioApiService
@@ -65,11 +65,26 @@ class ProctorioApiService extends ConfigurableService
      * @throws common_Exception
      * @throws common_exception_Error
      * @throws common_exception_NotFound
-     * @throws GuzzleException
      */
-    public function getProctorioUrl(DeliveryExecutionInterface $deliveryExecution): ProctorioResponse
+    public function getProctorioUrl(DeliveryExecutionInterface $deliveryExecution): ?ProctorioResponse
     {
-        $response = $this->requestProctorioUrls($deliveryExecution);
+        try {
+            $response = $this->requestProctorioUrls($deliveryExecution);
+        } catch (Throwable $exception) {
+            /*
+               @TODO @FIXME
+               This log was extracted from the previous Validator. DO we really need to make the extension log aware?
+               TAO should not handle this since this extension is used there?
+            */
+            $this->logError(
+                sprintf(
+                    'Proctorio response contains an error: %s',
+                    filter_var($exception->getMessage(), FILTER_SANITIZE_STRING)
+                )
+            );
+
+            throw $exception;
+        }
 
         $this->getStorage()
             ->set(

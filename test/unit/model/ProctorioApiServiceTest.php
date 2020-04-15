@@ -28,11 +28,10 @@ use oat\generis\persistence\PersistenceManager;
 use oat\generis\test\TestCase;
 use oat\oatbox\log\LoggerService;
 use oat\Proctorio\ProctorioService;
+use oat\Proctorio\Response\ProctorioResponse;
 use oat\remoteProctoring\model\LaunchService;
 use oat\remoteProctoring\model\ProctorioApiService;
 use oat\remoteProctoring\model\request\ProctorioRequestBuilder;
-use oat\remoteProctoring\model\response\ProctorioResponse;
-use oat\remoteProctoring\model\response\ProctorioResponseValidator;
 use oat\taoDelivery\model\execution\DeliveryExecutionInterface;
 use PHPUnit\Framework\MockObject\MockBuilder;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -62,7 +61,7 @@ class ProctorioApiServiceTest extends TestCase
             ->getMock();
 
         $proctorioLibraryMock->method('callRemoteProctoring')
-            ->willReturn('["ttURL","reviewURL"]');
+            ->willReturn(new ProctorioResponse('ttURL', 'reviewURL'));
 
         $this->subject->setProctorioService($proctorioLibraryMock);
         $this->subject->setServiceLocator($serviceLocatorMock);
@@ -117,14 +116,11 @@ class ProctorioApiServiceTest extends TestCase
 
     private function setMockServices(MockObject $persistanceManager): ServiceLocatorInterface
     {
-        $validator = $this->createMock(ProctorioResponseValidator::class);
-        $validator->method('validate')->willReturn(true);
         $services = [
             PersistenceManager::SERVICE_ID => $persistanceManager,
             ProctorioRequestBuilder::SERVICE_ID => $this->createMock(ProctorioRequestBuilder::class),
             LaunchService::SERVICE_ID => $this->createMock(LaunchService::class),
             ProctorioRequestBuilder::class => $this->createMock(ProctorioRequestBuilder::class),
-            ProctorioResponseValidator::class => $validator,
             LoggerService::SERVICE_ID => $this->createMock(LoggerInterface::class)
         ];
 

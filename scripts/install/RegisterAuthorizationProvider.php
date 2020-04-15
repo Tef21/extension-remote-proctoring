@@ -26,6 +26,7 @@ use oat\oatbox\extension\InstallAction;
 use oat\taoDelivery\model\authorization\AuthorizationService;
 use oat\taoDelivery\model\authorization\strategy\AuthorizationAggregator;
 use oat\remoteProctoring\model\authorization\ProctoringAuthorizationProvider;
+use common_exception_Error;
 
 /**
  * Installation action that register the authorization.
@@ -40,7 +41,7 @@ class RegisterAuthorizationProvider extends InstallAction
        $authService = $this->getServiceManager()->get(AuthorizationService::SERVICE_ID);
 
        if (!$authService instanceof AuthorizationAggregator) {
-           throw new \common_exception_Error(
+           throw new common_exception_Error(
                'Incompatible AuthorizationService "' . get_class($authService) . '" found.'
            );
        }

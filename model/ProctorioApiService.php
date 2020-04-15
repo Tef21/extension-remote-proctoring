@@ -91,7 +91,10 @@ class ProctorioApiService extends ConfigurableService
     private function requestProctorioUrls(DeliveryExecutionInterface $deliveryExecution): string
     {
         $proctorioService = $this->getProctorioLibraryService();
-        $launchUrl = $this->getLaunchService()->generateUrl($deliveryExecution->getIdentifier());
+        $launchUrl = $this->getLaunchService()->generateUrl(
+            LaunchService::URI_PARAM_EXECUTION,
+            $deliveryExecution->getIdentifier()
+        );
         $config = $this->getRequestBuilder()->build($deliveryExecution, $launchUrl);
 
         return $proctorioService->callRemoteProctoring(

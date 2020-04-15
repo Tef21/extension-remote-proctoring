@@ -23,14 +23,44 @@ declare(strict_types=1);
 namespace oat\remoteProctoring\model;
 
 use oat\oatbox\service\ConfigurableService;
+use oat\remoteProctoring\model\signature\exception\SignatureException;
+use oat\remoteProctoring\model\signature\SignatureMethod;
+use Psr\Http\Message\RequestInterface;
+use tao_helpers_Uri;
 
 class LaunchService extends ConfigurableService
 {
     public const SERVICE_ID = 'remoteProctoring/LaunchService';
 
-    public function generateUrl(string $deliveryExecutionId): string
+    //OPTIONS
+    public const OPTION_SIGNATURE_METHOD = 'signer';
+
+    //URI
+    public const URI_PARAM_EXECUTION = 'deId';
+
+    public function generateUrl(string $deliveryExecutionParamName, string $deliveryExecutionId): string
     {
-        //todo: to be created inside the NEX-878
-        return ' ';
+        $url = tao_helpers_Uri::url(
+            'launch',
+            'DeliveryLaunch',
+            'remoteProctoring',
+            [
+                $deliveryExecutionParamName => $deliveryExecutionId
+            ]
+        );
+        return $this->getSignatureMethod()->signUrl($url);
+    }
+
+    /**
+     * @throws SignatureException
+     */
+    public function validateRequest(RequestInterface $request): void
+    {
+        $this->getSignatureMethod()->validateRequest($request);
+    }
+
+    private function getSignatureMethod(): SignatureMethod
+    {
+        return $this->propagate($this->getOption(self::OPTION_SIGNATURE_METHOD));
     }
 }

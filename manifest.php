@@ -32,7 +32,7 @@ return [
     'version' => '0.0.0',
     'author' => 'Open Assessment Technologies SA',
     'requires' => [
-        'tao' => '>=41.4.0',
+        'tao' => '>=41.12.0',
     ],
     'managementRole' => 'http://www.tao.lu/Ontologies/generis.rdf#remoteProctoringManager',
     'acl' => [

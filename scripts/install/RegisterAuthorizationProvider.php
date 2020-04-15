@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -14,9 +15,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
- * Copyright (c) 2016 (original work) Open Assessment Technologies SA (under the project TAO-PRODUCT);
- *
+ * Copyright (c) 2020 (original work) Open Assessment Technologies SA
  */
+
+declare(strict_types=1);
 
 namespace oat\remoteProctoring\scripts\install;
 
@@ -40,7 +42,8 @@ class RegisterAuthorizationProvider extends InstallAction
             $authService->addProvider(new ProctoringAuthorizationProvider());
             $this->registerService(AuthorizationService::SERVICE_ID, $authService);
         } else {
-            throw new \common_exception_Error('Incompatible AuthorizationService "'.get_class($authService).'" found.');
+            $errorMessage = 'Incompatible AuthorizationService "' . get_class($authService) . '" found.';
+            throw new \common_exception_Error($errorMessage);
         }
     }
 }

@@ -84,5 +84,4 @@ class ProctoringAuthorizationProvider extends ConfigurableService implements Aut
     {
         return true;
     }
-    
 }

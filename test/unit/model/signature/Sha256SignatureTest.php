@@ -50,14 +50,6 @@ class Sha256SignatureTest extends TestCase
     {
         return [
             ['https://tao.lu&signature=ae0d9df0a858f22a5ef4cab17b8f5b215c552867af0880ade4fa39311e7383d7', [],],
-            [
-                'http://tao.lu&signature=ae0d9df0a858f22a5ef4cab17b8f5b215c552867af0880ade4fa39311e7383d7',
-                ['x-forwarded-proto' => 'https'],
-            ],
-            [
-                'http://tao.lu&signature=ae0d9df0a858f22a5ef4cab17b8f5b215c552867af0880ade4fa39311e7383d7',
-                ['x-forwarded-ssl' => 'on'],
-            ]
         ];
     }
 
@@ -66,14 +58,6 @@ class Sha256SignatureTest extends TestCase
         return [
             ['https://tao.lu&signature=invalid', [],],
             ['http://tao.lu&signature=ae0d9df0a858f22a5ef4cab17b8f5b215c552867af0880ade4fa39311e7383d7', [],],
-            [
-                'http://tao.lu&signature=ae0d9df0a858f22a5ef4cab17b8f5b215c552867af0880ade4fa39311e7383d7',
-                ['x-forwarded-proto' => null],
-            ],
-            [
-                'http://tao.lu&signature=ae0d9df0a858f22a5ef4cab17b8f5b215c552867af0880ade4fa39311e7383d7',
-                ['x-forwarded-ssl' => null],
-            ]
         ];
     }
 

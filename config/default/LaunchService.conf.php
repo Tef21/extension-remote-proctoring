@@ -20,13 +20,12 @@
 
 use oat\remoteProctoring\model\LaunchService;
 use oat\remoteProctoring\model\signature\Sha256Signature;
-use Ramsey\Uuid\Uuid;
 
 return new LaunchService(
     [
         LaunchService::OPTION_SIGNATURE_METHOD => new Sha256Signature(
             [
-                Sha256Signature::OPTION_SECRET => Uuid::uuid4()->toString()
+                Sha256Signature::OPTION_SECRET => uniqid(mt_rand(), true)
             ]
         )
     ]

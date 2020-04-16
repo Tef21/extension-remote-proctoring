@@ -28,8 +28,6 @@ use common_session_DefaultSession as DefaultSession;
 use InterruptedActionException;
 use oat\oatbox\session\SessionService;
 use oat\oatbox\user\UserService;
-use oat\remoteProctoring\model\delivery\DeliverySettings;
-use oat\remoteProctoring\model\delivery\DeliverySettingsRepository;
 use oat\remoteProctoring\model\LaunchService;
 use oat\remoteProctoring\model\signature\exception\SignatureException;
 use oat\tao\model\http\Controller;
@@ -50,30 +48,16 @@ class DeliveryLaunch extends Controller implements ServiceLocatorAwareInterface
      */
     public function launch(): void
     {
+        try {
+            $this->getLaunchService()->validateRequest($this->getPsrRequest());
+        } catch (SignatureException $e) {
+            throw new common_exception_Unauthorized('The provided link is not valid', 403);
+        }
         $deliveryExecutionId = (string)$this->getGetParameter(LaunchService::URI_PARAM_EXECUTION);
         $deliveryExecution = $this->getDeliveryExecution($deliveryExecutionId);
-        $deliverySettings = $this->getDeliverySettings($deliveryExecution);
 
-        if ($deliverySettings->isProctorioEnabled()) {
-            try {
-                $this->getLaunchService()->validateRequest($this->getPsrRequest());
-            } catch (SignatureException $e) {
-                throw new common_exception_Unauthorized('The provided link is not valid', 403);
-            }
-
-            $this->initSession($deliveryExecution);
-            $this->redirect($this->getRedirectUrl($deliveryExecutionId));
-        }
-    }
-
-    private function getDeliverySettings(DeliveryExecutionInterface $deliveryExecution): DeliverySettings
-    {
-        return $this->getDeliveryChecker()->findByDeliveryExecution($deliveryExecution);
-    }
-
-    private function getDeliveryChecker(): DeliverySettingsRepository
-    {
-        return $this->getServiceLocator()->get(DeliverySettingsRepository::class);
+        $this->initSession($deliveryExecution);
+        $this->redirect($this->getRedirectUrl($deliveryExecutionId));
     }
 
     private function initSession(DeliveryExecutionInterface $deliveryExecution): void

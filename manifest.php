@@ -21,6 +21,7 @@
  */
 
 use oat\remoteProctoring\scripts\install\RegisterAuthorizationProvider;
+use oat\tao\model\user\TaoRoles;
 
 /**
  * Generated using taoDevTools 6.5.0
@@ -41,6 +42,7 @@ return [
     'managementRole' => 'http://www.tao.lu/Ontologies/generis.rdf#remoteProctoringManager',
     'acl' => [
         ['grant', 'http://www.tao.lu/Ontologies/generis.rdf#remoteProctoringManager', ['ext' => 'remoteProctoring']],
+        ['grant', TaoRoles::ANONYMOUS, ['ext' => 'remoteProctoring', 'mod' => 'DeliveryLaunch', 'act' => 'launch']],
     ],
     'install' => [
         'php' => [

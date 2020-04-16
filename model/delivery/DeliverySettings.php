@@ -22,34 +22,18 @@ declare(strict_types=1);
 
 namespace oat\remoteProctoring\model\delivery;
 
-use common_exception_NotFound;
-use common_persistence_KeyValuePersistence;
-use oat\taoDelivery\model\execution\DeliveryExecutionInterface;
-
-class DeliveryChecker
+class DeliverySettings
 {
-    private const STORAGE_KEY_PATTERN = 'proctorio::deliveryId::%s';
+    /** @var bool */
+    private $isProctorioEnabled;
 
-    /** @var common_persistence_KeyValuePersistence */
-    private $persistence;
-
-    public function __construct(common_persistence_KeyValuePersistence $persistence)
+    public function __construct(bool $isProctorioEnabled)
     {
-        $this->persistence = $persistence;
+        $this->isProctorioEnabled = $isProctorioEnabled;
     }
 
-    /**
-     * @throws common_exception_NotFound
-     */
-    public function isDeliveryExecutionProctored(DeliveryExecutionInterface $deliveryExecution): bool
+    public function isProctorioEnabled(): bool
     {
-        $storedValue = $this->persistence->get(
-            sprintf(
-                self::STORAGE_KEY_PATTERN,
-                $deliveryExecution->getIdentifier() //@TODO Must be the DeliveryId
-            )
-        );
-
-        return !empty($storedValue);
+        return $this->isProctorioEnabled;
     }
 }

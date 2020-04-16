@@ -28,7 +28,8 @@ use common_session_DefaultSession as DefaultSession;
 use InterruptedActionException;
 use oat\oatbox\session\SessionService;
 use oat\oatbox\user\UserService;
-use oat\remoteProctoring\model\delivery\DeliveryChecker;
+use oat\remoteProctoring\model\delivery\DeliverySettings;
+use oat\remoteProctoring\model\delivery\DeliverySettingsRepository;
 use oat\remoteProctoring\model\LaunchService;
 use oat\remoteProctoring\model\signature\exception\SignatureException;
 use oat\tao\model\http\Controller;
@@ -51,8 +52,9 @@ class DeliveryLaunch extends Controller implements ServiceLocatorAwareInterface
     {
         $deliveryExecutionId = (string)$this->getGetParameter(LaunchService::URI_PARAM_EXECUTION);
         $deliveryExecution = $this->getDeliveryExecution($deliveryExecutionId);
+        $deliverySettings = $this->getDeliverySettings($deliveryExecution);
 
-        if ($this->getDeliveryChecker()->isDeliveryExecutionProctored($deliveryExecution)) {
+        if ($deliverySettings->isProctorioEnabled()) {
             try {
                 $this->getLaunchService()->validateRequest($this->getPsrRequest());
             } catch (SignatureException $e) {
@@ -64,9 +66,14 @@ class DeliveryLaunch extends Controller implements ServiceLocatorAwareInterface
         }
     }
 
-    private function getDeliveryChecker(): DeliveryChecker
+    private function getDeliverySettings(DeliveryExecutionInterface $deliveryExecution): DeliverySettings
     {
-        //@TODO Get prover service here
+        return $this->getDeliveryChecker()->findByDeliveryExecution($deliveryExecution);
+    }
+
+    private function getDeliveryChecker(): DeliverySettingsRepository
+    {
+        return $this->getServiceLocator()->get(DeliverySettingsRepository::class);
     }
 
     private function initSession(DeliveryExecutionInterface $deliveryExecution): void

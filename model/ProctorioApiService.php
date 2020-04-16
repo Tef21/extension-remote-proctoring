@@ -72,11 +72,6 @@ class ProctorioApiService extends ConfigurableService
         try {
             $response = $this->requestProctorioUrls($deliveryExecution);
         } catch (Throwable $exception) {
-            /*
-               @TODO @FIXME
-               This log was extracted from the previous Validator. Do we really need to make the extension log aware?
-               TAO should not handle this since this extension is used there?
-            */
             $this->logError(
                 sprintf(
                     'Proctorio response contains an error: %s',

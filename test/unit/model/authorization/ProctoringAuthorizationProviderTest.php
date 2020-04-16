@@ -57,17 +57,21 @@ class ProctoringAuthorizationProviderTest extends TestCase
     public function testAuthorized(): void
     {
         $user = $this->prophesize(User::class);
+        
         $deliveryExecution = $this->prophesize(DeliveryExecutionInterface::class);
         $deliveryExecution->getIdentifier()->willReturn('123456');
+        
         $context = $this->prophesize(RemoteProcotoredSessionContext::class);
         $context->getDeliveryExecutionId()->willReturn('123456');
+        
         $authorization = new ProctoringAuthorizationProvider();
         $authorization->setServiceLocator($this->getMocks([$context->reveal()]));
         $authorization->verifyResumeAuthorization($deliveryExecution->reveal(), $user->reveal());
+        
         $this->assertTrue(true, 'No exception should be thrown and end of function reached');
     }
 
-    protected function getMocks(array $sessionContexts = [], $url = 'http://fakeUrl'): ServiceLocatorInterface
+    private function getMocks(array $sessionContexts = [], $url = 'http://fakeUrl'): ServiceLocatorInterface
     {
         return $this->getServiceLocatorMock([
             SessionService::SERVICE_ID => $this->getSessionMock($sessionContexts),
@@ -75,7 +79,7 @@ class ProctoringAuthorizationProviderTest extends TestCase
         ]);
     }
 
-    protected function getSessionMock(array $sessionContexts): SessionService
+    private function getSessionMock(array $sessionContexts): SessionService
     {
         $session = $this->prophesize(\common_session_Session::class);
         $session->getContexts(Argument::any())->willReturn($sessionContexts);
@@ -84,7 +88,7 @@ class ProctoringAuthorizationProviderTest extends TestCase
         return $sessionService->reveal();
     }
 
-    protected function getProctorioApiMock($url): ProctorioApiService
+    private function getProctorioApiMock($url): ProctorioApiService
     {
         $response = $this->prophesize(ProctorioResponse::class);
         $response->getTestTakerUrl()->willReturn($url);

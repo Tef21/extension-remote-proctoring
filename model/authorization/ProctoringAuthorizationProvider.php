@@ -36,11 +36,19 @@ use oat\oatbox\session\SessionService;
  */
 class ProctoringAuthorizationProvider extends ConfigurableService implements AuthorizationProvider
 {
+    /**
+     * {@inheritDoc}
+     * @see AuthorizationProvider::verifyStartAuthorization()
+     */
     public function verifyStartAuthorization($deliveryId, User $user)
     {
         // No verification on start required, validate on resume
     }
 
+    /**
+     * {@inheritDoc}
+     * @see AuthorizationProvider::verifyResumeAuthorization()
+     */
     public function verifyResumeAuthorization(DeliveryExecutionInterface $deliveryExecution, User $user)
     {
         if ($this->requiresRemoteProctoring($deliveryExecution) && !$this->isRemoteProctored($deliveryExecution)) {
@@ -48,9 +56,6 @@ class ProctoringAuthorizationProvider extends ConfigurableService implements Aut
         }
     }
 
-    /**
-     * @param DeliveryExecutionInterface $deliveryExecution
-     */
     private function getProctoringUrl(DeliveryExecutionInterface $deliveryExecution): ProctorioResponse
     {
         $proctorioApiService = $this->getServiceLocator()->get(ProctorioApiService::SERVICE_ID);

@@ -20,6 +20,8 @@
  *
  */
 
+use oat\remoteProctoring\scripts\install\RegisterAuthorizationProvider;
+
 /**
  * Generated using taoDevTools 6.5.0
  */
@@ -32,6 +34,8 @@ return [
     'version' => '0.0.0',
     'author' => 'Open Assessment Technologies SA',
     'requires' => [
+        'generis' => '>=12.17.0',
+        'taoDelivery' => '14.10.1',
         'tao' => '>=41.12.0',
     ],
     'managementRole' => 'http://www.tao.lu/Ontologies/generis.rdf#remoteProctoringManager',
@@ -39,6 +43,9 @@ return [
         ['grant', 'http://www.tao.lu/Ontologies/generis.rdf#remoteProctoringManager', ['ext' => 'remoteProctoring']],
     ],
     'install' => [
+        'php' => [
+            RegisterAuthorizationProvider::class
+        ]
     ],
     'uninstall' => [
     ],

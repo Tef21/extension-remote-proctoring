@@ -35,6 +35,7 @@ use oat\taoDelivery\model\execution\DeliveryExecutionInterface;
 use oat\taoDelivery\model\execution\ServiceProxy;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorAwareTrait;
+use oat\remoteProctoring\model\authorization\RemoteProcotoredSessionContext;
 
 class DeliveryLaunch extends Controller implements ServiceLocatorAwareInterface
 {
@@ -55,18 +56,19 @@ class DeliveryLaunch extends Controller implements ServiceLocatorAwareInterface
         $deliveryExecutionId = (string)$this->getGetParameter(LaunchService::URI_PARAM_EXECUTION);
         $deliveryExecution = $this->getDeliveryExecution($deliveryExecutionId);
 
-        $this->initSession($deliveryExecution->getUserIdentifier());
+        $this->initSession($deliveryExecution);
         $this->redirect($this->getRedirectUrl($deliveryExecutionId));
     }
 
-    private function initSession(string $userId): void
+    private function initSession(DeliveryExecutionInterface $deliveryExecution): void
     {
         /** @var UserService $userService */
         $userService = $this->getServiceLocator()->get(UserService::SERVICE_ID);
-        $user = $userService->getUser($userId);
+        $user = $userService->getUser($deliveryExecution->getUserIdentifier());
         /** @var SessionService $sessionService */
         $sessionService = $this->getServiceLocator()->get(SessionService::SERVICE_ID);
-        $sessionService->setSession(new DefaultSession($user));
+        $proctorContext = new RemoteProcotoredSessionContext($deliveryExecution->getIdentifier());
+        $sessionService->setSession(new DefaultSession($user, [$proctorContext]));
     }
 
     private function getDeliveryExecution($deliveryExecutionId): DeliveryExecutionInterface

@@ -58,8 +58,6 @@ class ProctorioApiService extends ConfigurableService
     private $proctorioService;
 
     /**
-     * @param DeliveryExecutionInterface $deliveryExecution
-     * @return ProctorioResponse
      * @throws InvalidProctorioResponseException
      * @throws ProctorioParameterException
      * @throws common_Exception

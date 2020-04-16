@@ -28,6 +28,7 @@ use common_session_DefaultSession as DefaultSession;
 use InterruptedActionException;
 use oat\oatbox\session\SessionService;
 use oat\oatbox\user\UserService;
+use oat\remoteProctoring\model\delivery\DeliveryChecker;
 use oat\remoteProctoring\model\LaunchService;
 use oat\remoteProctoring\model\signature\exception\SignatureException;
 use oat\tao\model\http\Controller;
@@ -48,16 +49,24 @@ class DeliveryLaunch extends Controller implements ServiceLocatorAwareInterface
      */
     public function launch(): void
     {
-        try {
-            $this->getLaunchService()->validateRequest($this->getPsrRequest());
-        } catch (SignatureException $e) {
-            throw new common_exception_Unauthorized('The provided link is not valid', 403);
-        }
         $deliveryExecutionId = (string)$this->getGetParameter(LaunchService::URI_PARAM_EXECUTION);
         $deliveryExecution = $this->getDeliveryExecution($deliveryExecutionId);
 
-        $this->initSession($deliveryExecution);
-        $this->redirect($this->getRedirectUrl($deliveryExecutionId));
+        if ($this->getDeliveryChecker()->isDeliveryExecutionProctored($deliveryExecution)) {
+            try {
+                $this->getLaunchService()->validateRequest($this->getPsrRequest());
+            } catch (SignatureException $e) {
+                throw new common_exception_Unauthorized('The provided link is not valid', 403);
+            }
+
+            $this->initSession($deliveryExecution);
+            $this->redirect($this->getRedirectUrl($deliveryExecutionId));
+        }
+    }
+
+    private function getDeliveryChecker(): DeliveryChecker
+    {
+        //@TODO Get prover service here
     }
 
     private function initSession(DeliveryExecutionInterface $deliveryExecution): void

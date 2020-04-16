@@ -29,8 +29,8 @@
 		"oat-sa/extension-tao-delivery": "*",
 		"oat-sa/generis": "*",
 		"oat-sa/tao-core": "*",
-        "ext-json": "*"
-    },
+		"ext-json": "*"
+	},
 	"autoload" : {
 		"psr-4" : {
 			"oat\\remoteProctoring\\" : ""

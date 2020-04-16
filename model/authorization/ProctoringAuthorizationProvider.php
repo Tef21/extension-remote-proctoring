@@ -23,12 +23,12 @@ declare(strict_types=1);
 namespace oat\remoteProctoring\model\authorization;
 
 use oat\oatbox\service\ConfigurableService;
+use oat\Proctorio\Response\ProctorioResponse;
 use oat\taoDelivery\model\authorization\AuthorizationProvider;
 use oat\oatbox\user\User;
 use oat\taoDelivery\model\authorization\UnAuthorizedException;
 use oat\taoDelivery\model\execution\DeliveryExecutionInterface;
 use oat\remoteProctoring\model\ProctorioApiService;
-use oat\remoteProctoring\model\response\ProctorioResponse;
 use oat\oatbox\session\SessionService;
 
 /**

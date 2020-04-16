@@ -26,17 +26,16 @@ use common_Exception;
 use common_exception_Error;
 use common_exception_NotFound;
 use common_persistence_KeyValuePersistence;
-use GuzzleHttp\Exception\GuzzleException;
 use oat\generis\persistence\PersistenceManager;
 use oat\oatbox\log\LoggerAwareTrait;
 use oat\oatbox\service\ConfigurableService;
+use oat\Proctorio\Exception\InvalidProctorioResponseException;
 use oat\Proctorio\Exception\ProctorioParameterException;
 use oat\Proctorio\ProctorioService;
+use oat\Proctorio\Response\ProctorioResponse;
 use oat\remoteProctoring\model\request\ProctorioRequestBuilder;
-use oat\remoteProctoring\model\response\ProctorioResponse;
-use oat\remoteProctoring\model\response\ProctorioResponseValidator;
-use oat\remoteProctoring\model\storage\ProctorioUrlRepository;
 use oat\taoDelivery\model\execution\DeliveryExecutionInterface;
+use Throwable;
 
 /**
  * Class ProctorioApiService
@@ -59,21 +58,40 @@ class ProctorioApiService extends ConfigurableService
     private $proctorioService;
 
     /**
-     * @throws GuzzleException
+     * @throws InvalidProctorioResponseException
      * @throws ProctorioParameterException
      * @throws common_Exception
      * @throws common_exception_Error
      * @throws common_exception_NotFound
+     * @throws Throwable
      */
     public function getProctorioUrl(DeliveryExecutionInterface $deliveryExecution): ?ProctorioResponse
     {
-            $providerJsonResponse = $this->requestProctorioUrls($deliveryExecution);
-        if ($this->getValidator()->validate($providerJsonResponse)) {
-            $proctorioUrls = ProctorioResponse::fromJson($providerJsonResponse);
-            $this->getStorage()->set($this->getUrlsId($deliveryExecution), $proctorioUrls);
+        try {
+            $response = $this->requestProctorioUrls($deliveryExecution);
+        } catch (Throwable $exception) {
+            $this->logError(
+                sprintf(
+                    'Proctorio response contains an error: %s',
+                    filter_var($exception->getMessage(), FILTER_SANITIZE_STRING)
+                )
+            );
+
+            throw $exception;
         }
 
-        return $proctorioUrls;
+        $this->getStorage()
+            ->set(
+                $this->getUrlsId($deliveryExecution),
+                json_encode(
+                    [
+                        $response->getTestTakerUrl(),
+                        $response->getTestReviewerUrl(),
+                    ]
+                )
+            );
+
+        return $response;
     }
 
     public function setProctorioService(ProctorioService $proctorioUrlLibraryService): void
@@ -82,13 +100,12 @@ class ProctorioApiService extends ConfigurableService
     }
 
     /**
-     * @throws GuzzleException
      * @throws common_Exception
-     * @throws common_exception_Error
      * @throws common_exception_NotFound
      * @throws ProctorioParameterException
+     * @throws InvalidProctorioResponseException
      */
-    private function requestProctorioUrls(DeliveryExecutionInterface $deliveryExecution): string
+    private function requestProctorioUrls(DeliveryExecutionInterface $deliveryExecution): ProctorioResponse
     {
         $proctorioService = $this->getProctorioLibraryService();
         $launchUrl = $this->getLaunchService()->generateUrl(
@@ -124,11 +141,6 @@ class ProctorioApiService extends ConfigurableService
     private function getUrlsId(DeliveryExecutionInterface $deliveryExecution): string
     {
         return self::PREFIX_KEY_VALUE . $deliveryExecution->getIdentifier();
-    }
-
-    private function getValidator(): ProctorioResponseValidator
-    {
-        return $this->getServiceLocator()->get(ProctorioResponseValidator::class);
     }
 
     private function getProctorioLibraryService(): ProctorioService

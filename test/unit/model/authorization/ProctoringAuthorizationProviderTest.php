@@ -23,13 +23,13 @@ declare(strict_types=1);
 namespace oat\remoteProctoring\test\unit\model\authorization;
 
 use oat\generis\test\TestCase;
+use oat\Proctorio\Response\ProctorioResponse;
 use oat\remoteProctoring\model\authorization\ProctoringAuthorizationProvider;
 use oat\oatbox\user\User;
 use oat\taoDelivery\model\execution\DeliveryExecutionInterface;
 use oat\oatbox\session\SessionService;
 use Prophecy\Argument;
 use oat\remoteProctoring\model\ProctorioApiService;
-use oat\remoteProctoring\model\response\ProctorioResponse;
 use oat\taoDelivery\model\authorization\UnAuthorizedException;
 use oat\remoteProctoring\model\authorization\RemoteProcotoredSessionContext;
 use Zend\ServiceManager\ServiceLocatorInterface;

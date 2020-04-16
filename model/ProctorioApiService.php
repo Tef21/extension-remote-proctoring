@@ -65,6 +65,7 @@ class ProctorioApiService extends ConfigurableService
      * @throws common_Exception
      * @throws common_exception_Error
      * @throws common_exception_NotFound
+     * @throws Throwable
      */
     public function getProctorioUrl(DeliveryExecutionInterface $deliveryExecution): ?ProctorioResponse
     {
@@ -73,7 +74,7 @@ class ProctorioApiService extends ConfigurableService
         } catch (Throwable $exception) {
             /*
                @TODO @FIXME
-               This log was extracted from the previous Validator. DO we really need to make the extension log aware?
+               This log was extracted from the previous Validator. Do we really need to make the extension log aware?
                TAO should not handle this since this extension is used there?
             */
             $this->logError(
@@ -107,7 +108,6 @@ class ProctorioApiService extends ConfigurableService
 
     /**
      * @throws common_Exception
-     * @throws common_exception_Error
      * @throws common_exception_NotFound
      * @throws ProctorioParameterException
      * @throws InvalidProctorioResponseException

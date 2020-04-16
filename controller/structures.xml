@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE structures SYSTEM "../../tao/doc/structures.dtd">
+<structures>
+    <structure id="results" name="Results" level="5" group="main">
+        <sections>
+            <section id="manage_results" name="Manage Results" url="/taoOutcomeUi/Results/index">
+                <actions>
+                    <action id="results-proctorio-review" name="Proctorio Review" url="/remoteProctoring/DeliveryReview/review"
+                            group="tree" context="resource">
+                        <icon id="icon-desktop-preview"/>
+                    </action>
+                </actions>
+            </section>
+        </sections>
+    </structure>
+</structures>

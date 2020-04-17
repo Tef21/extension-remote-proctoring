@@ -18,10 +18,10 @@
  * Copyright (c) 2020 (original work) Open Assessment Technologies SA
  */
 
-use oat\remoteProctoring\model\delivery\DeliverySettingsRepository;
+use oat\remoteProctoring\model\delivery\ProctorioDeliverySettingsRepository;
 
-return new DeliverySettingsRepository(
+return new ProctorioDeliverySettingsRepository(
     [
-        DeliverySettingsRepository::OPTION_PERSISTENCE => 'default_kv',
+        ProctorioDeliverySettingsRepository::OPTION_PERSISTENCE => 'default_kv',
     ]
 );

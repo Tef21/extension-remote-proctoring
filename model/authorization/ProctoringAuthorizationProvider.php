@@ -24,7 +24,7 @@ namespace oat\remoteProctoring\model\authorization;
 
 use oat\oatbox\service\ConfigurableService;
 use oat\Proctorio\Response\ProctorioResponse;
-use oat\remoteProctoring\model\delivery\DeliverySettingsRepository;
+use oat\remoteProctoring\model\delivery\ProctorioDeliverySettingsRepository;
 use oat\taoDelivery\model\authorization\AuthorizationProvider;
 use oat\oatbox\user\User;
 use oat\taoDelivery\model\authorization\UnAuthorizedException;
@@ -91,8 +91,8 @@ class ProctoringAuthorizationProvider extends ConfigurableService implements Aut
             ->isProctorioEnabled();
     }
 
-    private function getDeliverySettingsRepository(): DeliverySettingsRepository
+    private function getDeliverySettingsRepository(): ProctorioDeliverySettingsRepository
     {
-        return $this->getServiceLocator()->get(DeliverySettingsRepository::class);
+        return $this->getServiceLocator()->get(ProctorioDeliverySettingsRepository::class);
     }
 }

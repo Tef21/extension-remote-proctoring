@@ -28,22 +28,24 @@ use oat\generis\persistence\PersistenceManager;
 use oat\oatbox\service\ConfigurableService;
 use oat\taoDelivery\model\execution\DeliveryExecutionInterface;
 
-class DeliverySettingsRepository extends ConfigurableService
+class ProctorioDeliverySettingsRepository extends ConfigurableService
 {
-    private const STORAGE_KEY_PATTERN = 'proctorio:deliverySettings:%s';
+    public const SERVICE_ID = 'remoteProctoring/ProctorioDeliverySettingsRepository';
     public const OPTION_PERSISTENCE = 'persistence';
+
+    private const STORAGE_KEY_PATTERN = 'proctorio:deliverySettings:%s';
 
     /**
      * @throws common_exception_NotFound
      */
-    public function findByDeliveryExecution(DeliveryExecutionInterface $deliveryExecution): DeliverySettings
+    public function findByDeliveryExecution(DeliveryExecutionInterface $deliveryExecution): ProctorioDeliverySettings
     {
         $settings = json_decode(
             $this->getPersistence()->get($this->getStorageSettingKey($deliveryExecution)),
             true
         );
 
-        return new DeliverySettings(!empty($settings['enabled']));
+        return new ProctorioDeliverySettings(!empty($settings['enabled']));
     }
 
     /**

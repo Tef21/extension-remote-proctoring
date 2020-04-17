@@ -22,7 +22,7 @@ declare(strict_types=1);
 
 namespace oat\remoteProctoring\model\delivery;
 
-class DeliverySettings
+class ProctorioDeliverySettings
 {
     /** @var bool */
     private $isProctorioEnabled;

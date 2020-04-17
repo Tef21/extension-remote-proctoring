@@ -25,13 +25,13 @@ namespace oat\remoteProctoring\test\unit\model\delivery;
 use common_persistence_KeyValuePersistence;
 use oat\generis\test\MockObject;
 use oat\generis\test\TestCase;
-use oat\remoteProctoring\model\delivery\DeliverySettings;
-use oat\remoteProctoring\model\delivery\DeliverySettingsRepository;
+use oat\remoteProctoring\model\delivery\ProctorioDeliverySettings;
+use oat\remoteProctoring\model\delivery\ProctorioDeliverySettingsRepository;
 use oat\taoDelivery\model\execution\DeliveryExecutionInterface;
 
-class DeliverySettingsRepositoryTest extends TestCase
+class ProctorioDeliverySettingsRepositoryTest extends TestCase
 {
-    /** @var DeliverySettingsRepository */
+    /** @var ProctorioDeliverySettingsRepository */
     private $subject;
 
     /** @var common_persistence_KeyValuePersistence|MockObject */
@@ -40,7 +40,7 @@ class DeliverySettingsRepositoryTest extends TestCase
     protected function setUp(): void
     {
         $this->persistence = $this->createMock(common_persistence_KeyValuePersistence::class);
-        $this->subject = new DeliverySettingsRepository(
+        $this->subject = new ProctorioDeliverySettingsRepository(
             [
                 'persistence' => $this->persistence
             ]
@@ -53,7 +53,7 @@ class DeliverySettingsRepositoryTest extends TestCase
         $this->mockDeliveryActivation('_id', true);
 
         $this->assertEquals(
-            new DeliverySettings(true),
+            new ProctorioDeliverySettings(true),
             $this->subject->findByDeliveryExecution($deliveryExecution)
         );
     }
@@ -64,7 +64,7 @@ class DeliverySettingsRepositoryTest extends TestCase
         $this->mockDeliveryActivation('_id', false);
 
         $this->assertEquals(
-            new DeliverySettings(false),
+            new ProctorioDeliverySettings(false),
             $this->subject->findByDeliveryExecution($deliveryExecution)
         );
     }

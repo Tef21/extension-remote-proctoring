@@ -26,8 +26,8 @@ use oat\generis\test\TestCase;
 use oat\Proctorio\Response\ProctorioResponse;
 use oat\remoteProctoring\model\authorization\ProctoringAuthorizationProvider;
 use oat\oatbox\user\User;
-use oat\remoteProctoring\model\delivery\DeliverySettings;
-use oat\remoteProctoring\model\delivery\DeliverySettingsRepository;
+use oat\remoteProctoring\model\delivery\ProctorioDeliverySettings;
+use oat\remoteProctoring\model\delivery\ProctorioDeliverySettingsRepository;
 use oat\taoDelivery\model\execution\DeliveryExecutionInterface;
 use oat\oatbox\session\SessionService;
 use Prophecy\Argument;
@@ -78,7 +78,7 @@ class ProctoringAuthorizationProviderTest extends TestCase
         return $this->getServiceLocatorMock([
             SessionService::SERVICE_ID => $this->getSessionMock($sessionContexts),
             ProctorioApiService::SERVICE_ID => $this->getProctorioApiMock($url),
-            DeliverySettingsRepository::class => $this->getDeliverySettingsRepositoryMock()
+            ProctorioDeliverySettingsRepository::class => $this->getDeliverySettingsRepositoryMock()
         ]);
     }
 
@@ -100,10 +100,10 @@ class ProctoringAuthorizationProviderTest extends TestCase
         return $proctorioApiService->reveal();
     }
 
-    private function getDeliverySettingsRepositoryMock(): DeliverySettingsRepository
+    private function getDeliverySettingsRepositoryMock(): ProctorioDeliverySettingsRepository
     {
-        $mock = $this->prophesize(DeliverySettingsRepository::class);
-        $mock->findByDeliveryExecution(Argument::any())->willReturn(new DeliverySettings(true));
+        $mock = $this->prophesize(ProctorioDeliverySettingsRepository::class);
+        $mock->findByDeliveryExecution(Argument::any())->willReturn(new ProctorioDeliverySettings(true));
 
         return $mock->reveal();
     }

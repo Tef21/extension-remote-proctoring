@@ -20,7 +20,9 @@
 
 namespace oat\remoteProctoring\scripts\update;
 
-class Updater extends \common_ext_ExtensionUpdater
+use common_ext_ExtensionUpdater;
+
+class Updater extends common_ext_ExtensionUpdater
 {
     /**
      * @inheritDoc

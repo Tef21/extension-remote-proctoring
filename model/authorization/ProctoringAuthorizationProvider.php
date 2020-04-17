@@ -84,7 +84,7 @@ class ProctoringAuthorizationProvider extends ConfigurableService implements Aut
     /**
      * Whenever or not the current context needs to be proctored
      */
-    protected function requiresRemoteProctoring(DeliveryExecutionInterface $deliveryExecution): bool
+    private function requiresRemoteProctoring(DeliveryExecutionInterface $deliveryExecution): bool
     {
         return $this->getDeliverySettingsRepository()
             ->findByDeliveryExecution($deliveryExecution)

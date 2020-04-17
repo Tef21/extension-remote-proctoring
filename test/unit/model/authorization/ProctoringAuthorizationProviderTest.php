@@ -103,7 +103,7 @@ class ProctoringAuthorizationProviderTest extends TestCase
     private function getDeliverySettingsRepositoryMock(): DeliverySettingsRepository
     {
         $mock = $this->prophesize(DeliverySettingsRepository::class);
-        $mock->findByDeliveryExecution()->willReturn(new DeliverySettings(true));
+        $mock->findByDeliveryExecution(Argument::any())->willReturn(new DeliverySettings(true));
 
         return $mock->reveal();
     }

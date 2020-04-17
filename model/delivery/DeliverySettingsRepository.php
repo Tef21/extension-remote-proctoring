@@ -30,7 +30,8 @@ use oat\taoDelivery\model\execution\DeliveryExecutionInterface;
 
 class DeliverySettingsRepository extends ConfigurableService
 {
-    private const STORAGE_KEY_PATTERN = 'proctorio:delivery:%s';
+    private const STORAGE_KEY_PATTERN = 'proctorio:deliverySettings:%s';
+    private const OPTION_PERSISTENCE = 'persistence';
 
     /**
      * @throws common_exception_NotFound
@@ -58,7 +59,7 @@ class DeliverySettingsRepository extends ConfigurableService
 
     private function getPersistence(): common_persistence_KeyValuePersistence
     {
-        $persistence = $this->getOption('persistence');
+        $persistence = $this->getOption(self::OPTION_PERSISTENCE);
 
         if ($persistence instanceof common_persistence_KeyValuePersistence) {
             return $persistence;

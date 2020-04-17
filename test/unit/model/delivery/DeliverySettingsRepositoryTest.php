@@ -82,7 +82,7 @@ class DeliverySettingsRepositoryTest extends TestCase
     {
         $this->persistence
             ->method('get')
-            ->with(sprintf('proctorio:delivery:%s', $id))
+            ->with(sprintf('proctorio:deliverySettings:%s', $id))
             ->willReturn(
                 json_encode(
                     [

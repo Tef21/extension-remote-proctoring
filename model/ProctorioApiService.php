@@ -53,7 +53,7 @@ class ProctorioApiService extends ConfigurableService
 
     //Prefix
     public const PREFIX_KEY_VALUE = 'proctorio::';
-    const DELIVERY_ID_PREFIX = 'deliveryId:';
+    public const PREFIX_DELIVERY_KEY_VALUE = self::PREFIX_KEY_VALUE . 'deliveryId::';
 
     /** @var ProctorioService */
     private $proctorioService;
@@ -82,7 +82,10 @@ class ProctorioApiService extends ConfigurableService
         }
 
         $this->getStorage()->set($this->getUrlsId($deliveryExecution), $response->getTestTakerUrl());
-        $this->getStorage()->set(self::DELIVERY_ID_PREFIX . $deliveryExecution->getDelivery()->getUri(), $response->getTestReviewerUrl());
+        $this->getStorage()->set(
+            self::PREFIX_DELIVERY_KEY_VALUE . $deliveryExecution->getDelivery()->getUri(),
+            $response->getTestReviewerUrl()
+        );
 
         return $response;
     }

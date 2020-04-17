@@ -140,7 +140,7 @@ class ProctorioApiService extends ConfigurableService
 
     private function getUrlsId(DeliveryExecutionInterface $deliveryExecution): string
     {
-        return self::PREFIX_KEY_VALUE . $deliveryExecution->getIdentifier();
+        return self::PREFIX_KEY_VALUE . $deliveryExecution->getDelivery()->getUri();
     }
 
     private function getProctorioLibraryService(): ProctorioService

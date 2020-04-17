@@ -36,8 +36,9 @@ return [
     'author' => 'Open Assessment Technologies SA',
     'requires' => [
         'generis' => '>=12.17.0',
-        'taoDelivery' => '14.10.1',
+        'taoDelivery' => '>=14.10.1',
         'tao' => '>=41.12.0',
+        'taoOutcomeUi' => '>=8.5.0'
     ],
     'managementRole' => 'http://www.tao.lu/Ontologies/generis.rdf#remoteProctoringManager',
     'acl' => [
@@ -62,5 +63,6 @@ return [
         'BASE_URL' => ROOT_URL . 'remoteProctoring/',
     ],
     'extra' => [
-    ],
+        'structures' => $extpath . 'controller' . DIRECTORY_SEPARATOR . 'structures.xml',
+    ]
 ];

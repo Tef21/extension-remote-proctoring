@@ -53,7 +53,7 @@ class Sha256SignatureTest extends TestCase
         ];
     }
 
-    public function InvalidSignaturesProvider(): array
+    public function invalidSignaturesProvider(): array
     {
         return [
             ['https://tao.lu&signature=invalid', [],],
@@ -90,7 +90,7 @@ class Sha256SignatureTest extends TestCase
     }
 
     /**
-     * @dataProvider InvalidSignaturesProvider
+     * @dataProvider invalidSignaturesProvider
      */
     public function testInvalidSignature(string $url, array $headers = []): void
     {

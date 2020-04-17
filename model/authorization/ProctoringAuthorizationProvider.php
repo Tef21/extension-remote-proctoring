@@ -93,6 +93,6 @@ class ProctoringAuthorizationProvider extends ConfigurableService implements Aut
 
     private function getDeliverySettingsRepository(): ProctorioDeliverySettingsRepository
     {
-        return $this->getServiceLocator()->get(ProctorioDeliverySettingsRepository::class);
+        return $this->getServiceLocator()->get(ProctorioDeliverySettingsRepository::SERVICE_ID);
     }
 }

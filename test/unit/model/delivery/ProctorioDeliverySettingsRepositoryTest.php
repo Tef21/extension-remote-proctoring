@@ -42,7 +42,7 @@ class ProctorioDeliverySettingsRepositoryTest extends TestCase
         $this->persistence = $this->createMock(common_persistence_KeyValuePersistence::class);
         $this->subject = new ProctorioDeliverySettingsRepository(
             [
-                'persistence' => $this->persistence
+                ProctorioDeliverySettingsRepository::OPTION_PERSISTENCE => $this->persistence
             ]
         );
     }

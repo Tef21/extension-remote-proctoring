@@ -78,7 +78,7 @@ class ProctoringAuthorizationProviderTest extends TestCase
         return $this->getServiceLocatorMock([
             SessionService::SERVICE_ID => $this->getSessionMock($sessionContexts),
             ProctorioApiService::SERVICE_ID => $this->getProctorioApiMock($url),
-            ProctorioDeliverySettingsRepository::class => $this->getDeliverySettingsRepositoryMock()
+            ProctorioDeliverySettingsRepository::SERVICE_ID => $this->getDeliverySettingsRepositoryMock()
         ]);
     }
 

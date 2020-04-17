@@ -32,7 +32,7 @@ return [
     'label' => 'Remote Proctoring extension that allows you to use a remote proctoring solution',
     'description' => 'This extension provides functionality to integrate with Proctorio tool',
     'license' => 'GPL-2.0',
-    'version' => '0.0.0',
+    'version' => '0.2.0',
     'author' => 'Open Assessment Technologies SA',
     'requires' => [
         'generis' => '>=12.17.0',
@@ -54,6 +54,7 @@ return [
     ],
     'uninstall' => [
     ],
+    'update' => 'oat\\remoteProctoring\\scripts\\update\\Updater',
     'routes' => [
         '/remoteProctoring' => 'oat\\remoteProctoring\\controller',
     ],

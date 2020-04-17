@@ -25,6 +25,7 @@ namespace oat\remoteProctoring\controller;
 use oat\generis\persistence\PersistenceManager;
 use oat\remoteProctoring\model\ProctorioApiService;
 use oat\tao\model\http\Controller;
+use tao_helpers_Uri;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorAwareTrait;
 
@@ -32,15 +33,12 @@ class DeliveryReview extends Controller implements ServiceLocatorAwareInterface
 {
     use ServiceLocatorAwareTrait;
 
-    public function review()
+    public function review(): string
     {
         $requestBody = $this->getPsrRequest()->getParsedBody();
-        $deliveryId = $requestBody['uri'];
+        $deliveryId = tao_helpers_Uri::decode($requestBody['uri']);
 
-        echo $deliveryId;
-
-        $proctorioApiService = $this->getProctorioApiService();
-        $proctorioApiService->getProctorioUrl();
+        return (string)$this->getProctorioApiService()->findReviewUrl($deliveryId);
     }
 
     private function getProctorioApiService(): ProctorioApiService

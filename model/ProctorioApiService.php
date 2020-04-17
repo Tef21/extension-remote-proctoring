@@ -53,6 +53,7 @@ class ProctorioApiService extends ConfigurableService
 
     //Prefix
     public const PREFIX_KEY_VALUE = 'proctorio::';
+    const DELIVERY_ID_PREFIX = 'deliveryId:';
 
     /** @var ProctorioService */
     private $proctorioService;
@@ -80,16 +81,8 @@ class ProctorioApiService extends ConfigurableService
             throw $exception;
         }
 
-        $this->getStorage()
-            ->set(
-                $this->getUrlsId($deliveryExecution),
-                json_encode(
-                    [
-                        $response->getTestTakerUrl(),
-                        $response->getTestReviewerUrl(),
-                    ]
-                )
-            );
+        $this->getStorage()->set($this->getUrlsId($deliveryExecution), $response->getTestTakerUrl());
+        $this->getStorage()->set(self::DELIVERY_ID_PREFIX . $deliveryExecution->getDelivery()->getUri(), $response->getTestReviewerUrl());
 
         return $response;
     }
@@ -140,7 +133,7 @@ class ProctorioApiService extends ConfigurableService
 
     private function getUrlsId(DeliveryExecutionInterface $deliveryExecution): string
     {
-        return self::PREFIX_KEY_VALUE . $deliveryExecution->getDelivery()->getUri();
+        return self::PREFIX_KEY_VALUE . $deliveryExecution->getIdentifier();
     }
 
     private function getProctorioLibraryService(): ProctorioService
@@ -150,5 +143,10 @@ class ProctorioApiService extends ConfigurableService
         }
 
         return $this->proctorioService;
+    }
+
+    public function findReviewUrl(string $deliveryId): ?string
+    {
+        return $this->getStorage()->get($deliveryId);
     }
 }

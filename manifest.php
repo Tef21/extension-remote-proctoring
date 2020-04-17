@@ -63,6 +63,6 @@ return [
         'BASE_URL' => ROOT_URL . 'remoteProctoring/',
     ],
     'extra' => [
-        'structures' => $extpath . 'controller' . DIRECTORY_SEPARATOR . 'structures.xml',
+        'structures' => __DIR__ . DIRECTORY_SEPARATOR . 'controller' . DIRECTORY_SEPARATOR . 'structures.xml',
     ]
 ];

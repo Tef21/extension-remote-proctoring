@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<rdf:RDF
+	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+	xml:base="http://www.tao.lu/Ontologies/TAODelivery.rdf#"
+	xmlns:widget="http://www.tao.lu/datatypes/WidgetDefinitions.rdf#"
+	xmlns:generis="http://www.tao.lu/Ontologies/generis.rdf#"
+	xmlns:tao="http://www.tao.lu/Ontologies/TAO.rdf#"
+>
+  <rdf:Description rdf:about="http://www.tao.lu/Ontologies/TAODelivery.rdf#EnableRemoteProctoring">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+    <rdfs:label xml:lang="en-US"><![CDATA[Enable remote proctoring]]></rdfs:label>
+    <rdfs:comment xml:lang="en-US"><![CDATA[Defines if the exam should be remote proctored or not]]></rdfs:comment>
+    <rdfs:domain rdf:resource="http://www.tao.lu/Ontologies/TAODelivery.rdf#Delivery"/>
+	<rdfs:range rdf:resource="http://www.tao.lu/Ontologies/generis.rdf#Boolean"/>
+	<widget:widget rdf:resource="http://www.tao.lu/datatypes/WidgetDefinitions.rdf#RadioBox"/>
+    <generis:is_language_dependent rdf:resource="http://www.tao.lu/Ontologies/generis.rdf#False"/>
+    <tao:TAOGUIOrder><![CDATA[60]]></tao:TAOGUIOrder>
+  </rdf:Description>
+</rdf:RDF>

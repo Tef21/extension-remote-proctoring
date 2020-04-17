@@ -18,10 +18,20 @@
  * Copyright (c) 2020 (original work) Open Assessment Technologies SA
  */
 
-use oat\remoteProctoring\model\delivery\ProctorioDeliverySettingsRepository;
+namespace oat\remoteProctoring\scripts\update;
 
-return new ProctorioDeliverySettingsRepository(
-    [
-        ProctorioDeliverySettingsRepository::OPTION_PERSISTENCE => 'default_kv',
-    ]
-);
+use oat\tao\scripts\update\OntologyUpdater;
+
+class Updater extends \common_ext_ExtensionUpdater
+{
+    /**
+     * @inheritDoc
+     */
+    public function update($initialVersion)
+    {
+        if ($this->isVersion('0.1.0')) {
+            OntologyUpdater::syncModels();
+            $this->setVersion('0.1.0');
+        }
+    }
+}

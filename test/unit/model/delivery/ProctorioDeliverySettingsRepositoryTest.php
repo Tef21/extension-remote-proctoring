@@ -22,7 +22,10 @@ declare(strict_types=1);
 
 namespace oat\remoteProctoring\test\unit\model\delivery;
 
-use common_persistence_KeyValuePersistence;
+use core_kernel_classes_Property;
+use core_kernel_classes_Resource;
+use oat\generis\model\data\Ontology;
+use oat\generis\model\GenerisRdf;
 use oat\generis\test\MockObject;
 use oat\generis\test\TestCase;
 use oat\remoteProctoring\model\delivery\ProctorioDeliverySettings;
@@ -34,61 +37,69 @@ class ProctorioDeliverySettingsRepositoryTest extends TestCase
     /** @var ProctorioDeliverySettingsRepository */
     private $subject;
 
-    /** @var common_persistence_KeyValuePersistence|MockObject */
-    private $persistence;
+    /** @var Ontology|MockObject */
+    private $ontology;
+
+    /** @var DeliveryExecutionInterface|MockObject */
+    private $deliveryExecution;
+
+    /** @var core_kernel_classes_Resource|MockObject */
+    private $delivery;
 
     protected function setUp(): void
     {
-        $this->persistence = $this->createMock(common_persistence_KeyValuePersistence::class);
-        $this->subject = new ProctorioDeliverySettingsRepository(
-            [
-                ProctorioDeliverySettingsRepository::OPTION_PERSISTENCE => $this->persistence
-            ]
-        );
+        $this->ontology = $this->createMock(Ontology::class);
+
+        $this->delivery = $this->createMock(core_kernel_classes_Resource::class);
+        $this->deliveryExecution = $this->createMock(DeliveryExecutionInterface::class);
+        $this->deliveryExecution
+            ->method('getDelivery')
+            ->willReturn($this->delivery);
+
+        $this->subject = new ProctorioDeliverySettingsRepository();
+        $this->subject->setModel($this->ontology);
     }
 
     public function testIsDeliveryExecutionProctoredEnabled(): void
     {
-        $deliveryExecution = $this->mockDeliveryExecution('_id');
-        $this->mockDeliveryActivation('_id', true);
+        $this->mockOntology(true);
 
         $this->assertEquals(
             new ProctorioDeliverySettings(true),
-            $this->subject->findByDeliveryExecution($deliveryExecution)
+            $this->subject->findByDeliveryExecution($this->deliveryExecution)
         );
     }
 
     public function testIsDeliveryExecutionProctoredDisabled(): void
     {
-        $deliveryExecution = $this->mockDeliveryExecution('_id');
-        $this->mockDeliveryActivation('_id', false);
+        $this->mockOntology(false);
 
         $this->assertEquals(
             new ProctorioDeliverySettings(false),
-            $this->subject->findByDeliveryExecution($deliveryExecution)
+            $this->subject->findByDeliveryExecution($this->deliveryExecution)
         );
     }
 
-    public function mockDeliveryExecution(string $deliveryId): DeliveryExecutionInterface
+    private function mockOntology(bool $isActivated): void
     {
-        $deliveryExecution = $this->createMock(DeliveryExecutionInterface::class);
-        $deliveryExecution->method('getIdentifier')
-            ->willReturn($deliveryId);
+        $propertyMock = $this->createMock(core_kernel_classes_Property::class);
+        $resourceMock = $this->createMock(core_kernel_classes_Resource::class);
+        $resourceMock->method('equals')
+            ->willReturn($isActivated);
 
-        return $deliveryExecution;
-    }
+        $this->delivery
+            ->method('getUniquePropertyValue')
+            ->with($propertyMock)
+            ->willReturn($resourceMock);
 
-    private function mockDeliveryActivation(string $id, bool $isActivated): void
-    {
-        $this->persistence
-            ->method('get')
-            ->with(sprintf('proctorio:deliverySettings:%s', $id))
-            ->willReturn(
-                json_encode(
-                    [
-                        'enabled' => $isActivated
-                    ]
-                )
-            );
+        $this->ontology
+            ->method('getResource')
+            ->with(GenerisRdf::GENERIS_TRUE)
+            ->willReturn($resourceMock);
+
+        $this->ontology
+            ->method('getProperty')
+            ->with('http://www.tao.lu/Ontologies/TAODelivery.rdf#EnableRemoteProctoring')
+            ->willReturn($propertyMock);
     }
 }

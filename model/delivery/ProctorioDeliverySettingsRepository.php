@@ -22,53 +22,35 @@ declare(strict_types=1);
 
 namespace oat\remoteProctoring\model\delivery;
 
+use common_Exception;
 use common_exception_NotFound;
-use common_persistence_KeyValuePersistence;
-use oat\generis\persistence\PersistenceManager;
+use core_kernel_classes_Container;
+use core_kernel_classes_EmptyProperty;
+use oat\generis\model\GenerisRdf;
 use oat\oatbox\service\ConfigurableService;
 use oat\taoDelivery\model\execution\DeliveryExecutionInterface;
+use oat\generis\model\OntologyAwareTrait;
 
 class ProctorioDeliverySettingsRepository extends ConfigurableService
 {
-    public const SERVICE_ID = 'remoteProctoring/ProctorioDeliverySettingsRepository';
-    public const OPTION_PERSISTENCE = 'persistence';
+    use OntologyAwareTrait;
 
-    private const STORAGE_KEY_PATTERN = 'proctorio:deliverySettings:%s';
+    public const SERVICE_ID = 'remoteProctoring/ProctorioDeliverySettingsRepository';
 
     /**
+     * @throws common_Exception
+     * @throws core_kernel_classes_EmptyProperty
      * @throws common_exception_NotFound
      */
     public function findByDeliveryExecution(DeliveryExecutionInterface $deliveryExecution): ProctorioDeliverySettings
     {
-        $settings = json_decode(
-            (string)$this->getPersistence()->get($this->getStorageSettingKey($deliveryExecution)),
-            true
-        );
+        /** @var core_kernel_classes_Container $enabled */
+        $enabled = $deliveryExecution
+            ->getDelivery()
+            ->getUniquePropertyValue(
+                $this->getProperty('http://www.tao.lu/Ontologies/TAODelivery.rdf#EnableRemoteProctoring')
+            );
 
-        return new ProctorioDeliverySettings(!empty($settings['enabled']));
-    }
-
-    /**
-     * @throws common_exception_NotFound
-     */
-    private function getStorageSettingKey(DeliveryExecutionInterface $deliveryExecution): string
-    {
-        return sprintf(
-            self::STORAGE_KEY_PATTERN,
-            $deliveryExecution->getIdentifier() //@TODO Must be the DeliveryId, considering this for test purposes
-        );
-    }
-
-    private function getPersistence(): common_persistence_KeyValuePersistence
-    {
-        $persistence = $this->getOption(self::OPTION_PERSISTENCE);
-
-        if ($persistence instanceof common_persistence_KeyValuePersistence) {
-            return $persistence;
-        }
-
-        return $this->getServiceLocator()
-            ->get(PersistenceManager::SERVICE_ID)
-            ->getPersistenceById($persistence);
+        return new ProctorioDeliverySettings($enabled->equals($this->getResource(GenerisRdf::GENERIS_TRUE)));
     }
 }

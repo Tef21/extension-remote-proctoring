@@ -29,7 +29,7 @@ class Updater extends \common_ext_ExtensionUpdater
      */
     public function update($initialVersion)
     {
-        if ($this->isVersion('0.1.0')) {
+        if ($this->isVersion('0.0.0')) {
             OntologyUpdater::syncModels();
             $this->setVersion('0.1.0');
         }

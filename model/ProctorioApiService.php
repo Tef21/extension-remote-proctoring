@@ -147,6 +147,6 @@ class ProctorioApiService extends ConfigurableService
 
     public function findReviewUrl(string $deliveryId): ?string
     {
-        return $this->getStorage()->get($deliveryId);
+        return (string)$this->getStorage()->get($deliveryId);
     }
 }

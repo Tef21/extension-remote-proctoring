@@ -36,7 +36,7 @@ class ProctorioExamUrlFactory extends ConfigurableService
 
     public function createExamTakeUrl(): string
     {
-        return $this->convertUrlToPattern(rtrim($this->getRootURl(), '/')) . '/.*';
+        return $this->convertUrlToPattern(sprintf('%s/taoDelivery/DeliveryServer/runDeliveryExecution', rtrim($this->getRootURl(), '/'))) . '/.*';
     }
 
     public function createExamEndUrl(): string

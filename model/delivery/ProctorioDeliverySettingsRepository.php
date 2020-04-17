@@ -41,7 +41,7 @@ class ProctorioDeliverySettingsRepository extends ConfigurableService
     public function findByDeliveryExecution(DeliveryExecutionInterface $deliveryExecution): ProctorioDeliverySettings
     {
         $settings = json_decode(
-            $this->getPersistence()->get($this->getStorageSettingKey($deliveryExecution)),
+            (string)$this->getPersistence()->get($this->getStorageSettingKey($deliveryExecution)),
             true
         );
 

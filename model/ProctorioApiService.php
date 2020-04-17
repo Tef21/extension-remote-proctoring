@@ -70,6 +70,7 @@ class ProctorioApiService extends ConfigurableService
     {
         try {
             $response = $this->requestProctorioUrls($deliveryExecution);
+            $this->saveProctorioUrls($deliveryExecution, $response);
         } catch (Throwable $exception) {
             $this->logError(
                 sprintf(
@@ -80,12 +81,6 @@ class ProctorioApiService extends ConfigurableService
 
             throw $exception;
         }
-
-        $this->getStorage()->set($this->getUrlsId($deliveryExecution), $response->getTestTakerUrl());
-        $this->getStorage()->set(
-            self::PREFIX_DELIVERY_KEY_VALUE . $deliveryExecution->getDelivery()->getUri(),
-            $response->getTestReviewerUrl()
-        );
 
         return $response;
     }
@@ -151,5 +146,18 @@ class ProctorioApiService extends ConfigurableService
     public function findReviewUrl(string $deliveryId): ?string
     {
         return (string)$this->getStorage()->get($deliveryId);
+    }
+
+    /**
+     * @throws common_Exception
+     * @throws common_exception_NotFound
+     */
+    private function saveProctorioUrls(DeliveryExecutionInterface $deliveryExecution, ProctorioResponse $response): void
+    {
+        $this->getStorage()->set($this->getUrlsId($deliveryExecution), $response->getTestTakerUrl());
+        $this->getStorage()->set(
+            self::PREFIX_DELIVERY_KEY_VALUE . $deliveryExecution->getDelivery()->getUri(),
+            $response->getTestReviewerUrl()
+        );
     }
 }

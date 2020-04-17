@@ -95,7 +95,7 @@ class ProctorioDeliverySettingsRepositoryTest extends TestCase
                     [
                         ProctorioDeliverySettingsRepository::ONTOLOGY_DELIVERY_SETTINGS => [
                             new core_kernel_classes_Property(
-                                ProctorioDeliverySettingsRepository::ONTOLOGY_ENABLE_SETTING
+                                ProctorioDeliverySettingsRepository::ONTOLOGY_PROCTORING_ENABLED
                             ),
                         ]
                     ] :

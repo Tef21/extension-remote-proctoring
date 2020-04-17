@@ -36,7 +36,7 @@ class ProctorioDeliverySettingsRepository extends ConfigurableService
 
     public const SERVICE_ID = 'remoteProctoring/ProctorioDeliverySettingsRepository';
     public const ONTOLOGY_DELIVERY_SETTINGS = 'http://www.tao.lu/Ontologies/TAODelivery.rdf#ProctorioDeliverySettings';
-    public const ONTOLOGY_ENABLE_SETTING = 'http://www.tao.lu/Ontologies/TAODelivery.rdf#ProctorioDeliverySettings';
+    public const ONTOLOGY_PROCTORING_ENABLED = 'http://www.tao.lu/Ontologies/TAODelivery.rdf#EnableRemoteProctoring';
 
     /**
      * @throws common_Exception
@@ -58,7 +58,7 @@ class ProctorioDeliverySettingsRepository extends ConfigurableService
 
         /** @var core_kernel_classes_Resource $resource */
         foreach ($properties[self::ONTOLOGY_DELIVERY_SETTINGS] ?? [] as $resource) {
-            if ($resource->getUri() === self::ONTOLOGY_ENABLE_SETTING) {
+            if ($resource->getUri() === self::ONTOLOGY_PROCTORING_ENABLED) {
                 $isEnabled = true;
 
                 break;

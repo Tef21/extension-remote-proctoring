@@ -30,12 +30,16 @@ use oat\taoDelivery\model\authorization\UnAuthorizedException;
 use oat\taoDelivery\model\execution\DeliveryExecutionInterface;
 use oat\remoteProctoring\model\ProctorioApiService;
 use oat\oatbox\session\SessionService;
+use oat\generis\model\OntologyAwareTrait;
+use oat\generis\model\OntologyRdfs;
+use oat\generis\model\GenerisRdf;
 
 /**
  * Authorization Provider that verifies if the tes
  */
 class ProctoringAuthorizationProvider extends ConfigurableService implements AuthorizationProvider
 {
+    use OntologyAwareTrait;
     /**
      * {@inheritDoc}
      * @see AuthorizationProvider::verifyStartAuthorization()
@@ -87,6 +91,8 @@ class ProctoringAuthorizationProvider extends ConfigurableService implements Aut
      */
     protected function requiresRemoteProctoring(DeliveryExecutionInterface $deliveryExecution): bool
     {
-        return true;
+        $delivery = $deliveryExecution->getDelivery();
+        $enabled = $delivery->getUniquePropertyValue($this->getProperty('http://www.tao.lu/Ontologies/TAODelivery.rdf#RequiresRemoteProctoring'));
+        return $enabled == $this->getResource(GenerisRdf::GENERIS_TRUE);
     }
 }

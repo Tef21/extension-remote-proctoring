@@ -47,6 +47,9 @@ return [
     'install' => [
         'php' => [
             RegisterAuthorizationProvider::class
+        ],
+        'rdf' => [
+            __DIR__.'/scripts/install/remoteProctoring.rdf'
         ]
     ],
     'uninstall' => [

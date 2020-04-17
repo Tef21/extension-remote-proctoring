@@ -49,7 +49,7 @@ class ProctorioExamUrlFactory extends ConfigurableService
                 rtrim($this->getRootURl(), '/')
             )
         )
-            . '/.*';
+            . self::ANY_CHARACTER_PATTERN;
     }
 
     public function createExamEndUrl(): string
@@ -59,7 +59,7 @@ class ProctorioExamUrlFactory extends ConfigurableService
                 '%s' . self::DELIVERY_EXECUTION_END_URI,
                 rtrim($this->getRootURl(), '/')
             )
-        ) . '/.*';
+        ) . self::ANY_CHARACTER_PATTERN;
     }
 
     private function convertUrlToPattern(string $url): string

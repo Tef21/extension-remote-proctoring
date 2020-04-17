@@ -31,7 +31,7 @@ use oat\taoDelivery\model\execution\DeliveryExecutionInterface;
 class DeliverySettingsRepository extends ConfigurableService
 {
     private const STORAGE_KEY_PATTERN = 'proctorio:deliverySettings:%s';
-    private const OPTION_PERSISTENCE = 'persistence';
+    public const OPTION_PERSISTENCE = 'persistence';
 
     /**
      * @throws common_exception_NotFound

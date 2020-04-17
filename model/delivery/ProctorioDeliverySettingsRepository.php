@@ -58,7 +58,11 @@ class ProctorioDeliverySettingsRepository extends ConfigurableService
 
         /** @var core_kernel_classes_Resource $resource */
         foreach ($properties[self::ONTOLOGY_DELIVERY_SETTINGS] ?? [] as $resource) {
-            $isEnabled = $resource->getUri() === self::ONTOLOGY_ENABLE_SETTING;
+            if ($resource->getUri() === self::ONTOLOGY_ENABLE_SETTING) {
+                $isEnabled = true;
+
+                break;
+            }
         }
 
         return new ProctorioDeliverySettings($isEnabled);

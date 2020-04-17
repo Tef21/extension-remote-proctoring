@@ -48,5 +48,4 @@ class Sha256Signature extends Configurable implements SignatureMethod
             throw new SignatureException('Invalid Signature');
         }
     }
-
 }

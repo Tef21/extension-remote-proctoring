@@ -28,20 +28,38 @@ use tao_helpers_Uri;
 class ProctorioExamUrlFactory extends ConfigurableService
 {
     public const OPTION_BASE_URL = 'base_url';
+    public const DELIVERY_EXECUTION_TAKE_URI = '/taoDelivery/DeliveryServer/runDeliveryExecution';
+    public const DELIVERY_EXECUTION_END_URI = '/taoDelivery/DeliveryServer/index';
+    public const DELIVERY_EXECUTION_START_URI = '/remoteProctoring';
+    public const ANY_CHARACTER_PATTERN = '.*';
 
     public function createExamStartUrl(): string
     {
-        return $this->convertUrlToPattern(rtrim($this->getRootURl(), '/') . '/remoteProctoring') . '.*';
+        return $this->convertUrlToPattern(
+            rtrim($this->getRootURl(), '/')
+                . self::DELIVERY_EXECUTION_START_URI
+        ) . self::ANY_CHARACTER_PATTERN;
     }
 
     public function createExamTakeUrl(): string
     {
-        return $this->convertUrlToPattern(sprintf('%s/taoDelivery/DeliveryServer/runDeliveryExecution', rtrim($this->getRootURl(), '/'))) . '/.*';
+        return $this->convertUrlToPattern(
+            sprintf(
+                '%s' . self::DELIVERY_EXECUTION_TAKE_URI,
+                rtrim($this->getRootURl(), '/')
+            )
+        )
+            . self::ANY_CHARACTER_PATTERN;
     }
 
     public function createExamEndUrl(): string
     {
-        return $this->convertUrlToPattern(sprintf('%s/taoDelivery/DeliveryServer/index', rtrim($this->getRootURl(), '/'))) . '/.*';
+        return $this->convertUrlToPattern(
+            sprintf(
+                '%s' . self::DELIVERY_EXECUTION_END_URI,
+                rtrim($this->getRootURl(), '/')
+            )
+        ) . self::ANY_CHARACTER_PATTERN;
     }
 
     private function convertUrlToPattern(string $url): string

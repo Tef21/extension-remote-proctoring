@@ -25,7 +25,6 @@ namespace oat\remoteProctoring\test\unit\model\delivery;
 use core_kernel_classes_Property;
 use core_kernel_classes_Resource;
 use oat\generis\model\data\Ontology;
-use oat\generis\model\GenerisRdf;
 use oat\generis\test\MockObject;
 use oat\generis\test\TestCase;
 use oat\remoteProctoring\model\delivery\ProctorioDeliverySettings;
@@ -82,24 +81,25 @@ class ProctorioDeliverySettingsRepositoryTest extends TestCase
 
     private function mockOntology(bool $isActivated): void
     {
-        $propertyMock = $this->createMock(core_kernel_classes_Property::class);
-        $resourceMock = $this->createMock(core_kernel_classes_Resource::class);
-        $resourceMock->method('equals')
-            ->willReturn($isActivated);
-
         $this->delivery
-            ->method('getUniquePropertyValue')
-            ->with($propertyMock)
-            ->willReturn($resourceMock);
-
-        $this->ontology
-            ->method('getResource')
-            ->with(GenerisRdf::GENERIS_TRUE)
-            ->willReturn($resourceMock);
-
-        $this->ontology
-            ->method('getProperty')
-            ->with('http://www.tao.lu/Ontologies/TAODelivery.rdf#EnableRemoteProctoring')
-            ->willReturn($propertyMock);
+            ->method('getPropertiesValues')
+            ->with(
+                [
+                    new core_kernel_classes_Property(
+                        ProctorioDeliverySettingsRepository::ONTOLOGY_DELIVERY_SETTINGS
+                    ),
+                ]
+            )
+            ->willReturn(
+                $isActivated ?
+                    [
+                        ProctorioDeliverySettingsRepository::ONTOLOGY_DELIVERY_SETTINGS => [
+                            new core_kernel_classes_Property(
+                                ProctorioDeliverySettingsRepository::ONTOLOGY_ENABLE_SETTING
+                            ),
+                        ]
+                    ] :
+                    []
+            );
     }
 }

@@ -24,9 +24,8 @@ namespace oat\remoteProctoring\model\delivery;
 
 use common_Exception;
 use common_exception_NotFound;
-use core_kernel_classes_Container;
-use core_kernel_classes_EmptyProperty;
-use oat\generis\model\GenerisRdf;
+use core_kernel_classes_Resource;
+use core_kernel_classes_Property;
 use oat\oatbox\service\ConfigurableService;
 use oat\taoDelivery\model\execution\DeliveryExecutionInterface;
 use oat\generis\model\OntologyAwareTrait;
@@ -36,21 +35,32 @@ class ProctorioDeliverySettingsRepository extends ConfigurableService
     use OntologyAwareTrait;
 
     public const SERVICE_ID = 'remoteProctoring/ProctorioDeliverySettingsRepository';
+    public const ONTOLOGY_DELIVERY_SETTINGS = 'http://www.tao.lu/Ontologies/TAODelivery.rdf#ProctorioDeliverySettings';
+    public const ONTOLOGY_ENABLE_SETTING = 'http://www.tao.lu/Ontologies/TAODelivery.rdf#ProctorioDeliverySettings';
 
     /**
      * @throws common_Exception
-     * @throws core_kernel_classes_EmptyProperty
      * @throws common_exception_NotFound
      */
     public function findByDeliveryExecution(DeliveryExecutionInterface $deliveryExecution): ProctorioDeliverySettings
     {
-        /** @var core_kernel_classes_Container $enabled */
-        $enabled = $deliveryExecution
-            ->getDelivery()
-            ->getUniquePropertyValue(
-                $this->getProperty('http://www.tao.lu/Ontologies/TAODelivery.rdf#EnableRemoteProctoring')
-            );
+        /** @var core_kernel_classes_Resource $delivery */
+        $delivery = $deliveryExecution
+            ->getDelivery();
 
-        return new ProctorioDeliverySettings($enabled->equals($this->getResource(GenerisRdf::GENERIS_TRUE)));
+        $properties = $delivery->getPropertiesValues(
+            [
+                new core_kernel_classes_Property(self::ONTOLOGY_DELIVERY_SETTINGS),
+            ]
+        );
+
+        $isEnabled = false;
+
+        /** @var core_kernel_classes_Resource $resource */
+        foreach ($properties[self::ONTOLOGY_DELIVERY_SETTINGS] ?? [] as $resource) {
+            $isEnabled = $resource->getUri() === self::ONTOLOGY_ENABLE_SETTING;
+        }
+
+        return new ProctorioDeliverySettings($isEnabled);
     }
 }

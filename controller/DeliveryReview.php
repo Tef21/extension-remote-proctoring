@@ -22,7 +22,6 @@ declare(strict_types=1);
 
 namespace oat\remoteProctoring\controller;
 
-use oat\generis\persistence\PersistenceManager;
 use oat\remoteProctoring\model\ProctorioApiService;
 use oat\tao\model\http\Controller;
 use tao_helpers_Uri;

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,6 +20,9 @@
  *
  */
 
+use oat\remoteProctoring\scripts\install\RegisterAuthorizationProvider;
+use oat\tao\model\user\TaoRoles;
+
 /**
  * Generated using taoDevTools 6.5.0
  */
@@ -28,19 +32,29 @@ return [
     'label' => 'Remote Proctoring extension that allows you to use a remote proctoring solution',
     'description' => 'This extension provides functionality to integrate with Proctorio tool',
     'license' => 'GPL-2.0',
-    'version' => '0.0.0',
+    'version' => '1.0.0',
     'author' => 'Open Assessment Technologies SA',
     'requires' => [
-        'tao' => '>=41.4.0',
+        'generis' => '>=12.17.0',
+        'taoDelivery' => '14.10.1',
+        'tao' => '>=41.12.0',
     ],
     'managementRole' => 'http://www.tao.lu/Ontologies/generis.rdf#remoteProctoringManager',
     'acl' => [
         ['grant', 'http://www.tao.lu/Ontologies/generis.rdf#remoteProctoringManager', ['ext' => 'remoteProctoring']],
+        ['grant', TaoRoles::ANONYMOUS, ['ext' => 'remoteProctoring', 'mod' => 'DeliveryLaunch', 'act' => 'launch']],
     ],
     'install' => [
+        'php' => [
+            RegisterAuthorizationProvider::class
+        ],
+        'rdf' => [
+            __DIR__ . '/install/ontology/remoteProctoring.rdf'
+        ]
     ],
     'uninstall' => [
     ],
+    'update' => 'oat\\remoteProctoring\\scripts\\update\\Updater',
     'routes' => [
         '/remoteProctoring' => 'oat\\remoteProctoring\\controller',
     ],

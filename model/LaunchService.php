@@ -1,0 +1,66 @@
+<?php
+
+/**
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; under version 2
+ * of the License (non-upgradable).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *
+ * Copyright (c) 2020 (original work) Open Assessment Technologies SA
+ */
+
+declare(strict_types=1);
+
+namespace oat\remoteProctoring\model;
+
+use oat\oatbox\service\ConfigurableService;
+use oat\remoteProctoring\model\signature\exception\SignatureException;
+use oat\remoteProctoring\model\signature\SignatureMethod;
+use Psr\Http\Message\RequestInterface;
+use tao_helpers_Uri;
+
+class LaunchService extends ConfigurableService
+{
+    public const SERVICE_ID = 'remoteProctoring/LaunchService';
+
+    //OPTIONS
+    public const OPTION_SIGNATURE_METHOD = 'signer';
+
+    //URI
+    public const URI_PARAM_EXECUTION = 'deId';
+
+    public function generateUrl(string $deliveryExecutionParamName, string $deliveryExecutionId): string
+    {
+        $url = tao_helpers_Uri::url(
+            'launch',
+            'DeliveryLaunch',
+            'remoteProctoring',
+            [
+                $deliveryExecutionParamName => $deliveryExecutionId
+            ]
+        );
+        return $this->getSignatureMethod()->signUrl($url);
+    }
+
+    /**
+     * @throws SignatureException
+     */
+    public function validateRequest(RequestInterface $request): void
+    {
+        $this->getSignatureMethod()->validateRequest($request);
+    }
+
+    private function getSignatureMethod(): SignatureMethod
+    {
+        return $this->propagate($this->getOption(self::OPTION_SIGNATURE_METHOD));
+    }
+}

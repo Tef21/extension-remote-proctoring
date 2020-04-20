@@ -81,25 +81,15 @@ class ProctorioDeliverySettingsRepositoryTest extends TestCase
 
     private function mockOntology(bool $isActivated): void
     {
+        $property = new core_kernel_classes_Property(ProctorioDeliverySettingsRepository::ONTOLOGY_DELIVERY_SETTINGS);
+
+        $this->ontology
+            ->method('getProperty')
+            ->willReturn($property);
+
         $this->delivery
-            ->method('getPropertiesValues')
-            ->with(
-                [
-                    new core_kernel_classes_Property(
-                        ProctorioDeliverySettingsRepository::ONTOLOGY_DELIVERY_SETTINGS
-                    ),
-                ]
-            )
-            ->willReturn(
-                $isActivated ?
-                    [
-                        ProctorioDeliverySettingsRepository::ONTOLOGY_DELIVERY_SETTINGS => [
-                            new core_kernel_classes_Property(
-                                ProctorioDeliverySettingsRepository::ONTOLOGY_PROCTORING_ENABLED
-                            ),
-                        ]
-                    ] :
-                    []
-            );
+            ->method('getPropertyValues')
+            ->with($property)
+            ->willReturn($isActivated ? [ProctorioDeliverySettingsRepository::ONTOLOGY_PROCTORING_ENABLED] : []);
     }
 }

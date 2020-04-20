@@ -24,8 +24,6 @@ namespace oat\remoteProctoring\model\delivery;
 
 use common_Exception;
 use common_exception_NotFound;
-use core_kernel_classes_Resource;
-use core_kernel_classes_Property;
 use oat\oatbox\service\ConfigurableService;
 use oat\taoDelivery\model\execution\DeliveryExecutionInterface;
 use oat\generis\model\OntologyAwareTrait;
@@ -44,27 +42,15 @@ class ProctorioDeliverySettingsRepository extends ConfigurableService
      */
     public function findByDeliveryExecution(DeliveryExecutionInterface $deliveryExecution): ProctorioDeliverySettings
     {
-        /** @var core_kernel_classes_Resource $delivery */
-        $delivery = $deliveryExecution
-            ->getDelivery();
+        $settings = $deliveryExecution
+            ->getDelivery()
+            ->getPropertyValues($this->getProperty(self::ONTOLOGY_DELIVERY_SETTINGS));
 
-        $properties = $delivery->getPropertiesValues(
-            [
-                new core_kernel_classes_Property(self::ONTOLOGY_DELIVERY_SETTINGS),
-            ]
+        return new ProctorioDeliverySettings(
+            in_array(
+                self::ONTOLOGY_PROCTORING_ENABLED,
+                $settings
+            )
         );
-
-        $isEnabled = false;
-
-        /** @var core_kernel_classes_Resource $resource */
-        foreach ($properties[self::ONTOLOGY_DELIVERY_SETTINGS] ?? [] as $resource) {
-            if ($resource->getUri() === self::ONTOLOGY_PROCTORING_ENABLED) {
-                $isEnabled = true;
-
-                break;
-            }
-        }
-
-        return new ProctorioDeliverySettings($isEnabled);
     }
 }

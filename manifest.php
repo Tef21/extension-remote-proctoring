@@ -48,10 +48,14 @@ return [
     'install' => [
         'php' => [
             RegisterAuthorizationProvider::class
+        ],
+        'rdf' => [
+            __DIR__ . '/install/ontology/remoteProctoring.rdf'
         ]
     ],
     'uninstall' => [
     ],
+    'update' => 'oat\\remoteProctoring\\scripts\\update\\Updater',
     'routes' => [
         '/remoteProctoring' => 'oat\\remoteProctoring\\controller',
     ],

@@ -24,9 +24,9 @@
   </rdf:Description>
 
   <!-- All Remote Proctoring options should be added bellow -->
-  <rdf:Description rdf:about="http://www.tao.lu/Ontologies/TAODelivery.rdf#EnableRemoteProctoring">
-  	<rdfs:label xml:lang="en-US"><![CDATA[Enable]]></rdfs:label>
-  	<rdfs:comment xml:lang="en-US"><![CDATA[Enable Remote Proctoring]]></rdfs:comment>
+  <rdf:Description rdf:about="http://www.tao.lu/Ontologies/TAODelivery.rdf#RequiresRemoteProctoring">
+  	<rdfs:label xml:lang="en-US"><![CDATA[Requires Remote Proctoring]]></rdfs:label>
+  	<rdfs:comment xml:lang="en-US"><![CDATA[Requires Remote Proctoring]]></rdfs:comment>
   	<rdf:type rdf:resource="http://www.tao.lu/Ontologies/TAODelivery.rdf#RemoteProctoring"/>
    </rdf:Description>
 </rdf:RDF>

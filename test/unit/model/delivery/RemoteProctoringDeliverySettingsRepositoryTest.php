@@ -81,7 +81,7 @@ class RemoteProctoringDeliverySettingsRepositoryTest extends TestCase
 
     private function mockOntology(bool $isActivated): void
     {
-        $property = new core_kernel_classes_Property(RemoteProctoringDeliverySettingsRepository::ONTOLOGY_DELIVERY_SETTINGS);
+        $property = new core_kernel_classes_Property(RemoteProctoringDeliverySettingsRepository::ONTOLOGY_REMOTE_PROCTORING_DELIVERY_SETTINGS);
 
         $this->ontology
             ->method('getProperty')
@@ -90,6 +90,6 @@ class RemoteProctoringDeliverySettingsRepositoryTest extends TestCase
         $this->delivery
             ->method('getPropertyValues')
             ->with($property)
-            ->willReturn($isActivated ? [RemoteProctoringDeliverySettingsRepository::ONTOLOGY_PROCTORING_ENABLED] : []);
+            ->willReturn($isActivated ? [RemoteProctoringDeliverySettingsRepository::ONTOLOGY_REQUIRES_REMOTE_PROCTORING] : []);
     }
 }

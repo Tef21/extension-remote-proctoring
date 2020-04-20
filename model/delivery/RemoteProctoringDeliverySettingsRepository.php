@@ -33,8 +33,8 @@ class RemoteProctoringDeliverySettingsRepository extends ConfigurableService
     use OntologyAwareTrait;
 
     public const SERVICE_ID = 'remoteProctoring/RemoteProctoringDeliverySettingsRepository';
-    public const ONTOLOGY_DELIVERY_SETTINGS = 'http://www.tao.lu/Ontologies/TAODelivery.rdf#RemoteProctoringDeliverySettings';
-    public const ONTOLOGY_PROCTORING_ENABLED = 'http://www.tao.lu/Ontologies/TAODelivery.rdf#EnableRemoteProctoring';
+    public const ONTOLOGY_REMOTE_PROCTORING_DELIVERY_SETTINGS = 'http://www.tao.lu/Ontologies/TAODelivery.rdf#RemoteProctoringDeliverySettings';
+    public const ONTOLOGY_REQUIRES_REMOTE_PROCTORING = 'http://www.tao.lu/Ontologies/TAODelivery.rdf#RequiresRemoteProctoring';
 
     /**
      * @throws common_Exception
@@ -44,11 +44,11 @@ class RemoteProctoringDeliverySettingsRepository extends ConfigurableService
     {
         $settings = $deliveryExecution
             ->getDelivery()
-            ->getPropertyValues($this->getProperty(self::ONTOLOGY_DELIVERY_SETTINGS));
+            ->getPropertyValues($this->getProperty(self::ONTOLOGY_REMOTE_PROCTORING_DELIVERY_SETTINGS));
 
         return new RemoteProctoringDeliverySettings(
             in_array(
-                self::ONTOLOGY_PROCTORING_ENABLED,
+                self::ONTOLOGY_REQUIRES_REMOTE_PROCTORING,
                 $settings
             )
         );

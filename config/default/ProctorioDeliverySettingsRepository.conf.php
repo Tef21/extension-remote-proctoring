@@ -18,6 +18,6 @@
  * Copyright (c) 2020 (original work) Open Assessment Technologies SA
  */
 
-use oat\remoteProctoring\model\delivery\ProctorioDeliverySettingsRepository;
+use oat\remoteProctoring\model\delivery\RemoteProctoringDeliverySettingsRepository;
 
-return new ProctorioDeliverySettingsRepository();
+return new RemoteProctoringDeliverySettingsRepository();

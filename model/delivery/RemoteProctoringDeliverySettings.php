@@ -22,18 +22,18 @@ declare(strict_types=1);
 
 namespace oat\remoteProctoring\model\delivery;
 
-class ProctorioDeliverySettings
+class RemoteProctoringDeliverySettings
 {
     /** @var bool */
-    private $isProctorioEnabled;
+    private $isRemoteProctoringEnabled;
 
-    public function __construct(bool $isProctorioEnabled)
+    public function __construct(bool $isRemoteProctoringEnabled)
     {
-        $this->isProctorioEnabled = $isProctorioEnabled;
+        $this->isRemoteProctoringEnabled = $isRemoteProctoringEnabled;
     }
 
-    public function isProctorioEnabled(): bool
+    public function isRemoteProctoringEnabled(): bool
     {
-        return $this->isProctorioEnabled;
+        return $this->isRemoteProctoringEnabled;
     }
 }

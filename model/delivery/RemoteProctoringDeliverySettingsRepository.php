@@ -28,25 +28,25 @@ use oat\oatbox\service\ConfigurableService;
 use oat\taoDelivery\model\execution\DeliveryExecutionInterface;
 use oat\generis\model\OntologyAwareTrait;
 
-class ProctorioDeliverySettingsRepository extends ConfigurableService
+class RemoteProctoringDeliverySettingsRepository extends ConfigurableService
 {
     use OntologyAwareTrait;
 
-    public const SERVICE_ID = 'remoteProctoring/ProctorioDeliverySettingsRepository';
-    public const ONTOLOGY_DELIVERY_SETTINGS = 'http://www.tao.lu/Ontologies/TAODelivery.rdf#ProctorioDeliverySettings';
+    public const SERVICE_ID = 'remoteProctoring/RemoteProctoringDeliverySettingsRepository';
+    public const ONTOLOGY_DELIVERY_SETTINGS = 'http://www.tao.lu/Ontologies/TAODelivery.rdf#RemoteProctoringDeliverySettings';
     public const ONTOLOGY_PROCTORING_ENABLED = 'http://www.tao.lu/Ontologies/TAODelivery.rdf#EnableRemoteProctoring';
 
     /**
      * @throws common_Exception
      * @throws common_exception_NotFound
      */
-    public function findByDeliveryExecution(DeliveryExecutionInterface $deliveryExecution): ProctorioDeliverySettings
+    public function findByDeliveryExecution(DeliveryExecutionInterface $deliveryExecution): RemoteProctoringDeliverySettings
     {
         $settings = $deliveryExecution
             ->getDelivery()
             ->getPropertyValues($this->getProperty(self::ONTOLOGY_DELIVERY_SETTINGS));
 
-        return new ProctorioDeliverySettings(
+        return new RemoteProctoringDeliverySettings(
             in_array(
                 self::ONTOLOGY_PROCTORING_ENABLED,
                 $settings

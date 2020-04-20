@@ -27,13 +27,13 @@ use core_kernel_classes_Resource;
 use oat\generis\model\data\Ontology;
 use oat\generis\test\MockObject;
 use oat\generis\test\TestCase;
-use oat\remoteProctoring\model\delivery\ProctorioDeliverySettings;
-use oat\remoteProctoring\model\delivery\ProctorioDeliverySettingsRepository;
+use oat\remoteProctoring\model\delivery\RemoteProctoringDeliverySettings;
+use oat\remoteProctoring\model\delivery\RemoteProctoringDeliverySettingsRepository;
 use oat\taoDelivery\model\execution\DeliveryExecutionInterface;
 
-class ProctorioDeliverySettingsRepositoryTest extends TestCase
+class RemoteProctoringDeliverySettingsRepositoryTest extends TestCase
 {
-    /** @var ProctorioDeliverySettingsRepository */
+    /** @var RemoteProctoringDeliverySettingsRepository */
     private $subject;
 
     /** @var Ontology|MockObject */
@@ -55,7 +55,7 @@ class ProctorioDeliverySettingsRepositoryTest extends TestCase
             ->method('getDelivery')
             ->willReturn($this->delivery);
 
-        $this->subject = new ProctorioDeliverySettingsRepository();
+        $this->subject = new RemoteProctoringDeliverySettingsRepository();
         $this->subject->setModel($this->ontology);
     }
 
@@ -64,7 +64,7 @@ class ProctorioDeliverySettingsRepositoryTest extends TestCase
         $this->mockOntology(true);
 
         $this->assertEquals(
-            new ProctorioDeliverySettings(true),
+            new RemoteProctoringDeliverySettings(true),
             $this->subject->findByDeliveryExecution($this->deliveryExecution)
         );
     }
@@ -74,14 +74,14 @@ class ProctorioDeliverySettingsRepositoryTest extends TestCase
         $this->mockOntology(false);
 
         $this->assertEquals(
-            new ProctorioDeliverySettings(false),
+            new RemoteProctoringDeliverySettings(false),
             $this->subject->findByDeliveryExecution($this->deliveryExecution)
         );
     }
 
     private function mockOntology(bool $isActivated): void
     {
-        $property = new core_kernel_classes_Property(ProctorioDeliverySettingsRepository::ONTOLOGY_DELIVERY_SETTINGS);
+        $property = new core_kernel_classes_Property(RemoteProctoringDeliverySettingsRepository::ONTOLOGY_DELIVERY_SETTINGS);
 
         $this->ontology
             ->method('getProperty')
@@ -90,6 +90,6 @@ class ProctorioDeliverySettingsRepositoryTest extends TestCase
         $this->delivery
             ->method('getPropertyValues')
             ->with($property)
-            ->willReturn($isActivated ? [ProctorioDeliverySettingsRepository::ONTOLOGY_PROCTORING_ENABLED] : []);
+            ->willReturn($isActivated ? [RemoteProctoringDeliverySettingsRepository::ONTOLOGY_PROCTORING_ENABLED] : []);
     }
 }

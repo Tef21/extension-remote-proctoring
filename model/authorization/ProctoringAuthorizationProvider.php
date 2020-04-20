@@ -24,6 +24,7 @@ namespace oat\remoteProctoring\model\authorization;
 
 use oat\oatbox\service\ConfigurableService;
 use oat\Proctorio\Response\ProctorioResponse;
+use oat\remoteProctoring\model\delivery\RemoteProctoringDeliverySettingsRepository;
 use oat\taoDelivery\model\authorization\AuthorizationProvider;
 use oat\oatbox\user\User;
 use oat\taoDelivery\model\authorization\UnAuthorizedException;
@@ -82,11 +83,16 @@ class ProctoringAuthorizationProvider extends ConfigurableService implements Aut
 
     /**
      * Whenever or not the current context needs to be proctored
-     * @param DeliveryExecutionInterface $deliveryExecution
-     * @return boolean
      */
-    protected function requiresRemoteProctoring(DeliveryExecutionInterface $deliveryExecution): bool
+    private function requiresRemoteProctoring(DeliveryExecutionInterface $deliveryExecution): bool
     {
-        return true;
+        return $this->getDeliverySettingsRepository()
+            ->findByDeliveryExecution($deliveryExecution)
+            ->isRemoteProctoringEnabled();
+    }
+
+    private function getDeliverySettingsRepository(): RemoteProctoringDeliverySettingsRepository
+    {
+        return $this->getServiceLocator()->get(RemoteProctoringDeliverySettingsRepository::SERVICE_ID);
     }
 }

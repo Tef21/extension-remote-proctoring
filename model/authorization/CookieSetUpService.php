@@ -80,7 +80,10 @@ class CookieSetUpService extends ConfigurableService
 
     private function requiresUpdateSameSiteOption(array $cookieParams): bool
     {
-        return strpos($cookieParams['path'] ?? '', self::SAME_SITE_VALUE) === false ||
-            ($cookieParams['samesite'] ?? '') !== 'none';
+        if ($this->isPhpVersionGreaterThan72()) {
+            return ($cookieParams['samesite'] ?? '') !== 'none';
+        }
+
+        return strpos($cookieParams['path'] ?? '', self::SAME_SITE_VALUE) === false;
     }
 }

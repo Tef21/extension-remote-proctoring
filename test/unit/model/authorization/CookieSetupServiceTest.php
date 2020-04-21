@@ -46,7 +46,19 @@ class CookieSetupServiceTest extends TestCase
 
         $cookieParams = session_get_cookie_params();
 
-        $this->assertSame('/; samesite=none', $cookieParams['path']);
+        if (!$this->isPhpVersionGreaterThan72()) {
+            $this->assertSame('/; samesite=none', $cookieParams['path']);
+        }
+
+        if ($this->isPhpVersionGreaterThan72()) {
+            $this->assertSame('none', $cookieParams['samesite']);
+        }
+
         $this->assertSame(session_status(), PHP_SESSION_ACTIVE);
+    }
+
+    private function isPhpVersionGreaterThan72(): bool
+    {
+        return phpversion() >= '7.3.0';
     }
 }

@@ -33,7 +33,7 @@ class CookieSetUpService extends ConfigurableService
     {
         $cookieParams = session_get_cookie_params();
 
-        if ($this->requiresUpdateSameSiteOption($cookieParams['path'])) {
+        if ($this->requiresUpdateSameSiteOption($cookieParams)) {
             $this->commitSessionIfNeeded();
             $this->addSameSiteOption($cookieParams);
             $this->startSessionIfNeeded();

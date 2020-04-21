@@ -25,7 +25,7 @@ define(function(){
     return {
         'DeliveryReview': {
             'actions': {
-                'index' : 'controller/proctorioReview'
+                'review' : 'controller/proctorioReview'
             }
         }
     };

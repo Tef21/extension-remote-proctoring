@@ -44,7 +44,7 @@ define([
             var config = module.config() || {};
             var taskButton;
 
-            console.log(config);
+            console.log(config, module);
 
             taskButton = treeTaskButtonFactory({
                 replace : true,
@@ -52,7 +52,7 @@ define([
                 label : __('Proctorio Review')
             }).render($('#results-proctorio-review'));
 
-            binder.register('proctorio_url_redirect', function remove(actionContext){
+            binder.register('proctorio_url_redirect', (actionContext) => {
                 console.log('binding done');
                 var data = _.pick(actionContext, ['uri', 'classUri', 'id']);
                 var uniqueValue = data.uri || data.classUri || '';

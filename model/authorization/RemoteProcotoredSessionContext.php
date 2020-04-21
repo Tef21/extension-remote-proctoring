@@ -23,7 +23,6 @@ declare(strict_types=1);
 namespace oat\remoteProctoring\model\authorization;
 
 use oat\oatbox\session\SessionContext;
-use oat\tao\model\security\SecurityException;
 
 /**
  * Authorization Provider that verifies if the tes
@@ -42,21 +41,15 @@ class RemoteProcotoredSessionContext implements SessionContext
     }
 
     /**
-     * Retuns the delivery execution id for which the authorization was granted
+     * Returns the delivery execution id for which the authorization was granted
      */
     public function getDeliveryExecutionId(): string
     {
         return $this->deliveryExecutionId;
     }
 
-    /**
-     * @throws SecurityException
-     */
     public function consume(): void
     {
-        if ($this->consumed) {
-            throw new SecurityException('Proctorio authorisation attempt has been already consumed');
-        }
         $this->consumed = true;
     }
 

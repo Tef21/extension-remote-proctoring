@@ -84,6 +84,6 @@ class CookieSetUpService extends ConfigurableService
             return ($cookieParams['samesite'] ?? '') !== 'none';
         }
 
-        return strpos($cookieParams['path'] ?? '', self::SAME_SITE_VALUE) === false;
+        return strpos($cookieParams['path'], self::SAME_SITE_VALUE) === false;
     }
 }

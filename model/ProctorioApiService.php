@@ -129,11 +129,6 @@ class ProctorioApiService extends ConfigurableService
         return $this->getServiceLocator()->get(ProctorioRequestBuilder::SERVICE_ID);
     }
 
-    private function getUrlsId(DeliveryExecutionInterface $deliveryExecution): string
-    {
-        return self::PREFIX_KEY_VALUE . $deliveryExecution->getIdentifier();
-    }
-
     private function getProctorioLibraryService(): ProctorioService
     {
         if ($this->proctorioService === null) {
@@ -145,7 +140,7 @@ class ProctorioApiService extends ConfigurableService
 
     public function findReviewUrl(string $deliveryId): ?string
     {
-        return (string)$this->getStorage()->get($deliveryId);
+        return (string)$this->getStorage()->get(self::PREFIX_DELIVERY_KEY_VALUE . $deliveryId);
     }
 
     /**
@@ -154,7 +149,10 @@ class ProctorioApiService extends ConfigurableService
      */
     private function saveProctorioUrls(DeliveryExecutionInterface $deliveryExecution, ProctorioResponse $response): void
     {
-        $this->getStorage()->set($this->getUrlsId($deliveryExecution), $response->getTestTakerUrl());
+        $this->getStorage()->set(
+            self::PREFIX_KEY_VALUE . $deliveryExecution->getIdentifier(),
+            $response->getTestTakerUrl()
+        );
         $this->getStorage()->set(
             self::PREFIX_DELIVERY_KEY_VALUE . $deliveryExecution->getDelivery()->getUri(),
             $response->getTestReviewerUrl()

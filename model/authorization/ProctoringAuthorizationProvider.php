@@ -37,8 +37,6 @@ use oat\oatbox\session\SessionService;
  */
 class ProctoringAuthorizationProvider extends ConfigurableService implements AuthorizationProvider
 {
-     public const OPTION_COOKIE_SETUP_SERVICE = 'cookieSetupService';
-
     /**
      * {@inheritDoc}
      * @see AuthorizationProvider::verifyStartAuthorization()
@@ -46,7 +44,6 @@ class ProctoringAuthorizationProvider extends ConfigurableService implements Aut
     public function verifyStartAuthorization($deliveryId, User $user)
     {
         // No verification on start required, validate on resume
-        $this->getCookieSetUpService()->setUp();
     }
 
     /**
@@ -97,10 +94,5 @@ class ProctoringAuthorizationProvider extends ConfigurableService implements Aut
     private function getDeliverySettingsRepository(): RemoteProctoringDeliverySettingsRepository
     {
         return $this->getServiceLocator()->get(RemoteProctoringDeliverySettingsRepository::SERVICE_ID);
-    }
-
-    private function getCookieSetUpService(): CookieSetUpService
-    {
-        return $this->getOption(self::OPTION_COOKIE_SETUP_SERVICE);
     }
 }

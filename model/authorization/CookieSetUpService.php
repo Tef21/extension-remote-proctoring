@@ -26,29 +26,61 @@ use oat\oatbox\service\ConfigurableService;
 
 class CookieSetUpService extends ConfigurableService
 {
+    public const SERVICE_ID = 'remoteProctoring/CookieSetUpService';
     private const SAME_SITE_VALUE = 'samesite=none';
 
     public function setUp(): void
     {
-        //@TODO @FIXME By some reason we are loosing the session context data. Without this the proctorio does not work. Check with @joel
         $cookieParams = session_get_cookie_params();
 
-        if (strpos($cookieParams['path'] ?? '', self::SAME_SITE_VALUE) === false) {
-            if (session_status() === PHP_SESSION_ACTIVE) {
-                session_commit();
-            }
-
-            session_set_cookie_params(
-                $cookieParams['lifetime'],
-                $cookieParams['path'] . '; ' . self::SAME_SITE_VALUE,
-                $cookieParams['domain'],
-                $cookieParams['secure'],
-                $cookieParams['httponly']
-            );
-
-            if (session_status() === PHP_SESSION_NONE) {
-                session_start();
-            }
+        if ($this->requiresUpdateSameSiteOption($cookieParams['path'])) {
+            $this->commitSessionIfNeeded();
+            $this->addSameSiteOption($cookieParams);
+            $this->startSessionIfNeeded();
         }
+    }
+
+    private function addSameSiteOption(array $cookieParams): void
+    {
+        if ($this->isPhpVersionGreaterThan72()) {
+            $cookieParams['samesite'] = 'none';
+
+            session_set_cookie_params($cookieParams);
+
+            return;
+        }
+
+        session_set_cookie_params(
+            $cookieParams['lifetime'],
+            $cookieParams['path'] . '; ' . self::SAME_SITE_VALUE,
+            $cookieParams['domain'],
+            $cookieParams['secure'],
+            $cookieParams['httponly']
+        );
+    }
+
+    private function isPhpVersionGreaterThan72(): bool
+    {
+        return phpversion() >= '7.3.0';
+    }
+
+    private function commitSessionIfNeeded(): void
+    {
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            session_commit();
+        }
+    }
+
+    private function startSessionIfNeeded(): void
+    {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+    }
+
+    private function requiresUpdateSameSiteOption(array $cookieParams): bool
+    {
+        return strpos($cookieParams['path'] ?? '', self::SAME_SITE_VALUE) === false ||
+            ($cookieParams['samesite'] ?? '') !== 'none';
     }
 }

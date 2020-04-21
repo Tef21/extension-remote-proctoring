@@ -28,6 +28,7 @@ use common_session_DefaultSession as DefaultSession;
 use InterruptedActionException;
 use oat\oatbox\session\SessionService;
 use oat\oatbox\user\UserService;
+use oat\remoteProctoring\model\authorization\CookieSetUpService;
 use oat\remoteProctoring\model\LaunchService;
 use oat\remoteProctoring\model\signature\exception\SignatureException;
 use oat\tao\model\http\Controller;
@@ -62,6 +63,8 @@ class DeliveryLaunch extends Controller implements ServiceLocatorAwareInterface
 
     private function initSession(DeliveryExecutionInterface $deliveryExecution): void
     {
+        $this->getCookieSetUpService()->setUp();
+
         /** @var UserService $userService */
         $userService = $this->getServiceLocator()->get(UserService::SERVICE_ID);
         $user = $userService->getUser($deliveryExecution->getUserIdentifier());
@@ -91,5 +94,10 @@ class DeliveryLaunch extends Controller implements ServiceLocatorAwareInterface
     private function getLaunchService(): LaunchService
     {
         return $this->getServiceLocator()->get(LaunchService::SERVICE_ID);
+    }
+
+    private function getCookieSetUpService(): CookieSetUpService
+    {
+        return $this->getServiceLocator()->get(CookieSetUpService::SERVICE_ID);
     }
 }

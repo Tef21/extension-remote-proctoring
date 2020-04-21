@@ -23,7 +23,6 @@ declare(strict_types=1);
 namespace oat\remoteProctoring\scripts\install;
 
 use oat\oatbox\extension\InstallAction;
-use oat\remoteProctoring\model\authorization\CookieSetUpService;
 use oat\taoDelivery\model\authorization\AuthorizationService;
 use oat\taoDelivery\model\authorization\strategy\AuthorizationAggregator;
 use oat\remoteProctoring\model\authorization\ProctoringAuthorizationProvider;
@@ -35,25 +34,19 @@ use common_exception_Error;
 class RegisterAuthorizationProvider extends InstallAction
 {
     /**
-     * @inheritDoc
+     * @param $params
      */
     public function __invoke($params)
     {
-        $authService = $this->getServiceManager()->get(AuthorizationService::SERVICE_ID);
+       $authService = $this->getServiceManager()->get(AuthorizationService::SERVICE_ID);
 
-        if (!$authService instanceof AuthorizationAggregator) {
-            throw new common_exception_Error(
-                'Incompatible AuthorizationService "' . get_class($authService) . '" found.'
-            );
-        }
+       if (!$authService instanceof AuthorizationAggregator) {
+           throw new common_exception_Error(
+               'Incompatible AuthorizationService "' . get_class($authService) . '" found.'
+           );
+       }
 
-        $authService->addProvider(
-            new ProctoringAuthorizationProvider(
-                [
-                    ProctoringAuthorizationProvider::OPTION_COOKIE_SETUP_SERVICE => new CookieSetUpService()
-                ]
-            )
-        );
-        $this->registerService(AuthorizationService::SERVICE_ID, $authService);
+       $authService->addProvider(new ProctoringAuthorizationProvider());
+       $this->registerService(AuthorizationService::SERVICE_ID, $authService);
     }
 }

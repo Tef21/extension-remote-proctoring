@@ -30,6 +30,7 @@ module.exports = function(grunt) {
                 options : {
                     extension : 'remoteProctoring',
                     outputDir : 'loader',
+                    dependencies : ['taoItems'],
                     bundles : [{
                         name : 'remoteProctoring',
                         default : true,

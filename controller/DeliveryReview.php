@@ -27,21 +27,19 @@ use oat\tao\model\http\Controller;
 use tao_helpers_Uri;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorAwareTrait;
+use function GuzzleHttp\Psr7\stream_for;
 
 class DeliveryReview extends Controller implements ServiceLocatorAwareInterface
 {
     use ServiceLocatorAwareTrait;
 
-    public function review(): string
+    public function review()
     {
         $requestBody = $this->getPsrRequest()->getParsedBody();
         $deliveryId = tao_helpers_Uri::decode($requestBody['uri']);
+        $reviewUrl = $this->getProctorioApiService()->findReviewUrl($deliveryId);
 
-        $reviewUrl = return $this->getProctorioApiService()->findReviewUrl($deliveryId);
-
-        return $this->returnJson([
-            'url' => $reviewUrl,
-        ], 200);
+        return $this->getPsrResponse()->withBody(stream_for(json_encode(['url' => $reviewUrl])));
     }
 
     private function getProctorioApiService(): ProctorioApiService

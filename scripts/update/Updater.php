@@ -37,7 +37,7 @@ class Updater extends common_ext_ExtensionUpdater
             $settingsRepository = $this->getServiceManager()->get(SecuritySettingsRepositoryInterface::SERVICE_ID);
             $securitySettings = $settingsRepository->findAll();
             $values = explode(PHP_EOL, $securitySettings->findContentSecurityPolicyWhitelist()->getValue());
-            $values[] = 'https://getproctorio.com';
+            $values = array_merge($values, ['https://getproctorio.com', ROOT_URL]);
             $securitySettings->findContentSecurityPolicy()->setValue('list');
             $securitySettings->findContentSecurityPolicyWhitelist()->setValue(implode(PHP_EOL, array_unique($values)));
             $settingsRepository->persist($securitySettings);

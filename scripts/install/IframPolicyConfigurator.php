@@ -34,7 +34,7 @@ class IframPolicyConfigurator extends InstallAction
         /** @var SecuritySettingsRepositoryInterface $settingsRepository */
         $settingsRepository = $this->getServiceManager()->get(SecuritySettingsRepositoryInterface::SERVICE_ID);
         $securitySettings = $settingsRepository->findAll();
-        $values = ['https://getproctorio.com'];
+        $values = ['https://getproctorio.com', ROOT_URL];
         $securitySettings->findContentSecurityPolicy()->setValue('list');
         $securitySettings->findContentSecurityPolicyWhitelist()->setValue(implode(PHP_EOL, $values));
         $settingsRepository->persist($securitySettings);

@@ -22,6 +22,7 @@ declare(strict_types=1);
 
 namespace oat\remoteProctoring\controller;
 
+use common_Exception;
 use oat\remoteProctoring\model\ProctorioApiService;
 use oat\tao\model\http\Controller;
 use tao_helpers_Uri;
@@ -34,18 +35,34 @@ class DeliveryReview extends Controller implements ServiceLocatorAwareInterface
 {
     use ServiceLocatorAwareTrait;
 
+    public function index()
+    {
+        return $this->getPsrResponse()->withBody(stream_for(json_encode(['success' => true])))->withStatus(200);
+    }
+
     public function review()
     {
-        $requestBody = $this->getPsrRequest()->getParsedBody();
-        $deliveryId = tao_helpers_Uri::decode($requestBody['uri']);
-        $reviewUrl = $this->getProctorioApiService()->findReviewUrl($deliveryId);
+        $code = 200;
 
-        return $this->getPsrResponse()->withBody(
-            stream_for(json_encode(
-                    ['url' => $reviewUrl, 'success' => true]
-                )
-            )
-        );
+        try {
+            $requestBody = $this->getPsrRequest()->getParsedBody();
+            $deliveryId = tao_helpers_Uri::decode($requestBody['uri']);
+            $reviewUrl = $this->getProctorioApiService()->findReviewUrl($deliveryId);
+
+
+            $response = [
+                'url' => $reviewUrl,
+                'success' => true,
+            ];
+        } catch (common_Exception $exception) {
+            $response = [
+                'url' => $exception->getMessage(),
+                'success' => false,
+            ];
+            $code = 500;
+        }
+
+        return $this->getPsrResponse()->withBody(stream_for(json_encode($response)))->withStatus($code);
     }
 
     private function getProctorioApiService(): ProctorioApiService

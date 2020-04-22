@@ -68,12 +68,15 @@ class ProctoringAuthorizationProvider extends ConfigurableService implements Aut
      */
     private function isRemoteProctored(DeliveryExecutionInterface $deliveryExecution): bool
     {
+        /** @var SessionService $sessionService */
         $sessionService = $this->getServiceLocator()->get(SessionService::SERVICE_ID);
         $session = $sessionService->getCurrentSession();
         $proctoredContexts = $session->getContexts(RemoteProcotoredSessionContext::class);
         $proctored = false;
+        /** @var RemoteProcotoredSessionContext $context */
         foreach ($proctoredContexts as $context) {
-            if ($context->getDeliveryExecutionId() == $deliveryExecution->getIdentifier()) {
+            if ($context->getDeliveryExecutionId() == $deliveryExecution->getIdentifier() && !$context->isConsumed()) {
+                $context->consume();
                 $proctored = true;
                 break;
             }

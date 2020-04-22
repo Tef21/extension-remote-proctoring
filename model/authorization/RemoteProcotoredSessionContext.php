@@ -32,16 +32,29 @@ class RemoteProcotoredSessionContext implements SessionContext
     /** @var string */
     private $deliveryExecutionId;
 
+    /**  @var bool */
+    private $consumed = false;
+
     public function __construct(string $deliveryExecutionId)
     {
         $this->deliveryExecutionId = $deliveryExecutionId;
     }
 
     /**
-     * Retuns the delivery execution id for which the authorization was granted
+     * Returns the delivery execution id for which the authorization was granted
      */
     public function getDeliveryExecutionId(): string
     {
         return $this->deliveryExecutionId;
+    }
+
+    public function consume(): void
+    {
+        $this->consumed = true;
+    }
+
+    public function isConsumed(): bool
+    {
+        return $this->consumed;
     }
 }

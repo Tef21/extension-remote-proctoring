@@ -22,28 +22,29 @@ declare(strict_types=1);
 
 namespace oat\remoteProctoring\model\authorization;
 
-use oat\oatbox\service\ConfigurableService;
-
-class CookieSetUpService extends ConfigurableService
+/**
+ * This class is necessary to override cookie policy required by remote proctoring to run the test inside an iFrame.
+ */
+class CookiePolicyService
 {
-    public const SERVICE_ID = 'remoteProctoring/CookieSetUpService';
-    private const SAME_SITE_VALUE = 'samesite=none';
+    private const SAME_SITE = 'samesite';
+    public const SAME_SITE_NONE = 'none';
 
-    public function setUp(): void
+    public function setSameSitePolicy(string $policy): void
     {
         $cookieParams = session_get_cookie_params();
 
-        if ($this->requiresUpdateSameSiteOption($cookieParams)) {
+        if ($this->requiresUpdatePolicy($cookieParams, self::SAME_SITE, $policy)) {
             $this->commitSessionIfNeeded();
-            $this->addSameSiteOption($cookieParams);
+            $this->setPolicy($cookieParams, self::SAME_SITE, $policy);
             $this->startSessionIfNeeded();
         }
     }
 
-    private function addSameSiteOption(array $cookieParams): void
+    private function setPolicy(array $cookieParams, string $policyName, string $policy): void
     {
         if ($this->isPhpVersionGreaterThan72()) {
-            $cookieParams['samesite'] = 'none';
+            $cookieParams[$policyName] = $policy;
 
             session_set_cookie_params($cookieParams);
 
@@ -52,7 +53,7 @@ class CookieSetUpService extends ConfigurableService
 
         session_set_cookie_params(
             $cookieParams['lifetime'],
-            $cookieParams['path'] . '; ' . self::SAME_SITE_VALUE,
+            $cookieParams['path'] . $this->getPathPolicy($policyName, $policy),
             $cookieParams['domain'],
             $cookieParams['secure'],
             $cookieParams['httponly']
@@ -78,12 +79,17 @@ class CookieSetUpService extends ConfigurableService
         }
     }
 
-    private function requiresUpdateSameSiteOption(array $cookieParams): bool
+    private function requiresUpdatePolicy(array $cookieParams, string $policyName, string $policy): bool
     {
         if ($this->isPhpVersionGreaterThan72()) {
-            return ($cookieParams['samesite'] ?? '') !== 'none';
+            return ($cookieParams[$policyName] ?? '') !== $policy;
         }
 
-        return strpos($cookieParams['path'], self::SAME_SITE_VALUE) === false;
+        return strpos($cookieParams['path'], $this->getPathPolicy($policyName, $policy)) === false;
+    }
+
+    private function getPathPolicy(string $policyName, string $policy): string
+    {
+        return sprintf('; %s=%s', $policyName, $policy);
     }
 }

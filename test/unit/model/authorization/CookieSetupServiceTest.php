@@ -23,26 +23,26 @@ declare(strict_types=1);
 namespace oat\remoteProctoring\test\unit\model\authorization;
 
 use oat\generis\test\TestCase;
-use oat\remoteProctoring\model\authorization\CookieSetUpService;
+use oat\remoteProctoring\model\authorization\CookiePolicyService;
 
 class CookieSetupServiceTest extends TestCase
 {
-    /** @var CookieSetUpService */
+    /** @var CookiePolicyService */
     private $subject;
 
     public function setUp(): void
     {
-        $this->subject = new CookieSetUpService();
+        $this->subject = new CookiePolicyService();
     }
 
     /**
      * @runInSeparateProcess
      */
-    public function testSetUpWillAddSameSiteOptionToPath(): void
+    public function testSetSameSiteOption(): void
     {
         session_start();
 
-        $this->subject->setUp();
+        $this->subject->setSameSitePolicy('none');
 
         $cookieParams = session_get_cookie_params();
 

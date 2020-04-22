@@ -39,7 +39,7 @@ class Updater extends common_ext_ExtensionUpdater
             $values = explode(PHP_EOL, $securitySettings->findContentSecurityPolicyWhitelist()->getValue());
             $values[] = 'https://getproctorio.com';
             $securitySettings->findContentSecurityPolicy()->setValue('list');
-            $securitySettings->findContentSecurityPolicyWhitelist()->setValue(implode(PHP_EOL, $values));
+            $securitySettings->findContentSecurityPolicyWhitelist()->setValue(implode(PHP_EOL, array_unique($values)));
             $settingsRepository->persist($securitySettings);
             $this->setVersion('1.0.3');
         }

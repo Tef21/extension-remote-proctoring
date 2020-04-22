@@ -20,6 +20,7 @@
  *
  */
 
+use oat\remoteProctoring\scripts\install\IframPolicyConfigurator;
 use oat\remoteProctoring\scripts\install\RegisterAuthorizationProvider;
 use oat\tao\model\user\TaoRoles;
 
@@ -46,7 +47,8 @@ return [
     ],
     'install' => [
         'php' => [
-            RegisterAuthorizationProvider::class
+            RegisterAuthorizationProvider::class,
+            IframPolicyConfigurator::class,
         ],
         'rdf' => [
             __DIR__ . '/install/ontology/remoteProctoring.rdf'

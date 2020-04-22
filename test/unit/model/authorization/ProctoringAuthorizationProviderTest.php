@@ -59,17 +59,19 @@ class ProctoringAuthorizationProviderTest extends TestCase
     public function testAuthorized(): void
     {
         $user = $this->prophesize(User::class);
-        
+
         $deliveryExecution = $this->prophesize(DeliveryExecutionInterface::class);
         $deliveryExecution->getIdentifier()->willReturn('123456');
-        
+
         $context = $this->prophesize(RemoteProcotoredSessionContext::class);
         $context->getDeliveryExecutionId()->willReturn('123456');
-        
+        $context->isConsumed()->willReturn(false);
+        $context->consume();
+
         $authorization = new ProctoringAuthorizationProvider();
         $authorization->setServiceLocator($this->getMocks([$context->reveal()]));
         $authorization->verifyResumeAuthorization($deliveryExecution->reveal(), $user->reveal());
-        
+
         $this->assertTrue(true, 'No exception should be thrown and end of function reached');
     }
 

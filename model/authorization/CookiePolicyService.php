@@ -22,10 +22,12 @@ declare(strict_types=1);
 
 namespace oat\remoteProctoring\model\authorization;
 
+use oat\oatbox\service\ConfigurableService;
+
 /**
  * This class is necessary to override cookie policy required by remote proctoring to run the test inside an iFrame.
  */
-class CookiePolicyService
+class CookiePolicyService extends ConfigurableService
 {
     private const SAME_SITE = 'samesite';
     public const SAME_SITE_NONE = 'none';

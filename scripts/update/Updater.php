@@ -21,6 +21,7 @@
 namespace oat\remoteProctoring\scripts\update;
 
 use common_ext_ExtensionUpdater;
+use oat\tao\model\security\Business\Contract\SecuritySettingsRepositoryInterface;
 
 class Updater extends common_ext_ExtensionUpdater
 {
@@ -29,10 +30,18 @@ class Updater extends common_ext_ExtensionUpdater
      */
     public function update($initialVersion)
     {
-        $this->skip('1.0.0', '1.0.1');
+        $this->skip('1.0.0', '1.0.2');
 
-        if ($this->isVersion('1.0.1')) {
-            $this->setVersion('1.0.2');
+        if ($this->isVersion('1.0.2')) {
+            /** @var SecuritySettingsRepositoryInterface $settingsRepository */
+            $settingsRepository = $this->getServiceManager()->get(SecuritySettingsRepositoryInterface::SERVICE_ID);
+            $securitySettings = $settingsRepository->findAll();
+            $values = explode(PHP_EOL, $securitySettings->findContentSecurityPolicyWhitelist()->getValue());
+            $values[] = 'https://getproctorio.com';
+            $securitySettings->findContentSecurityPolicy()->setValue('list');
+            $securitySettings->findContentSecurityPolicyWhitelist()->setValue(implode(PHP_EOL, $values));
+            $settingsRepository->persist($securitySettings);
+            $this->setVersion('1.0.3');
         }
     }
 }

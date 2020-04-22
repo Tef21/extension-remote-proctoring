@@ -52,8 +52,8 @@ class ProctorioApiService extends ConfigurableService
     public const OPTION_OAUTH_SECRET = 'oauthSecret';
 
     //Prefix
-    public const PREFIX_KEY_VALUE = 'proctorio::';
-    public const PREFIX_DELIVERY_KEY_VALUE = self::PREFIX_KEY_VALUE . 'deliveryId::';
+    private const PREFIX_KEY_VALUE = 'proctorio::';
+    private const PREFIX_DELIVERY_KEY_VALUE = self::PREFIX_KEY_VALUE . 'deliveryId::';
 
     /** @var ProctorioService */
     private $proctorioService;

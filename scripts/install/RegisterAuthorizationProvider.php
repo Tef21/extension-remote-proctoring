@@ -45,7 +45,7 @@ class RegisterAuthorizationProvider extends InstallAction
                 'Incompatible AuthorizationService "' . get_class($authService) . '" found.'
             );
         }
-       
+
         $authService->addProvider(new ProctoringAuthorizationProvider());
         $this->registerService(AuthorizationService::SERVICE_ID, $authService);
     }

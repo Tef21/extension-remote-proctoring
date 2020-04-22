@@ -27,11 +27,11 @@ use tao_helpers_Uri;
 
 class ProctorioExamUrlFactory extends ConfigurableService
 {
-    public const OPTION_BASE_URL = 'base_url';
-    public const DELIVERY_EXECUTION_TAKE_URI = '/taoDelivery/DeliveryServer/runDeliveryExecution';
-    public const DELIVERY_EXECUTION_END_URI = '/taoDelivery/DeliveryServer/index';
-    public const DELIVERY_EXECUTION_START_URI = '/remoteProctoring';
-    public const ANY_CHARACTER_PATTERN = '.*';
+    private const OPTION_BASE_URL = 'base_url';
+    private const DELIVERY_EXECUTION_TAKE_URI = '/taoDelivery/DeliveryServer/runDeliveryExecution';
+    private const DELIVERY_EXECUTION_END_URI = '/taoDelivery/DeliveryServer/index';
+    private const DELIVERY_EXECUTION_START_URI = '/remoteProctoring';
+    private const ANY_CHARACTER_PATTERN = '.*';
 
     public function createExamStartUrl(): string
     {

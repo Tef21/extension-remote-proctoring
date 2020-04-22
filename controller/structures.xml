@@ -5,9 +5,14 @@
         <sections>
             <section id="manage_results" name="Manage Results" url="/taoOutcomeUi/Results/index">
                 <actions>
-                    <action id="results-proctorio-review" name="Proctorio Review" url="/remoteProctoring/DeliveryReview/review"
-                            group="tree" context="resource" binding="proctorio_url_redirect">
+                    <action id="results-proctorio-review" name="Proctorio Review"
+                            url="/remoteProctoring/DeliveryReview/review"
+                            group="tree" context="resource">
                         <icon id="icon-desktop-preview"/>
+                    </action>
+                    <action id="results-index" name="Results" url="/remoteProctoring/DeliveryReview/index"
+                            group="content"
+                            context="instance">
                     </action>
                 </actions>
             </section>

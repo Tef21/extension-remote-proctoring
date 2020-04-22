@@ -27,7 +27,7 @@ use oat\oatbox\extension\InstallAction;
 use oat\tao\model\security\Business\Contract\SecuritySettingsRepositoryInterface;
 
 
-class IframPolicyConfigurator extends InstallAction
+class IframePolicyConfigurator extends InstallAction
 {
     public function __invoke($params)
     {

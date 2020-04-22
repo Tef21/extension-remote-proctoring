@@ -40,7 +40,12 @@ class DeliveryReview extends Controller implements ServiceLocatorAwareInterface
         $deliveryId = tao_helpers_Uri::decode($requestBody['uri']);
         $reviewUrl = $this->getProctorioApiService()->findReviewUrl($deliveryId);
 
-        return $this->getPsrResponse()->withBody(stream_for(json_encode(['url' => $reviewUrl])));
+        return $this->getPsrResponse()->withBody(
+            stream_for(json_encode(
+                    ['url' => $reviewUrl, 'success' => true]
+                )
+            )
+        );
     }
 
     private function getProctorioApiService(): ProctorioApiService

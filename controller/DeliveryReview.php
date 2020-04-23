@@ -37,7 +37,7 @@ class DeliveryReview extends Controller implements ServiceLocatorAwareInterface
 
     public function index()
     {
-        return $this->getPsrResponse()->withBody(stream_for(json_encode(['success' => true])))->withStatus(200);
+        return $this->getPsrResponse()->withStatus(200);
     }
 
     public function review()
@@ -51,12 +51,12 @@ class DeliveryReview extends Controller implements ServiceLocatorAwareInterface
 
 
             $response = [
-                'url' => $reviewUrl,
-                'success' => true,
+                'data' => ['url' => $reviewUrl],
+                'success' => true
             ];
         } catch (common_Exception $exception) {
             $response = [
-                'url' => $exception->getMessage(),
+                'data' => ['url' => ''],
                 'success' => false,
             ];
             $code = 500;

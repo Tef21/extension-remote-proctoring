@@ -20,6 +20,7 @@
  *
  */
 
+use oat\remoteProctoring\scripts\install\SetupSecurityPolicy;
 use oat\remoteProctoring\scripts\install\RegisterAuthorizationProvider;
 use oat\tao\model\user\TaoRoles;
 
@@ -47,7 +48,8 @@ return [
     ],
     'install' => [
         'php' => [
-            RegisterAuthorizationProvider::class
+            RegisterAuthorizationProvider::class,
+            SetupSecurityPolicy::class,
         ],
         'rdf' => [
             __DIR__ . '/install/ontology/remoteProctoring.rdf'

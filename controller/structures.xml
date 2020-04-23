@@ -7,7 +7,7 @@
                 <actions>
                     <action id="review_url" name="Proctorio Review"
                             url="/remoteProctoring/DeliveryReview/review"
-                            group="tree" context="resource" binding="proctorio_url_redirect">
+                            group="tree" context="resource" binding="open_url">
                         <icon id="icon-desktop-preview"/>
                     </action>
                 </actions>

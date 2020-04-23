@@ -34,6 +34,6 @@ class SetupSecurityPolicy extends InstallAction
         $policyConfigurator = $this->getServiceManager(SecurityPolicyConfigurator::class);
         $policyConfigurator->configureIFramePolicy();
 
-        return common_report_Report::createSuccess('IFrame policy successfully set to allows Proctorio communication');
+        return common_report_Report::createSuccess('IFrame policy successfully set to allow Proctorio communication');
     }
 }

@@ -49,7 +49,7 @@ class ProctorioExamUrlFactoryTest extends TestCase
     public function testCreateExamEndUrl(): void
     {
         $this->assertSame(
-            self::ROOT_URL_CONVERTED . '\/taoDelivery\/DeliveryServer\/index.*',
+
             $this->subject->createExamEndUrl()
         );
     }

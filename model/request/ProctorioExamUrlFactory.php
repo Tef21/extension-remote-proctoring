@@ -27,9 +27,9 @@ use tao_helpers_Uri;
 
 class ProctorioExamUrlFactory extends ConfigurableService
 {
-    private const OPTION_BASE_URL = 'base_url';
+    public const OPTION_BASE_URL = 'base_url';
     private const DELIVERY_EXECUTION_TAKE_URI = '/taoDelivery/DeliveryServer/runDeliveryExecution';
-    private const DELIVERY_EXECUTION_END_URI = '/taoDelivery/DeliveryServer/index';
+    private const DELIVERY_EXECUTION_END_URI = '/taoDelivery/DeliveryServer/';
     private const DELIVERY_EXECUTION_START_URI = '/remoteProctoring';
     private const ANY_CHARACTER_PATTERN = '.*';
 

@@ -34,7 +34,7 @@ class Updater extends common_ext_ExtensionUpdater
 
         if ($this->isVersion('1.0.3')) {
             /** @var  SecurityPolicyConfigurator $policyConfigurator */
-            $policyConfigurator = $this->getServiceManager(SecurityPolicyConfigurator::class);
+            $policyConfigurator = $this->getServiceManager()->get(SecurityPolicyConfigurator::class);
             $policyConfigurator->configureIFramePolicy();
 
             $this->setVersion('1.0.4');

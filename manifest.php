@@ -39,7 +39,7 @@ return [
         'generis' => '>=12.17.0',
         'taoDelivery' => '>=14.10.1',
         'tao' => '>=41.12.0',
-        'taoOutcomeUi' => '>=8.5.0'
+        'taoOutcomeUi' => '>=8.7.0'
     ],
     'managementRole' => 'http://www.tao.lu/Ontologies/generis.rdf#remoteProctoringManager',
     'acl' => [

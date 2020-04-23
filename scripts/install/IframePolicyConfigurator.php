@@ -26,7 +26,6 @@ use common_report_Report;
 use oat\oatbox\extension\InstallAction;
 use oat\tao\model\security\Business\Contract\SecuritySettingsRepositoryInterface;
 
-
 class IframePolicyConfigurator extends InstallAction
 {
     public function __invoke($params)

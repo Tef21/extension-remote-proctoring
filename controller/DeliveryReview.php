@@ -23,10 +23,12 @@ declare(strict_types=1);
 namespace oat\remoteProctoring\controller;
 
 use common_Exception;
+use oat\oatbox\log\LoggerAwareTrait;
 use oat\remoteProctoring\model\ProctorioApiService;
 use oat\tao\model\http\Controller;
 use Psr\Http\Message\ResponseInterface;
 use tao_helpers_Uri;
+use Throwable;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorAwareTrait;
 
@@ -35,29 +37,32 @@ use function GuzzleHttp\Psr7\stream_for;
 class DeliveryReview extends Controller implements ServiceLocatorAwareInterface
 {
     use ServiceLocatorAwareTrait;
+    use LoggerAwareTrait;
 
     public function review(): ResponseInterface
     {
-        $code = 200;
-
         try {
             $requestBody = $this->getPsrRequest()->getParsedBody();
             $deliveryId = tao_helpers_Uri::decode($requestBody['uri']);
             $reviewUrl = $this->getProctorioApiService()->findReviewUrl($deliveryId);
 
-            $response = [
-                'data' => ['url' => $reviewUrl],
-                'success' => true
-            ];
-        } catch (common_Exception $exception) {
-            $response = [
-                'data' => ['url' => ''],
-                'success' => false,
-            ];
-            $code = 500;
-        }
+            return $this->createResponse(200, $reviewUrl);
+        } catch (Throwable $exception) {
+            $this->logError($exception->getMessage());
 
-        return $this->getPsrResponse()->withBody(stream_for(json_encode($response)))->withStatus($code);
+            return $this->createResponse(500);
+        }
+    }
+
+    private function createResponse(int $code, string $reviewUrl = null): ResponseInterface
+    {
+        $response = [
+            'data' => ['url' => $reviewUrl],
+            'success' => $code === 200
+        ];
+        return $this->getPsrResponse()
+            ->withBody(stream_for(json_encode($response)))
+            ->withStatus($code);
     }
 
     private function getProctorioApiService(): ProctorioApiService

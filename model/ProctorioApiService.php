@@ -70,6 +70,7 @@ class ProctorioApiService extends ConfigurableService
     {
         try {
             $response = $this->requestProctorioUrls($deliveryExecution);
+
             $this->saveProctorioUrls($deliveryExecution, $response);
         } catch (Throwable $exception) {
             $this->logError(

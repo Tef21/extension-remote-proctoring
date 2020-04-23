@@ -30,14 +30,14 @@ class Updater extends common_ext_ExtensionUpdater
      */
     public function update($initialVersion)
     {
-        $this->skip('1.0.0', '1.0.2');
+        $this->skip('1.0.0', '1.0.3');
 
-        if ($this->isVersion('1.0.2')) {
+        if ($this->isVersion('1.0.3')) {
             /** @var  SecurityPolicyConfigurator $policyConfigurator */
             $policyConfigurator = $this->getServiceManager(SecurityPolicyConfigurator::class);
             $policyConfigurator->configureIFramePolicy();
 
-            $this->setVersion('1.0.3');
+            $this->setVersion('1.0.4');
         }
     }
 }

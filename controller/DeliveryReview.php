@@ -25,6 +25,7 @@ namespace oat\remoteProctoring\controller;
 use common_Exception;
 use oat\remoteProctoring\model\ProctorioApiService;
 use oat\tao\model\http\Controller;
+use Psr\Http\Message\ResponseInterface;
 use tao_helpers_Uri;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorAwareTrait;
@@ -35,12 +36,7 @@ class DeliveryReview extends Controller implements ServiceLocatorAwareInterface
 {
     use ServiceLocatorAwareTrait;
 
-    public function index()
-    {
-        return $this->getPsrResponse()->withStatus(200);
-    }
-
-    public function review()
+    public function review(): ResponseInterface
     {
         $code = 200;
 

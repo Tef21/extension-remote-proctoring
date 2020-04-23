@@ -18,26 +18,22 @@
  * Copyright (c) 2020 (original work) Open Assessment Technologies SA
  */
 
-namespace oat\remoteProctoring\scripts\update;
+declare(strict_types=1);
 
-use common_ext_ExtensionUpdater;
+namespace oat\remoteProctoring\scripts\install;
+
+use common_report_Report;
+use oat\oatbox\extension\InstallAction;
 use oat\remoteProctoring\model\SecurityPolicyConfigurator;
 
-class Updater extends common_ext_ExtensionUpdater
+class SetupSecurityPolicy extends InstallAction
 {
-    /**
-     * @inheritDoc
-     */
-    public function update($initialVersion)
+    public function __invoke($params)
     {
-        $this->skip('1.0.0', '1.0.2');
+        /** @var  SecurityPolicyConfigurator $policyConfigurator */
+        $policyConfigurator = $this->getServiceManager(SecurityPolicyConfigurator::class);
+        $policyConfigurator->configureIFramePolicy();
 
-        if ($this->isVersion('1.0.2')) {
-            /** @var  SecurityPolicyConfigurator $policyConfigurator */
-            $policyConfigurator = $this->getServiceManager(SecurityPolicyConfigurator::class);
-            $policyConfigurator->configureIFramePolicy();
-
-            $this->setVersion('1.0.3');
-        }
+        return common_report_Report::createSuccess('IFrame policy successfully set to allows Proctorio communication');
     }
 }

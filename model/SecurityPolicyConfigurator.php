@@ -20,24 +20,27 @@
 
 declare(strict_types=1);
 
-namespace oat\remoteProctoring\scripts\install;
+namespace oat\remoteProctoring\model;
 
-use common_report_Report;
-use oat\oatbox\extension\InstallAction;
+use oat\oatbox\service\ConfigurableService;
 use oat\tao\model\security\Business\Contract\SecuritySettingsRepositoryInterface;
 
-class IframePolicyConfigurator extends InstallAction
+class SecurityPolicyConfigurator extends ConfigurableService
 {
-    public function __invoke($params)
+    private const PROCTORIO_URL = 'https://getproctorio.com';
+
+    public function configureIFramePolicy(): void
     {
         /** @var SecuritySettingsRepositoryInterface $settingsRepository */
         $settingsRepository = $this->getServiceManager()->get(SecuritySettingsRepositoryInterface::SERVICE_ID);
-        $securitySettings = $settingsRepository->findAll();
-        $values = ['https://getproctorio.com', ROOT_URL];
-        $securitySettings->findContentSecurityPolicy()->setValue('list');
-        $securitySettings->findContentSecurityPolicyWhitelist()->setValue(implode(PHP_EOL, $values));
-        $settingsRepository->persist($securitySettings);
 
-        return common_report_Report::createSuccess('IFrame policy successfully set to allows Proctorio communication');
+        $securitySettings = $settingsRepository->findAll();
+        $values = explode(PHP_EOL, $securitySettings->findContentSecurityPolicyWhitelist()->getValue());
+        $values = array_merge($values, [self::PROCTORIO_URL, ROOT_URL]);
+
+        $securitySettings->findContentSecurityPolicy()->setValue('list');
+        $securitySettings->findContentSecurityPolicyWhitelist()->setValue(implode(PHP_EOL, array_unique($values)));
+
+        $settingsRepository->persist($securitySettings);
     }
 }

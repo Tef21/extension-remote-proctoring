@@ -139,7 +139,7 @@ class ProctorioApiService extends ConfigurableService
         return $this->proctorioService;
     }
 
-    public function findReviewUrl(string $deliveryId): ?string
+    public function findReviewUrl(string $deliveryId): string
     {
         return (string)$this->getStorage()->get(self::PREFIX_DELIVERY_KEY_VALUE . $deliveryId);
     }

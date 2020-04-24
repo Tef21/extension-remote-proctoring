@@ -21,6 +21,7 @@
 namespace oat\remoteProctoring\scripts\update;
 
 use common_ext_ExtensionUpdater;
+use oat\remoteProctoring\model\SecurityPolicyConfigurator;
 
 class Updater extends common_ext_ExtensionUpdater
 {
@@ -30,5 +31,15 @@ class Updater extends common_ext_ExtensionUpdater
     public function update($initialVersion)
     {
         $this->skip('1.0.0', '1.0.3');
+
+        if ($this->isVersion('1.0.3')) {
+            /** @var  SecurityPolicyConfigurator $policyConfigurator */
+            $policyConfigurator = $this->getServiceManager()->get(SecurityPolicyConfigurator::class);
+            $policyConfigurator->configureIFramePolicy();
+
+            $this->setVersion('1.0.4');
+        }
+
+        $this->skip('1.0.3', '1.1.0');
     }
 }

@@ -22,31 +22,18 @@ declare(strict_types=1);
 
 namespace oat\remoteProctoring\scripts\install;
 
+use common_report_Report;
 use oat\oatbox\extension\InstallAction;
-use oat\taoDelivery\model\authorization\AuthorizationService;
-use oat\taoDelivery\model\authorization\strategy\AuthorizationAggregator;
-use oat\remoteProctoring\model\authorization\ProctoringAuthorizationProvider;
-use common_exception_Error;
+use oat\remoteProctoring\model\SecurityPolicyConfigurator;
 
-/**
- * Installation action that register the authorization.
- */
-class RegisterAuthorizationProvider extends InstallAction
+class SetupSecurityPolicy extends InstallAction
 {
-    /**
-     * @param $params
-     */
     public function __invoke($params)
     {
-        $authService = $this->getServiceManager()->get(AuthorizationService::SERVICE_ID);
+        /** @var  SecurityPolicyConfigurator $policyConfigurator */
+        $policyConfigurator = $this->getServiceManager()->get(SecurityPolicyConfigurator::class);
+        $policyConfigurator->configureIFramePolicy();
 
-        if (!$authService instanceof AuthorizationAggregator) {
-            throw new common_exception_Error(
-                'Incompatible AuthorizationService "' . get_class($authService) . '" found.'
-            );
-        }
-
-        $authService->addProvider(new ProctoringAuthorizationProvider());
-        $this->registerService(AuthorizationService::SERVICE_ID, $authService);
+        return common_report_Report::createSuccess('IFrame policy successfully set to allow Proctorio communication');
     }
 }

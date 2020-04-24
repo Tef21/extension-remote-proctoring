@@ -52,7 +52,8 @@ class ProctorioApiService extends ConfigurableService
     public const OPTION_OAUTH_SECRET = 'oauthSecret';
 
     //Prefix
-    public const PREFIX_KEY_VALUE = 'proctorio::';
+    private const PREFIX_KEY_VALUE = 'proctorio::';
+    private const PREFIX_DELIVERY_KEY_VALUE = self::PREFIX_KEY_VALUE . 'deliveryId::';
 
     /** @var ProctorioService */
     private $proctorioService;
@@ -69,6 +70,8 @@ class ProctorioApiService extends ConfigurableService
     {
         try {
             $response = $this->requestProctorioUrls($deliveryExecution);
+
+            $this->saveProctorioUrls($deliveryExecution, $response);
         } catch (Throwable $exception) {
             $this->logError(
                 sprintf(
@@ -79,17 +82,6 @@ class ProctorioApiService extends ConfigurableService
 
             throw $exception;
         }
-
-        $this->getStorage()
-            ->set(
-                $this->getUrlsId($deliveryExecution),
-                json_encode(
-                    [
-                        $response->getTestTakerUrl(),
-                        $response->getTestReviewerUrl(),
-                    ]
-                )
-            );
 
         return $response;
     }
@@ -138,11 +130,6 @@ class ProctorioApiService extends ConfigurableService
         return $this->getServiceLocator()->get(ProctorioRequestBuilder::SERVICE_ID);
     }
 
-    private function getUrlsId(DeliveryExecutionInterface $deliveryExecution): string
-    {
-        return self::PREFIX_KEY_VALUE . $deliveryExecution->getIdentifier();
-    }
-
     private function getProctorioLibraryService(): ProctorioService
     {
         if ($this->proctorioService === null) {
@@ -150,5 +137,26 @@ class ProctorioApiService extends ConfigurableService
         }
 
         return $this->proctorioService;
+    }
+
+    public function findReviewUrl(string $deliveryId): string
+    {
+        return (string)$this->getStorage()->get(self::PREFIX_DELIVERY_KEY_VALUE . $deliveryId);
+    }
+
+    /**
+     * @throws common_Exception
+     * @throws common_exception_NotFound
+     */
+    private function saveProctorioUrls(DeliveryExecutionInterface $deliveryExecution, ProctorioResponse $response): void
+    {
+        $this->getStorage()->set(
+            self::PREFIX_KEY_VALUE . $deliveryExecution->getIdentifier(),
+            $response->getTestTakerUrl()
+        );
+        $this->getStorage()->set(
+            self::PREFIX_DELIVERY_KEY_VALUE . $deliveryExecution->getDelivery()->getUri(),
+            $response->getTestReviewerUrl()
+        );
     }
 }

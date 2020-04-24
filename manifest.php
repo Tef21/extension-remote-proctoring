@@ -33,12 +33,13 @@ return [
     'label' => 'Remote Proctoring extension that allows you to use a remote proctoring solution',
     'description' => 'This extension provides functionality to integrate with Proctorio tool',
     'license' => 'GPL-2.0',
-    'version' => '1.0.4',
+    'version' => '1.1.0',
     'author' => 'Open Assessment Technologies SA',
     'requires' => [
         'generis' => '>=12.17.0',
-        'taoDelivery' => '14.10.1',
+        'taoDelivery' => '>=14.10.1',
         'tao' => '>=41.12.0',
+        'taoOutcomeUi' => '>=8.7.0'
     ],
     'managementRole' => 'http://www.tao.lu/Ontologies/generis.rdf#remoteProctoringManager',
     'acl' => [
@@ -68,5 +69,6 @@ return [
         'BASE_URL' => ROOT_URL . 'remoteProctoring/',
     ],
     'extra' => [
-    ],
+        'structures' => __DIR__ . DIRECTORY_SEPARATOR . 'controller' . DIRECTORY_SEPARATOR . 'structures.xml',
+    ]
 ];
